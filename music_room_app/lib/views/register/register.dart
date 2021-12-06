@@ -1,19 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../Component/button.dart';
-import '../../constants.dart';
-import '../home/home.dart';
-import '../register/register.dart';
+import '../component/button.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+import '../../constants.dart';
+import '../login/login.dart';
+
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignupScreenState createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final formkey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
   String email = '';
@@ -23,6 +23,18 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[200],
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+            size: 30,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
       body: isloading
           ? const Center(
               child: CircularProgressIndicator(),
@@ -43,27 +55,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
-                              "Sign In",
-                              style: TextStyle(
-                                  fontSize: 50,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
+                            const Hero(
+                              tag: '1',
+                              child: Text(
+                                "Sign up",
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ),
                             const SizedBox(height: 30),
                             TextFormField(
                               keyboardType: TextInputType.emailAddress,
                               onChanged: (value) {
-                                email = value;
+                                email = value.toString().trim();
                               },
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Please enter Email";
-                                }
-                              },
+                              validator: (value) => (value!.isEmpty)
+                                  ? ' Please enter email'
+                                  : null,
                               textAlign: TextAlign.center,
                               decoration: kTextFieldDecoration.copyWith(
-                                hintText: 'Email',
+                                hintText: 'Enter Your Email',
                                 prefixIcon: const Icon(
                                   Icons.email,
                                   color: Colors.black,
@@ -83,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               textAlign: TextAlign.center,
                               decoration: kTextFieldDecoration.copyWith(
-                                  hintText: 'Password',
+                                  hintText: 'Choose a Password',
                                   prefixIcon: const Icon(
                                     Icons.lock,
                                     color: Colors.black,
@@ -91,21 +104,28 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 80),
                             LoginSignupButton(
-                              title: 'Login',
+                              title: 'Register',
                               ontapp: () async {
                                 if (formkey.currentState!.validate()) {
                                   setState(() {
                                     isloading = true;
                                   });
                                   try {
-                                    await _auth.signInWithEmailAndPassword(
+                                    await _auth.createUserWithEmailAndPassword(
                                         email: email, password: password);
 
-                                    await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (contex) => const HomeScreen(),
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.blueGrey,
+                                        content: Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                              'Sucessfully Register.You Can Login Now'),
+                                        ),
+                                        duration: Duration(seconds: 5),
                                       ),
                                     );
+                                    Navigator.of(context).pop();
 
                                     setState(() {
                                       isloading = false;
@@ -114,7 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     showDialog(
                                       context: context,
                                       builder: (ctx) => AlertDialog(
-                                        title: const Text("Ops! Login Failed"),
+                                        title: const Text(
+                                            ' Ops! Registration Failed'),
                                         content: Text('${e.message}'),
                                         actions: [
                                           TextButton(
@@ -126,8 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ],
                                       ),
                                     );
-                                    // ignore: avoid_print
-                                    print(e);
                                   }
                                   setState(() {
                                     isloading = false;
@@ -135,36 +154,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                               },
                             ),
-                            const SizedBox(height: 30),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => const SignupScreen(),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                children: const [
-                                  Text(
-                                    "Don't have an Account ?",
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.black87),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Hero(
-                                    tag: '1',
-                                    child: Text(
-                                      'Sign up',
-                                      style: TextStyle(
-                                          fontSize: 21,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
                           ],
                         ),
                       ),
