@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "870791210894",
+    "project_id": "musicroom-27d72",
+    "storage_bucket": "musicroom-27d72.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:870791210894:android:162945578d140eaea4e6df",
+        "android_client_info": {
+          "package_name": "com.example.music_room_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "870791210894-pputaom3aq61pbv6u3lnqbn76plg181n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.music_room_app",
+            "certificate_hash": "6e6ca8fa3ef0cdef934b5cdaae09126a77a4122f"
+          }
+        },
+        {
+          "client_id": "870791210894-ivlmdflv5dao4l4i1spto398p7qsri1l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDZM7l6zqOGiqpBs9O66-5IC026oBPsi4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "870791210894-ivlmdflv5dao4l4i1spto398p7qsri1l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
