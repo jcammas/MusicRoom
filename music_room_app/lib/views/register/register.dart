@@ -24,16 +24,8 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: const Color(0XFF072BB8),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-            size: 30,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
       ),
       body: isloading
           ? const Center(
@@ -61,7 +53,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 "Sign up",
                                 style: TextStyle(
                                     fontSize: 30,
-                                    color: Colors.black,
+                                    color: Color(0XFF072BB8),
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -79,7 +71,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 hintText: 'Enter Your Email',
                                 prefixIcon: const Icon(
                                   Icons.email,
-                                  color: Colors.black,
+                                  color: Color(0XFF072BB8),
                                 ),
                               ),
                             ),
@@ -99,7 +91,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   hintText: 'Choose a Password',
                                   prefixIcon: const Icon(
                                     Icons.lock,
-                                    color: Colors.black,
+                                    color: Color(0XFF072BB8),
                                   )),
                             ),
                             const SizedBox(height: 80),
@@ -116,7 +108,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        backgroundColor: Colors.blueGrey,
+                                        backgroundColor: Color(0XFF072BB8),
                                         content: Padding(
                                           padding: EdgeInsets.all(8.0),
                                           child: Text(
