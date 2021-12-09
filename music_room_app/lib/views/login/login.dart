@@ -5,7 +5,7 @@ import '../Component/button.dart';
 import '../../constants.dart';
 import '../home/home.dart';
 import '../register/register.dart';
-import 'widgets/forgot_password.dart';
+import 'widgets/reset.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -142,8 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ForgotPassword(),
+                                      builder: (context) => const Reset(),
                                     ));
                               },
                               child: const Text(
