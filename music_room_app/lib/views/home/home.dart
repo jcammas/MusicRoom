@@ -12,10 +12,6 @@ class HomeScreen extends StatefulWidget {
 
 final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-_signOut() async {
-  await _firebaseAuth.signOut();
-}
-
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
@@ -31,35 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       backgroundColor: Colors.grey[200],
-      drawer: const MyDrawer(),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('You have logged in Successfuly'),
-            const SizedBox(height: 50),
-            SizedBox(
-              height: 60,
-              width: 150,
-              child: ElevatedButton(
-                  clipBehavior: Clip.hardEdge,
-                  child: const Center(
-                    child: Text('Log out'),
-                  ),
-                  onPressed: () async {
-                    await _signOut();
-                    if (_firebaseAuth.currentUser == null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginScreen()),
-                      );
-                    }
-                  }),
-            )
-          ],
-        ),
-      ),
+      drawer: MyDrawer(),
+      body: Center(),
     );
   }
 }

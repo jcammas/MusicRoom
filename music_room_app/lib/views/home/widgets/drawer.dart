@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:music_room_app/views/login/login.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer({Key? key}) : super(key: key);
+  MyDrawer({Key? key}) : super(key: key);
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  _signOut() async {
+    await _firebaseAuth.signOut();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +36,19 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Mon compte'),
             onTap: () {},
           ),
+          ListTile(
+              leading: const Icon(Icons.account_circle_outlined),
+              title: const Text('Déconnexion'),
+              onTap: () async {
+                await _signOut();
+                if (_firebaseAuth.currentUser == null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                  );
+                }
+              }),
         ],
       ),
     );
