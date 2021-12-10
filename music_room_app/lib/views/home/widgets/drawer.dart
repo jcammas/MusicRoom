@@ -32,13 +32,29 @@ class MyDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.account_circle_outlined),
-            title: const Text('Mon compte'),
+            leading: const Icon(
+              Icons.account_circle_outlined,
+              size: 36,
+              color: Color(0XFF072BB8),
+            ),
+            title: const Text(
+              'Mon compte',
+              style: TextStyle(
+                color: Color(0XFF434343),
+                fontSize: 20,
+              ),
+            ),
             onTap: () {},
           ),
           ListTile(
-              leading: const Icon(Icons.account_circle_outlined),
-              title: const Text('Déconnexion'),
+              leading: const Icon(Icons.logout),
+              title: const Text(
+                'Déconnexion',
+                style: TextStyle(
+                  color: Color(0XFF434343),
+                  fontSize: 20,
+                ),
+              ),
               onTap: () async {
                 await _signOut();
                 if (_firebaseAuth.currentUser == null) {
