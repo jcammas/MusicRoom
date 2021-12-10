@@ -73,6 +73,21 @@ class _ResetState extends State<Reset> {
                         title: 'Send request',
                         ontapp: () async {
                           _auth.sendPasswordResetEmail(email: _email);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Color(0XFF072BB8),
+                              content: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text(
+                                    'An email has been set, please check your boxmail to recover your password.',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700),
+                                    textAlign: TextAlign.center),
+                              ),
+                              duration: Duration(seconds: 5),
+                            ),
+                          );
                           Navigator.pop(context);
                         },
                       ),
