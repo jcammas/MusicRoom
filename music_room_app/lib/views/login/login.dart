@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../Component/button.dart';
+import '../component/button.dart';
 import '../../constants.dart';
 import '../home/home.dart';
 import '../register/register.dart';
+import 'widgets/reset.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -47,8 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               "Sign In",
                               style: TextStyle(
                                   fontSize: 50,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
+                                  color: Color(0XFF072BB8),
+                                  fontWeight: FontWeight.w700),
                             ),
                             const SizedBox(height: 30),
                             TextFormField(
@@ -66,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hintText: 'Email',
                                 prefixIcon: const Icon(
                                   Icons.email,
-                                  color: Colors.black,
+                                  color: Color(0XFF072BB8),
                                 ),
                               ),
                             ),
@@ -86,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   hintText: 'Password',
                                   prefixIcon: const Icon(
                                     Icons.lock,
-                                    color: Colors.black,
+                                    color: Color(0XFF072BB8),
                                   )),
                             ),
                             const SizedBox(height: 80),
@@ -121,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             onPressed: () {
                                               Navigator.of(ctx).pop();
                                             },
-                                            child: const Text('Okay'),
+                                            child: const Text('Ok'),
                                           )
                                         ],
                                       ),
@@ -136,6 +137,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                             ),
                             const SizedBox(height: 30),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const Reset(),
+                                    ));
+                              },
+                              child: const Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                    color: Color(0XFF072BB8), fontSize: 24),
+                              ),
+                            ),
                             GestureDetector(
                               onTap: () {
                                 Navigator.of(context).push(
@@ -149,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Text(
                                     "Don't have an Account ?",
                                     style: TextStyle(
-                                        fontSize: 20, color: Colors.black87),
+                                        fontSize: 20, color: Color(0XFF072BB8)),
                                   ),
                                   SizedBox(width: 10),
                                   Hero(
@@ -159,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       style: TextStyle(
                                           fontSize: 21,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.black),
+                                          color: Color(0XFF072BB8)),
                                     ),
                                   )
                                 ],

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:music_room_app/views/register/widgets/verify.dart';
 import '../component/button.dart';
 
 import '../../constants.dart';
@@ -24,16 +25,8 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: const Color(0XFF072BB8),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-            size: 30,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
       ),
       body: isloading
           ? const Center(
@@ -61,7 +54,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 "Sign up",
                                 style: TextStyle(
                                     fontSize: 30,
-                                    color: Colors.black,
+                                    color: Color(0XFF072BB8),
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -79,7 +72,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 hintText: 'Enter Your Email',
                                 prefixIcon: const Icon(
                                   Icons.email,
-                                  color: Colors.black,
+                                  color: Color(0XFF072BB8),
                                 ),
                               ),
                             ),
@@ -99,7 +92,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   hintText: 'Choose a Password',
                                   prefixIcon: const Icon(
                                     Icons.lock,
-                                    color: Colors.black,
+                                    color: Color(0XFF072BB8),
                                   )),
                             ),
                             const SizedBox(height: 80),
@@ -111,22 +104,15 @@ class _SignupScreenState extends State<SignupScreen> {
                                     isloading = true;
                                   });
                                   try {
-                                    await _auth.createUserWithEmailAndPassword(
-                                        email: email, password: password);
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        backgroundColor: Colors.blueGrey,
-                                        content: Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                              'Sucessfully Register.You Can Login Now'),
-                                        ),
-                                        duration: Duration(seconds: 5),
-                                      ),
-                                    );
-                                    Navigator.of(context).pop();
-
+                                    await _auth
+                                        .createUserWithEmailAndPassword(
+                                            email: email, password: password)
+                                        .then((_) {
+                                      Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const VerifyScreen()));
+                                    });
                                     setState(() {
                                       isloading = false;
                                     });
