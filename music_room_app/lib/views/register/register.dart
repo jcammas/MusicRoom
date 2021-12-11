@@ -4,8 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:music_room_app/views/register/widgets/verify.dart';
 import '../component/button.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../constants.dart';
-import '../login/login.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -20,9 +21,24 @@ class _SignupScreenState extends State<SignupScreen> {
   String email = '';
   String password = '';
   bool isloading = false;
+  late String name;
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('user_info');
+
+    Future<void> addUser() {
+      // Call the user's CollectionReference to add a new user
+      return users
+          .add({
+            'mail': email, // John Doe
+            'password': password, // Stokes and Sons
+          })
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0XFF072BB8),
@@ -108,10 +124,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                         .createUserWithEmailAndPassword(
                                             email: email, password: password)
                                         .then((_) {
-                                      Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const VerifyScreen()));
+                                      addUser();
+                                      // Navigator.of(context).pushReplacement(
+                                      //     MaterialPageRoute(
+                                      //         builder: (context) =>
+                                      //             const VerifyScreen()));
                                     });
                                     setState(() {
                                       isloading = false;

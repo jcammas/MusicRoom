@@ -25,6 +25,6 @@ A faire :
         doit imposer la validation du mail et proposer à l’utilisateur de
         réinitialiser son mot de passe en cas de perte du celui-ci.
 
-- inscription / connexion / déconnexion OK
-- confirm inscription par mail
-- forgot password => ok mais ajouter une snackbar qui indique que le mail est envoyé :)
+- forgot password => verifier si on envoie un email ou pas
+
+- créer la database

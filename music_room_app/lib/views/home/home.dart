@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+// final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
 class _HomeScreenState extends State<HomeScreen> {
   @override

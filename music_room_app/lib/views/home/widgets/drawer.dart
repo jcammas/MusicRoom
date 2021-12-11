@@ -47,7 +47,11 @@ class MyDrawer extends StatelessWidget {
             onTap: () {},
           ),
           ListTile(
-              leading: const Icon(Icons.logout),
+              leading: const Icon(
+                Icons.logout,
+                size: 36,
+                color: Color(0XFF072BB8),
+              ),
               title: const Text(
                 'Déconnexion',
                 style: TextStyle(
