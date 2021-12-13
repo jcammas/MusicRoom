@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/views/login/login.dart';
 
 class MyDrawer extends StatelessWidget {
-  MyDrawer({Key? key}) : super(key: key);
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  MyDrawer({Key? key, required this.auth}) : super(key: key);
+  final AuthBase auth;
 
   _signOut() async {
-    await _firebaseAuth.signOut();
+    await auth.signOut();
   }
 
   @override
@@ -47,28 +48,20 @@ class MyDrawer extends StatelessWidget {
             onTap: () {},
           ),
           ListTile(
-              leading: const Icon(
-                Icons.logout,
-                size: 36,
-                color: Color(0XFF072BB8),
+            leading: const Icon(
+              Icons.logout,
+              size: 36,
+              color: Color(0XFF072BB8),
+            ),
+            title: const Text(
+              'Déconnexion',
+              style: TextStyle(
+                color: Color(0XFF434343),
+                fontSize: 20,
               ),
-              title: const Text(
-                'Déconnexion',
-                style: TextStyle(
-                  color: Color(0XFF434343),
-                  fontSize: 20,
-                ),
-              ),
-              onTap: () async {
-                await _signOut();
-                if (_firebaseAuth.currentUser == null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoginScreen()),
-                  );
-                }
-              }),
+            ),
+            onTap: _signOut,
+          ),
         ],
       ),
     );
