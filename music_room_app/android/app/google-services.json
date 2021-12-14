@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "870791210894-g2e62hhd7hqop5lvf4b2uoj5emok9tr5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.music_room_app",
+            "certificate_hash": "bc0cb8ecc52af07e17ec6bf2668def9fef94b0bb"
+          }
+        },
+        {
           "client_id": "870791210894-pputaom3aq61pbv6u3lnqbn76plg181n.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -37,6 +45,13 @@
             {
               "client_id": "870791210894-ivlmdflv5dao4l4i1spto398p7qsri1l.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "870791210894-6h75d96ru2nls8hc2n0h70e8g5qcvg5n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.musicRoomApp"
+              }
             }
           ]
         }
