@@ -35,9 +35,7 @@ class _SignupScreenState extends State<SignupScreen> {
             'mail': email, // John Doe
             'password': password, // Stokes and Sons
           })
-          // ignore: avoid_print
           .then((value) => print("User Added"))
-          // ignore: avoid_print
           .catchError((error) => print("Failed to add user: $error"));
     }
 
@@ -127,10 +125,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                             email: email, password: password)
                                         .then((_) {
                                       addUser();
-                                      Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  VerifyScreen()));
+                                      // Navigator.of(context).pushReplacement(
+                                      //     MaterialPageRoute(
+                                      //         builder: (context) =>
+                                      //             const VerifyScreen()));
                                     });
                                     setState(() {
                                       isloading = false;

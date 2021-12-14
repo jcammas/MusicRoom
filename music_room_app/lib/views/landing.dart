@@ -21,10 +21,10 @@ class LandingScreen extends StatelessWidget {
             );
           }
           return HomeScreen(
-              //       auth: auth,
-              );
+            auth: auth,
+          );
         }
-        return const Scaffold(
+        return Scaffold(
           body: Center(
             child: CircularProgressIndicator(),
           ),
