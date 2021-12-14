@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/views/home/widgets/drawer.dart';
+import 'package:music_room_app/views/sign_in/sign_in.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key, required this.auth}) : super(key: key);
@@ -9,7 +10,7 @@ class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 
-  Future<void> _signOut() async {
+  Future<void> _signOut(BuildContext context) async {
     try {
       await auth.signOut();
     } catch (e) {
@@ -44,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.white,
               ),
             ),
-            onPressed: widget._signOut,
+            onPressed: () => widget._signOut(context),
           ),
         ],
       ),

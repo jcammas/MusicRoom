@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                     await Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (contex) => HomeScreen(auth: widget.auth),
+                                        builder: (context) => HomeScreen(auth: widget.auth),
                                       ),
                                     );
 
