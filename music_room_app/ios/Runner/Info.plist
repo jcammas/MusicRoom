@@ -41,5 +41,39 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.870791210894-6h75d96ru2nls8hc2n0h70e8g5qcvg5n</string>
+				<string>fb4378069745635583</string>
+			</array>
+		</dict>
+	</array>
+	<key>FacebookAppID</key>
+	<string>4378069745635583</string>
+	<key>FacebookClientToken</key>
+	<string>cf20302e31d3970d08c1d589dab1456a</string>
+	<key>FacebookDisplayName</key>
+	<string>Music Room</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fbapi20130214</string>
+		<string>fbapi20130410</string>
+		<string>fbapi20130702</string>
+		<string>fbapi20131010</string>
+		<string>fbapi20131219</string>
+		<string>fbapi20140410</string>
+		<string>fbapi20140116</string>
+		<string>fbapi20150313</string>
+		<string>fbapi20150629</string>
+		<string>fbapi20160328</string>
+		<string>fbauth</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
 </dict>
 </plist>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:music_room_app/services/auth.dart';
 import '../component/button.dart';
 import '../../constants.dart';
 import '../home/home.dart';
@@ -8,7 +9,8 @@ import '../register/register.dart';
 import 'widgets/reset.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({Key? key, required this.auth}) : super(key: key);
+  final AuthBase auth;
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -16,7 +18,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final formkey = GlobalKey<FormState>();
-  final _auth = FirebaseAuth.instance;
   String email = '';
   String password = '';
   bool isloading = false;
@@ -24,6 +25,12 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Music Room'),
+        elevation: 2.0,
+        backgroundColor: Color(0XFF072BB8),
+      ),
+      backgroundColor: Colors.grey[200],
       body: isloading
           ? const Center(
               child: CircularProgressIndicator(),
@@ -99,12 +106,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                     isloading = true;
                                   });
                                   try {
-                                    await _auth.signInWithEmailAndPassword(
+                                    await widget.auth.signInWithEmailAndPassword(
                                         email: email, password: password);
 
                                     await Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (contex) => const HomeScreen(),
+                                        builder: (context) => HomeScreen(auth: widget.auth),
                                       ),
                                     );
 

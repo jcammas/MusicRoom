@@ -1,24 +1,24 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/views/home/home.dart';
 
 class VerifyScreen extends StatefulWidget {
-  const VerifyScreen({Key? key}) : super(key: key);
+  const VerifyScreen({Key? key, required this.auth}) : super(key: key);
+  final AuthBase auth;
 
   @override
   _VerifyScreenState createState() => _VerifyScreenState();
 }
 
 class _VerifyScreenState extends State<VerifyScreen> {
-  final auth = FirebaseAuth.instance;
   late User user;
   late Timer timer;
 
   @override
   void initState() {
-    user = auth.currentUser!;
+    user = widget.auth.currentUser!;
     user.sendEmailVerification();
 
     timer = Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -43,12 +43,12 @@ class _VerifyScreenState extends State<VerifyScreen> {
   }
 
   Future<void> checkEmailVerified() async {
-    user = auth.currentUser!;
+    user = widget.auth.currentUser!;
     await user.reload();
     if (user.emailVerified) {
       timer.cancel();
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()));
+          MaterialPageRoute(builder: (context) => HomeScreen(auth: widget.auth)));
     }
   }
 }
