@@ -9,8 +9,7 @@ import '../register/register.dart';
 import 'widgets/reset.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key, required this.auth}) : super(key: key);
-  final AuthBase auth;
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -18,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final formkey = GlobalKey<FormState>();
+  final auth = FirebaseAuth.instance;
   String email = '';
   String password = '';
   bool isloading = false;
@@ -26,9 +26,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Music Room'),
+        title: const Text('Music Room'),
         elevation: 2.0,
-        backgroundColor: Color(0XFF072BB8),
+        backgroundColor: const Color(0XFF072BB8),
       ),
       backgroundColor: Colors.grey[200],
       body: isloading
@@ -106,12 +106,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                     isloading = true;
                                   });
                                   try {
-                                    await widget.auth.signInWithEmailAndPassword(
+                                    await auth.signInWithEmailAndPassword(
                                         email: email, password: password);
 
                                     await Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => HomeScreen(auth: widget.auth),
+                                        builder: (context) => HomeScreen(),
                                       ),
                                     );
 

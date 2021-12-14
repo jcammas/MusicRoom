@@ -22,9 +22,9 @@ class _ResetState extends State<Reset> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Music Room'),
+        title: const Text('Music Room'),
         elevation: 2.0,
-        backgroundColor: Color(0XFF072BB8),
+        backgroundColor: const Color(0XFF072BB8),
       ),
       body: Form(
         key: formkey,

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/views/landing.dart';
-import 'package:music_room_app/views/login/login.dart';
-import 'package:music_room_app/views/sign_in/sign_in.dart';
+// import 'package:music_room_app/views/login/login.dart';
+// import 'package:music_room_app/views/sign_in/sign_in.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,9 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LandingScreen(
-        auth: Auth()
-      ),
+      home: LandingScreen(auth: Auth()),
     );
   }
 }

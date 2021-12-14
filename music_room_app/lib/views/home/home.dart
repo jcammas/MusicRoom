@@ -1,29 +1,33 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/views/home/widgets/drawer.dart';
-import 'package:music_room_app/views/sign_in/sign_in.dart';
+import 'package:music_room_app/views/login/login.dart';
+//import 'package:music_room_app/views/sign_in/sign_in.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key, required this.auth}) : super(key: key);
-  final AuthBase auth;
+  const HomeScreen({
+    Key? key,
+  }) : super(key: key);
+  // final AuthBase auth;
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 
-  Future<void> _signOut(BuildContext context) async {
-    try {
-      await auth.signOut();
-    } catch (e) {
-      print(e.toString());
-    }
-  }
+  // Future<void> _signOut(BuildContext context) async {
+  //   try {
+  //     await auth.signOut();
+  //   } catch (e) {
+  //     // ignore: avoid_print
+  //     print(e.toString());
+  //   }
+  // }
 }
-
 
 // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
 class _HomeScreenState extends State<HomeScreen> {
-
+  final auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,21 +41,26 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: <Widget>[
-          TextButton(
-            child: Text(
-              'Logout',
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.white,
-              ),
-            ),
-            onPressed: () => widget._signOut(context),
-          ),
+          // TextButton(
+          //     child: const Text(
+          //       'Logout',
+          //       style: TextStyle(
+          //         fontSize: 18.0,
+          //         color: Colors.white,
+          //       ),
+          //     ),
+          //     onPressed: () {
+          //       auth.signOut();
+          //       Navigator.of(context).pushReplacement(
+          //           MaterialPageRoute(builder: (context) => LoginScreen()));
+          //     }
+          //     //() => widget._signOut(context),
+          //     ),
         ],
       ),
       backgroundColor: Colors.grey[200],
-      drawer: MyDrawer(auth: widget.auth),
-      body: Center(),
+      drawer: MyDrawer(),
+      body: const Center(),
     );
   }
 }

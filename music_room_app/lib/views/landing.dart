@@ -4,7 +4,6 @@ import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/views/sign_in/sign_in.dart';
 import 'home/home.dart';
 
-
 class LandingScreen extends StatelessWidget {
   const LandingScreen({Key? key, required this.auth}) : super(key: key);
   final AuthBase auth;
@@ -22,10 +21,10 @@ class LandingScreen extends StatelessWidget {
             );
           }
           return HomeScreen(
-            auth: auth,
-          );
+              //       auth: auth,
+              );
         }
-        return Scaffold(
+        return const Scaffold(
           body: Center(
             child: CircularProgressIndicator(),
           ),

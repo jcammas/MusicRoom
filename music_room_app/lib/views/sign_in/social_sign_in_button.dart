@@ -3,6 +3,7 @@ import 'package:music_room_app/views/component/custom_raised_button.dart';
 
 class SocialSignInButton extends CustomRaisedButton {
   SocialSignInButton({
+    Key? key,
     String assetName = 'No name',
     String text = 'No text',
     Color color = Colors.red,
@@ -11,6 +12,7 @@ class SocialSignInButton extends CustomRaisedButton {
   })  : assert(assetName != null),
         assert(text != null),
         super(
+          key: key,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[

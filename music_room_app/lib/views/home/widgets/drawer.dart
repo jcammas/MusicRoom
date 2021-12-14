@@ -1,15 +1,20 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/views/login/login.dart';
+import 'package:music_room_app/views/sign_in/sign_in.dart';
+//import 'package:music_room_app/views/login/login.dart';
 
 class MyDrawer extends StatelessWidget {
-  MyDrawer({Key? key, required this.auth}) : super(key: key);
-  final AuthBase auth;
+  MyDrawer({Key? key}) : super(key: key);
+  //final AuthBase auth;
 
-  _signOut() async {
-    await auth.signOut();
-  }
+  // _signOut() async {
+  //   await auth.signOut();
+  // }
+
+  final auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +65,11 @@ class MyDrawer extends StatelessWidget {
                 fontSize: 20,
               ),
             ),
-            onTap: _signOut,
+            onTap: () {
+              auth.signOut();
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => SignInScreen()));
+            },
           ),
         ],
       ),
