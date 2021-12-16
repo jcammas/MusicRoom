@@ -107,16 +107,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   });
                                   try {
                                     await widget.auth
-                                        .signInWithEmailAndPassword(
+                                        .signInWithEmail(
                                             email: email, password: password);
-
-                                    await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            HomeScreen(auth: widget.auth),
-                                      ),
-                                    );
-
+                                    Navigator.of(context).pop();
                                     setState(() {
                                       isloading = false;
                                     });
@@ -164,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => const SignupScreen(),
+                                    builder: (context) => SignupScreen(auth: widget.auth),
                                   ),
                                 );
                               },

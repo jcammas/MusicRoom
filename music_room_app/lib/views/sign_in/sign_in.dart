@@ -9,10 +9,12 @@ class SignInScreen extends StatelessWidget {
   const SignInScreen({Key? key, required this.auth}) : super(key: key);
   final AuthBase auth;
 
-  Future<void> _signInWithEmailAndPassword(BuildContext context) async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen(auth: auth)),
+  Future<void> _signInWithEmail(BuildContext context) async {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (context) => LoginScreen(auth : auth),
+      )
     );
   }
 
@@ -82,7 +84,7 @@ class SignInScreen extends StatelessWidget {
             text: 'Sign in with email',
             textColor: Colors.white,
             color: Colors.teal[700],
-            onPressed: () => _signInWithEmailAndPassword(context),
+            onPressed: () => _signInWithEmail(context),
           ),
         ],
       ),

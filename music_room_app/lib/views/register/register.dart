@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/views/register/widgets/verify.dart';
 import '../component/button.dart';
 
@@ -9,15 +10,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../constants.dart';
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({Key? key}) : super(key: key);
-
+   SignupScreen({Key? key, required this.auth}) : super(key: key);
+  AuthBase auth;
   @override
   _SignupScreenState createState() => _SignupScreenState();
 }
 
 class _SignupScreenState extends State<SignupScreen> {
   final formkey = GlobalKey<FormState>();
-  final _auth = FirebaseAuth.instance;
   String email = '';
   String password = '';
   bool isloading = false;
@@ -25,20 +25,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference users =
-        FirebaseFirestore.instance.collection('user_info');
-
-    Future<void> addUser() {
-      // Call the user's CollectionReference to add a new user
-      return users
-          .add({
-            'mail': email, // John Doe
-            'password': password, // Stokes and Sons
-          })
-          .then((value) => print("User Added"))
-          .catchError((error) => print("Failed to add user: $error"));
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0XFF072BB8),
@@ -120,19 +106,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                     isloading = true;
                                   });
                                   try {
-                                    await _auth
-                                        .createUserWithEmailAndPassword(
-                                            email: email, password: password)
-                                        .then((_) {
-                                      addUser();
-                                      // Navigator.of(context).pushReplacement(
-                                      //     MaterialPageRoute(
-                                      //         builder: (context) =>
-                                      //             const VerifyScreen()));
-                                    });
+                                    await widget.auth.createUserWithEmail(
+                                            email: email, password: password);
+                                    await Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                 VerifyScreen(auth: widget.auth)));
                                     setState(() {
                                       isloading = false;
                                     });
+                                    Navigator.of(context).pop();
                                   } on FirebaseAuthException catch (e) {
                                     showDialog(
                                       context: context,
