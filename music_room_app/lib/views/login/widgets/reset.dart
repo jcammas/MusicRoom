@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:music_room_app/views/component/login_signup_button.dart';
 import '../../../constants.dart';
-import '../../component/button.dart';
 
 class Reset extends StatefulWidget {
   const Reset({Key? key}) : super(key: key);
@@ -72,7 +72,7 @@ class _ResetState extends State<Reset> {
                       SizedBox(height: sizeHeight * 0.05),
                       LoginSignupButton(
                         title: 'Send request',
-                        ontapp: () async {
+                        onPressed: () async {
                           _auth.sendPasswordResetEmail(email: _email);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

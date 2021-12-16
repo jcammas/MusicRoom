@@ -2,11 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/services/auth.dart';
+import 'package:music_room_app/views/component/login_signup_button.dart';
 import 'package:music_room_app/views/register/widgets/verify.dart';
-import '../component/button.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../../constants.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -100,7 +97,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             const SizedBox(height: 80),
                             LoginSignupButton(
                               title: 'Register',
-                              ontapp: () async {
+                              onPressed: () async {
                                 if (formkey.currentState!.validate()) {
                                   setState(() {
                                     isloading = true;

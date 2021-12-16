@@ -15,7 +15,7 @@ abstract class AuthBase {
 
   Future<User?> signInWithFacebook();
 
-  Future<User?> signInWithEmail(
+  Future<void> signInWithEmail(
       {required String email, required String password});
 
   Future<User?> createUserWithEmail(
@@ -38,11 +38,10 @@ class Auth implements AuthBase {
       FirebaseFirestore.instance.collection('user_info');
 
   @override
-  Future<User?> signInWithEmail(
+  Future<void> signInWithEmail(
       {required String email, required String password}) async {
-    final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+    await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
-    return userCredential.user;
   }
 
   @override
