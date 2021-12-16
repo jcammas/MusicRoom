@@ -5,6 +5,7 @@ import 'package:music_room_app/views/component/show_alert_dialog.dart';
 import 'package:music_room_app/views/login/validators.dart';
 import 'package:music_room_app/views/login/widgets/reset.dart';
 import '../../constants.dart';
+import 'verify.dart';
 
 enum LoginFormType { signIn, register }
 
@@ -41,15 +42,29 @@ class _LoginFormState extends State<LoginForm> {
       } else {
         await widget.auth
             .createUserWithEmail(email: _email, password: _password);
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VerifyScreen(auth: widget.auth),
+            ));
       }
       Navigator.of(context).pop();
     } catch (e) {
-      showAlertDialog(
-        context,
-        title: 'Sign in failed',
-        content: e.toString(),
-        defaultActionText: 'OK',
-      );
+      if (_formType == LoginFormType.signIn) {
+        showAlertDialog(
+          context,
+          title: 'Ops ! Sign in failed',
+          content: e.toString(),
+          defaultActionText: 'OK',
+        );
+      } else {
+        showAlertDialog(
+          context,
+          title: 'Ops ! Registering failed',
+          content: e.toString(),
+          defaultActionText: 'OK',
+        );
+      }
     } finally {
       setState(() {
         _isLoading = false;
