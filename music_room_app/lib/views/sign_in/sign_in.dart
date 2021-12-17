@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/services/auth.dart';
-import 'package:music_room_app/views/component/custom_appbar.dart';
 import 'package:music_room_app/views/login/login.dart';
 import 'package:music_room_app/views/sign_in/sign_in_button.dart';
 import 'package:music_room_app/views/sign_in/social_sign_in_button.dart';
+import 'package:provider/provider.dart';
 
 class SignInScreen extends StatelessWidget {
-  const SignInScreen({Key? key, required this.auth}) : super(key: key);
-  final AuthBase auth;
+  const SignInScreen({Key? key}) : super(key: key);
+
 
   Future<void> _signInWithEmail(BuildContext context) async {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         fullscreenDialog: true,
-        builder: (context) => LoginScreen(auth : auth),
+        builder: (context) => const LoginScreen(),
       )
     );
   }
 
-  Future<void> _signInWithGoogle() async {
+  Future<void> _signInWithGoogle(BuildContext context) async {
+    final auth = Provider.of<AuthBase>(context, listen: false);
     try {
       await auth.signInWithGoogle();
     } catch (e) {
@@ -26,7 +27,8 @@ class SignInScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _signInWithFacebook() async {
+  Future<void> _signInWithFacebook(BuildContext context) async {
+    final auth = Provider.of<AuthBase>(context, listen: false);
     try {
       await auth.signInWithFacebook();
     } catch (e) {
@@ -38,9 +40,9 @@ class SignInScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Music Room'),
+        title: const Text('Music Room'),
         elevation: 2.0,
-        backgroundColor: Color(0XFF072BB8),
+        backgroundColor: const Color(0XFF072BB8),
       ),
       body: _buildContent(context),
       backgroundColor: Colors.grey[200],
@@ -49,12 +51,12 @@ class SignInScreen extends StatelessWidget {
 
   Widget _buildContent(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text(
+          const Text(
             'Sign in',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -63,23 +65,23 @@ class SignInScreen extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(height: 48.0),
+          const SizedBox(height: 48.0),
           SocialSignInButton(
             assetName: 'images/google-logo.png',
             text: 'Sign in with Google',
             textColor: Colors.black87,
             color: Colors.white,
-            onPressed: _signInWithGoogle,
+            onPressed: () => _signInWithGoogle(context),
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           SocialSignInButton(
             assetName: 'images/facebook-logo.png',
             text: 'Sign in with Facebook',
             textColor: Colors.white,
-            color: Color(0xFF334D92),
-            onPressed: _signInWithFacebook,
+            color: const Color(0xFF334D92),
+            onPressed: () => _signInWithFacebook(context),
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           SignInButton(
             text: 'Sign in with email',
             textColor: Colors.white,

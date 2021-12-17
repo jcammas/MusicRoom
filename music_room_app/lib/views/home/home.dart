@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/views/home/widgets/drawer.dart';
-import 'package:music_room_app/views/sign_in/sign_in.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key, required this.auth}) : super(key: key);
-  final AuthBase auth;
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 
   Future<void> _signOut(BuildContext context) async {
+    final auth = Provider.of<AuthBase>(context, listen: false);
     try {
       await auth.signOut();
     } catch (e) {
@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: <Widget>[
           TextButton(
-            child: Text(
+            child: const Text(
               'Logout',
               style: TextStyle(
                 fontSize: 18.0,
@@ -48,8 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       backgroundColor: Colors.grey[200],
-      drawer: MyDrawer(auth: widget.auth),
-      body: Center(),
+      drawer: MyDrawer(),
+      body: const Center(),
     );
   }
 }

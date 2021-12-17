@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -58,10 +57,11 @@ class Auth implements AuthBase {
           .then((value) => print("User Added"))
           .catchError((error) => print("Failed to add user: $error"));
     });
-    if (userCredential != null)
+    if (userCredential != null) {
       return userCredential.user;
-    else
+    } else {
       return null;
+    }
   }
 
   @override

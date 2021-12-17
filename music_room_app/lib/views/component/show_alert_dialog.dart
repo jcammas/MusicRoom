@@ -3,12 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 Future<dynamic> showAlertDialog(
-    BuildContext context, {
-      required String title,
-      required String content,
-      String? cancelActionText,
-      required String defaultActionText,
-    }) {
+  BuildContext context, {
+  required String title,
+  required String content,
+  String? cancelActionText,
+  required String defaultActionText,
+}) {
   if (!Platform.isIOS) {
     return showDialog(
       context: context,
@@ -28,23 +28,24 @@ Future<dynamic> showAlertDialog(
         ],
       ),
     );
-  }
-  return showCupertinoDialog(
-    context: context,
-    builder: (context) => CupertinoAlertDialog(
-      title: Text(title),
-      content: Text(content),
-      actions: <Widget>[
-        if (cancelActionText != null)
+  } else {
+    return showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: <Widget>[
+          if (cancelActionText != null)
+            CupertinoDialogAction(
+              child: Text(cancelActionText),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
           CupertinoDialogAction(
-            child: Text(cancelActionText),
-            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(defaultActionText),
+            onPressed: () => Navigator.of(context).pop(true),
           ),
-        CupertinoDialogAction(
-          child: Text(defaultActionText),
-          onPressed: () => Navigator.of(context).pop(true),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }

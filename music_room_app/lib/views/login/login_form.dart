@@ -4,15 +4,15 @@ import 'package:music_room_app/views/component/login_signup_button.dart';
 import 'package:music_room_app/views/component/show_alert_dialog.dart';
 import 'package:music_room_app/views/login/validators.dart';
 import 'package:music_room_app/views/login/widgets/reset.dart';
+import 'package:provider/provider.dart';
 import '../../constants.dart';
 import 'verify.dart';
 
 enum LoginFormType { signIn, register }
 
 class LoginForm extends StatefulWidget with EmailAndPasswordValidators {
-  LoginForm({required this.auth});
+  LoginForm({Key? key}) : super(key: key);
 
-  final AuthBase auth;
 
   @override
   _LoginFormState createState() => _LoginFormState();
@@ -32,20 +32,20 @@ class _LoginFormState extends State<LoginForm> {
   bool _isLoading = false;
 
   void _submit() async {
+    final auth = Provider.of<AuthBase>(context, listen: false);
     setState(() {
       _submitted = true;
       _isLoading = true;
     });
     try {
       if (_formType == LoginFormType.signIn) {
-        await widget.auth.signInWithEmail(email: _email, password: _password);
+        await auth.signInWithEmail(email: _email, password: _password);
       } else {
-        await widget.auth
-            .createUserWithEmail(email: _email, password: _password);
+        await auth.createUserWithEmail(email: _email, password: _password);
         await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => VerifyScreen(auth: widget.auth),
+              builder: (context) => const VerifyScreen(),
             ));
       }
       Navigator.of(context).pop();
@@ -131,14 +131,14 @@ class _LoginFormState extends State<LoginForm> {
         children: [
           Text(
             primaryText,
-            style: TextStyle(fontSize: 20, color: Color(0XFF072BB8)),
+            style: const TextStyle(fontSize: 20, color: Color(0XFF072BB8)),
           ),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Hero(
             tag: '1',
             child: Text(
               secondaryText,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 21,
                   fontWeight: FontWeight.bold,
                   color: Color(0XFF072BB8)),
@@ -239,7 +239,7 @@ class _LoginFormState extends State<LoginForm> {
       TextButton(
         child: Text(
           secondaryText,
-          style: TextStyle(fontSize: 20, color: Color(0XFF072BB8)),
+          style: const TextStyle(fontSize: 20, color: Color(0XFF072BB8)),
         ),
         onPressed: !_isLoading ? _resetPassword : null,
       ),

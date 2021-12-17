@@ -8,9 +8,8 @@ class CustomRaisedButton extends StatelessWidget {
     this.borderRadius = 2.0,
     this.height = 50.0,
     required this.onPressed,
-    this.width = null,
-  })  : assert(borderRadius != null),
-        super(key: key);
+    this.width,
+  })  : super(key: key);
   final Widget child;
   final Color? color;
   final double borderRadius;
