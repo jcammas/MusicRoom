@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:music_room_app/services/auth.dart';
-import 'package:music_room_app/views/login/login.dart';
+import 'package:provider/provider.dart';
 
 class MyDrawer extends StatelessWidget {
-  MyDrawer({Key? key, required this.auth}) : super(key: key);
-  final AuthBase auth;
+  const MyDrawer({Key? key}) : super(key: key);
 
-  _signOut() async {
-    await auth.signOut();
+  Future<void> _signOut(BuildContext context) async {
+    final auth = Provider.of<AuthBase>(context, listen: false);
+    try {
+      await auth.signOut();
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   @override
@@ -60,7 +63,7 @@ class MyDrawer extends StatelessWidget {
                 fontSize: 20,
               ),
             ),
-            onTap: _signOut,
+            onTap: () => _signOut(context),
           ),
         ],
       ),

@@ -1,18 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class AuthBase {
   User? get currentUser;
+
+  CollectionReference get users;
+
   Stream<User?> authStateChanges();
+
   Future<User?> signInWithGoogle();
+
   Future<User?> signInWithFacebook();
-  Future<User?> signInWithEmailAndPassword({required String email, required String password});
+
+  Future<void> signInWithEmail(
+      {required String email, required String password});
+
+  Future<User?> createUserWithEmail(
+      {required String email, required String password});
+
   Future<void> signOut();
 }
 
 class Auth implements AuthBase {
-
   final _firebaseAuth = FirebaseAuth.instance;
 
   @override
@@ -22,9 +33,35 @@ class Auth implements AuthBase {
   User? get currentUser => _firebaseAuth.currentUser;
 
   @override
-  Future<User?> signInWithEmailAndPassword({required String email, required String password}) async {
-    final userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-    return userCredential.user;
+  CollectionReference get users =>
+      FirebaseFirestore.instance.collection('user_info');
+
+  @override
+  Future<void> signInWithEmail(
+      {required String email, required String password}) async {
+    await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
+  }
+
+  @override
+  Future<User?> createUserWithEmail(
+      {required String email, required String password}) async {
+    final userCredential = await _firebaseAuth
+        .createUserWithEmailAndPassword(email: email, password: password)
+        .then((_) {
+      users
+          .add({
+            'mail': email, // John Doe
+            'password': password, // Stokes and Sons
+          })
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
+    });
+    if (userCredential != null) {
+      return userCredential.user;
+    } else {
+      return null;
+    }
   }
 
   @override
@@ -86,8 +123,8 @@ class Auth implements AuthBase {
   @override
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
-    // final googleSignIn = GoogleSignIn();
-    // await googleSignIn.signOut();
+    final googleSignIn = GoogleSignIn();
+    await googleSignIn.signOut();
     final facebookLogin = FacebookLogin();
     await facebookLogin.logOut();
   }

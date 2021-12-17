@@ -6,9 +6,9 @@ class CustomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text('Music Room'),
+      title: const Text('Music Room'),
       elevation: 2.0,
-      backgroundColor: Color(0XFF072BB8),
+      backgroundColor: const Color(0XFF072BB8),
     );
   }
 }
