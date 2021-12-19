@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/views/component/login_signup_button.dart';
+import 'package:music_room_app/views/component/show_exception_alert_dialog.dart';
 import '../../../constants.dart';
 
 class Reset extends StatefulWidget {
@@ -73,7 +74,15 @@ class _ResetState extends State<Reset> {
                       LoginSignupButton(
                         title: 'Send request',
                         onPressed: () async {
-                          _auth.sendPasswordResetEmail(email: _email);
+                          try {
+                            _auth.sendPasswordResetEmail(email: _email);
+                          } on FirebaseAuthException catch (e) {
+                            showExceptionAlertDialog(
+                                context,
+                                title: 'Reset failed',
+                                exception : e
+                            );
+                          }
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               backgroundColor: Color(0XFF072BB8),

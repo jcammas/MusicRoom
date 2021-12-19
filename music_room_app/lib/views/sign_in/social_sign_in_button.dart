@@ -8,7 +8,7 @@ class SocialSignInButton extends CustomRaisedButton {
     String text = 'No text',
     Color color = Colors.red,
     Color textColor = Colors.white,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
   })  : super(
           key: key,
           child: Row(

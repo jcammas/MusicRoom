@@ -7,7 +7,7 @@ class SignInButton extends CustomRaisedButton {
     String text = 'No Text',
     Color? color = Colors.red,
     Color textColor = Colors.white,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
   }) : super(
           key: key,
           child: Text(

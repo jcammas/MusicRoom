@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/views/component/login_signup_button.dart';
-import 'package:music_room_app/views/component/show_alert_dialog.dart';
+import 'package:music_room_app/views/component/show_exception_alert_dialog.dart';
 import 'package:music_room_app/views/login/validators.dart';
 import 'package:music_room_app/views/login/widgets/reset.dart';
 import 'package:provider/provider.dart';
@@ -31,40 +32,38 @@ class _LoginFormState extends State<LoginForm> {
   bool _submitted = false;
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+
   void _submit() async {
-    final auth = Provider.of<AuthBase>(context, listen: false);
     setState(() {
       _submitted = true;
       _isLoading = true;
     });
     try {
+      final auth = Provider.of<AuthBase>(context, listen: false);
       if (_formType == LoginFormType.signIn) {
         await auth.signInWithEmail(email: _email, password: _password);
       } else {
         await auth.createUserWithEmail(email: _email, password: _password);
-        await Navigator.push(
-            context,
+        await Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => const VerifyScreen(),
             ));
       }
       Navigator.of(context).pop();
-    } catch (e) {
-      if (_formType == LoginFormType.signIn) {
-        showAlertDialog(
+    } on FirebaseAuthException catch (e) {
+        showExceptionAlertDialog(
           context,
-          title: 'Ops ! Sign in failed',
-          content: e.toString(),
-          defaultActionText: 'OK',
+          title: _formType == LoginFormType.signIn ? 'Ops ! Sign in failed' : 'Ops ! Registering failed',
+          exception : e
         );
-      } else {
-        showAlertDialog(
-          context,
-          title: 'Ops ! Registering failed',
-          content: e.toString(),
-          defaultActionText: 'OK',
-        );
-      }
     } finally {
       setState(() {
         _isLoading = false;
@@ -85,27 +84,17 @@ class _LoginFormState extends State<LoginForm> {
         _submitted = true;
         _isLoading = true;
       });
-      try {
         await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const Reset(),
             ));
         Navigator.of(context).pop();
-      } catch (e) {
-        showAlertDialog(
-          context,
-          title: 'Reset failed',
-          content: e.toString(),
-          defaultActionText: 'OK',
-        );
-      } finally {
         setState(() {
           _isLoading = false;
         });
       }
     }
-  }
 
   void _toggleFormType() {
     setState(() {
