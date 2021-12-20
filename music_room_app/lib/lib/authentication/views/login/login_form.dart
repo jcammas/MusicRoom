@@ -89,7 +89,7 @@ class _LoginFormState extends State<LoginForm> {
         ? 'Don\'t have an account?'
         : 'Have an account?';
     final secondaryText =
-    model.formType == LoginFormType.signIn ? 'Sign up' : 'Sign in';
+        model.formType == LoginFormType.signIn ? 'Sign up' : 'Sign in';
     return GestureDetector(
       onTap: !model.isLoading ? _toggleFormType : null,
       child: Row(
@@ -171,9 +171,9 @@ class _LoginFormState extends State<LoginForm> {
 
   List<Widget> _buildChildren() {
     final primaryText =
-    model.formType == LoginFormType.signIn ? 'Login' : 'Create an account';
+        model.formType == LoginFormType.signIn ? 'Login' : 'Create an account';
     final secondaryText =
-    model.formType == LoginFormType.signIn ? 'Forgot Password ?' : '';
+        model.formType == LoginFormType.signIn ? 'Forgot Password ?' : '';
 
     return [
       Text(
@@ -209,12 +209,12 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return model.isLoading
         ? const Center(
-      child: CircularProgressIndicator(),
-    )
+            child: CircularProgressIndicator(),
+          )
         : Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: _buildChildren(),
-    );
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: _buildChildren(),
+          );
   }
 }
