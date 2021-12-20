@@ -5,17 +5,10 @@ import 'package:provider/provider.dart';
 class MyDrawer extends StatelessWidget {
   const MyDrawer({Key? key}) : super(key: key);
 
-  Future<void> _signOut(BuildContext context) async {
-    final auth = Provider.of<AuthBase>(context, listen: false);
-    try {
-      await auth.signOut();
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthBase>(context, listen: false);
+
     return Drawer(
       child: ListView(
         children: <Widget>[
@@ -63,7 +56,7 @@ class MyDrawer extends StatelessWidget {
                 fontSize: 20,
               ),
             ),
-            onTap: () => _signOut(context),
+            onTap: () => auth.signOut(),
           ),
         ],
       ),

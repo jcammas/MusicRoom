@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/views/component/custom_raised_button.dart';
+import 'package:music_room_app/widgets/custom_raised_button.dart';
 
-class LoginSignupButton extends CustomRaisedButton {
-  LoginSignupButton({Key? key,
+class LoginButton extends CustomRaisedButton {
+  LoginButton({Key? key,
     required String title,
     required VoidCallback? onPressed,
   }) : super(key: key,

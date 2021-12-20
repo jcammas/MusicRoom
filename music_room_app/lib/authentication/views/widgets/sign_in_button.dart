@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/views/component/custom_raised_button.dart';
+import 'package:music_room_app/widgets/custom_raised_button.dart';
 
 class SignInButton extends CustomRaisedButton {
   SignInButton({
@@ -7,7 +7,7 @@ class SignInButton extends CustomRaisedButton {
     String text = 'No Text',
     Color? color = Colors.red,
     Color textColor = Colors.white,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
   }) : super(
           key: key,
           child: Text(

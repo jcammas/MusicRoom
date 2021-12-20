@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/services/auth.dart';
-import 'package:music_room_app/views/home/widgets/drawer.dart';
 import 'package:provider/provider.dart';
+import 'package:music_room_app/services/auth.dart';
+import 'package:music_room_app/widgets/show_alert_dialog.dart';
+import 'widgets/drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -9,12 +10,18 @@ class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 
-  Future<void> _signOut(BuildContext context) async {
+  Future<void> _confirmSignOut(BuildContext context) async {
     final auth = Provider.of<AuthBase>(context, listen: false);
-    try {
-      await auth.signOut();
-    } catch (e) {
-      print(e.toString());
+
+    final didRequestSignOut = await showAlertDialog(
+      context,
+      title: 'Logout',
+      content: 'Are you sure that you want to logout?',
+      cancelActionText: 'Cancel',
+      defaultActionText: 'Logout',
+    );
+    if (didRequestSignOut == true) {
+      auth.signOut();
     }
   }
 }
@@ -43,12 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.white,
               ),
             ),
-            onPressed: () => widget._signOut(context),
+            onPressed: () => widget._confirmSignOut(context),
           ),
         ],
       ),
       backgroundColor: Colors.grey[200],
-      drawer: MyDrawer(),
+      drawer: const MyDrawer(),
       body: const Center(),
     );
   }

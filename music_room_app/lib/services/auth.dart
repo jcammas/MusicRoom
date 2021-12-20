@@ -20,6 +20,8 @@ abstract class AuthBase {
   Future<User?> createUserWithEmail(
       {required String email, required String password});
 
+  Future<void> sendPasswordResetEmail({required String email});
+
   Future<void> signOut();
 }
 
@@ -39,28 +41,27 @@ class Auth implements AuthBase {
   @override
   Future<void> signInWithEmail(
       {required String email, required String password}) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Future<User?> createUserWithEmail(
       {required String email, required String password}) async {
-    final userCredential = await _firebaseAuth
-        .createUserWithEmailAndPassword(email: email, password: password)
-        .then((_) {
-      users
-          .add({
-            'mail': email, // John Doe
-            'password': password, // Stokes and Sons
-          })
-          .then((value) => print("User Added"))
-          .catchError((error) => print("Failed to add user: $error"));
-    });
-    if (userCredential != null) {
+    try {
+      final userCredential = await _firebaseAuth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      users.add({
+        'mail': email, // John Doe
+        'password': password, // Stokes and Sons
+      });
       return userCredential.user;
-    } else {
-      return null;
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -117,6 +118,15 @@ class Auth implements AuthBase {
         );
       default:
         throw UnimplementedError();
+    }
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } catch(e) {
+      rethrow;
     }
   }
 

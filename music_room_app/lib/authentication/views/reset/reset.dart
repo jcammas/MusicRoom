@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:music_room_app/views/login/login_form.dart';
+import 'reset_form.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class Reset extends StatelessWidget {
+  const Reset({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class LoginScreen extends StatelessWidget {
         value: SystemUiOverlayStyle.light,
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
-          child: LoginForm(),
+          child: ResetForm.create(context),
         ),
       ),
     );
