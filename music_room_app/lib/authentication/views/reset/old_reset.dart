@@ -1,18 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:music_room_app/views/component/login_signup_button.dart';
-import '../../../constants.dart';
+import 'package:music_room_app/authentication/views/widgets/login_button.dart';
+import 'package:music_room_app/widgets/constants.dart';
+import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 
-class Reset extends StatefulWidget {
-  const Reset({Key? key}) : super(key: key);
+class OldReset extends StatefulWidget {
+  const OldReset({Key? key}) : super(key: key);
 
   @override
-  _ResetState createState() => _ResetState();
+  _OldResetState createState() => _OldResetState();
 }
 
-class _ResetState extends State<Reset> {
-  final formkey = GlobalKey<FormState>();
+class _OldResetState extends State<OldReset> {
+  final formKey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
   late String _email;
 
@@ -27,7 +28,7 @@ class _ResetState extends State<Reset> {
         backgroundColor: const Color(0XFF072BB8),
       ),
       body: Form(
-        key: formkey,
+        key: formKey,
         child: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light,
           child: Stack(
@@ -38,7 +39,7 @@ class _ResetState extends State<Reset> {
                 color: Colors.grey[200],
                 child: SingleChildScrollView(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
+                  const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -59,7 +60,7 @@ class _ResetState extends State<Reset> {
                           _email = value.toString().trim();
                         },
                         validator: (value) =>
-                            (value!.isEmpty) ? ' Please enter email' : null,
+                        (value!.isEmpty) ? ' Please enter email' : null,
                         textAlign: TextAlign.center,
                         decoration: kTextFieldDecoration.copyWith(
                           hintText: 'Enter Your Email',
@@ -70,17 +71,25 @@ class _ResetState extends State<Reset> {
                         ),
                       ),
                       SizedBox(height: sizeHeight * 0.05),
-                      LoginSignupButton(
+                      LoginButton(
                         title: 'Send request',
                         onPressed: () async {
-                          _auth.sendPasswordResetEmail(email: _email);
+                          try {
+                            _auth.sendPasswordResetEmail(email: _email);
+                          } on FirebaseAuthException catch (e) {
+                            showExceptionAlertDialog(
+                                context,
+                                title: 'Reset failed',
+                                exception : e
+                            );
+                          }
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               backgroundColor: Color(0XFF072BB8),
                               content: Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: Text(
-                                    'An email has been set, please check your boxmail to recover your password.',
+                                    'An email has been set, please check your mail inbox to recover your password.',
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700),

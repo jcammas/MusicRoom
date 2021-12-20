@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/services/auth.dart';
-import 'package:music_room_app/views/component/show_alert_dialog.dart';
+import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:provider/provider.dart';
 
 class VerifyScreen extends StatefulWidget {
