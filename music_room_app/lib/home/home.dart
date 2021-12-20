@@ -1,10 +1,4 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD:music_room_app/lib/home/home.dart
-=======
-import 'package:music_room_app/services/auth.dart';
-import 'package:music_room_app/views/component/show_alert_dialog.dart';
-import 'package:music_room_app/views/home/widgets/drawer.dart';
->>>>>>> 3b4f21342eeafc989a2c37c2b37ac00625ebb210:music_room_app/lib/views/home/home.dart
 import 'package:provider/provider.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
@@ -28,19 +22,6 @@ class HomeScreen extends StatefulWidget {
     );
     if (didRequestSignOut == true) {
       auth.signOut();
-    }
-  }
-
-  Future<void> _confirmSignOut(BuildContext context) async {
-    final didRequestSignOut = await showAlertDialog(
-      context,
-      title: 'Logout',
-      content: 'Are you sure that you want to logout?',
-      cancelActionText: 'Cancel',
-      defaultActionText: 'Logout',
-    );
-    if (didRequestSignOut == true) {
-      _signOut(context);
     }
   }
 }
