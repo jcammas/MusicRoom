@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:music_room_app/authentication/models/validators.dart';
 import 'package:music_room_app/services/auth.dart';
 
-enum LoginFormType { signIn, register }
+enum LoginFormType { signIn, register, reset }
 
 class LoginModel with EmailAndPasswordValidators, ChangeNotifier {
   LoginModel({
@@ -13,7 +13,8 @@ class LoginModel with EmailAndPasswordValidators, ChangeNotifier {
     this.formType = LoginFormType.signIn,
     this.isLoading = false,
     this.submitted = false,
-});
+  });
+
   final AuthBase auth;
   String email;
   String password;
@@ -26,8 +27,10 @@ class LoginModel with EmailAndPasswordValidators, ChangeNotifier {
     try {
       if (formType == LoginFormType.signIn) {
         await auth.signInWithEmail(email: email, password: password);
-      } else {
+      } else if (formType == LoginFormType.register) {
         await auth.createUserWithEmail(email: email, password: password);
+      } else if (formType == LoginFormType.reset){
+        await auth.sendPasswordResetEmail(email: email);
       }
     } catch (e) {
       updateWith(isLoading: false);
@@ -37,7 +40,8 @@ class LoginModel with EmailAndPasswordValidators, ChangeNotifier {
 
   bool get canSubmit {
     return emailValidator.isValid(email) &&
-        passwordValidator.isValid(password) &&
+        (passwordValidator.isValid(password) ||
+            formType == LoginFormType.reset) &&
         !isLoading;
   }
 
@@ -49,18 +53,13 @@ class LoginModel with EmailAndPasswordValidators, ChangeNotifier {
     return submitted && !emailValidator.isValid(email);
   }
 
-  void toggleFormType() {
-    final formType = this.formType == LoginFormType.signIn
-        ? LoginFormType.register
-        : LoginFormType.signIn;
-    updateWith(
-      email: '',
-      password: '',
-      formType: formType,
-      isLoading: false,
-      submitted: false,
-    );
-  }
+  void updateFormType(LoginFormType formType) => updateWith(
+        email: '',
+        password: '',
+        formType: formType,
+        isLoading: false,
+        submitted: false,
+      );
 
   void updateEmail(String email) => updateWith(email: email);
 
@@ -80,6 +79,4 @@ class LoginModel with EmailAndPasswordValidators, ChangeNotifier {
     this.submitted = submitted ?? this.submitted;
     notifyListeners();
   }
-
-
 }

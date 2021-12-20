@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/authentication/views/widgets/login_button.dart';
+import 'package:music_room_app/authentication/views/widgets/recovery_email_snackbar.dart';
 import 'package:provider/provider.dart';
-import 'package:music_room_app/authentication/views/reset/reset.dart';
 import 'package:music_room_app/authentication/views/verify/verify.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/widgets/constants.dart';
@@ -32,8 +32,51 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordController = TextEditingController();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
+  String titleText = 'Sign In';
+  String buttonText = 'Login';
+  String forgotPassword = 'Forgot Password ?';
+  String footText = 'Don\'t have an account?';
+  String footHeroText = 'Sign up';
+  String errorText = 'Ops ! Sign in failed...';
 
   LoginModel get model => widget.model;
+
+  void _setTexts() {
+    switch (model.formType) {
+      case LoginFormType.signIn:
+        {
+          titleText = 'Sign In';
+          buttonText = 'Login';
+          forgotPassword = 'Forgot Password ?';
+          footText = 'Don\'t have an account?';
+          footHeroText = 'Sign up';
+          errorText = 'Ops ! Sign in failed...';
+        }
+        break;
+
+      case LoginFormType.register:
+        {
+          titleText = 'Sign Up';
+          buttonText = 'Create an account';
+          forgotPassword = '';
+          footText = 'Have an account ?';
+          footHeroText = 'Sign in';
+          errorText = 'Ops ! Registering failed...';
+        }
+        break;
+
+      case LoginFormType.reset:
+        {
+          titleText = 'Reset';
+          buttonText = 'Reset Password';
+          forgotPassword = '';
+          footText = '';
+          footHeroText = '';
+          errorText = 'Ops ! Reset failed...';
+        }
+        break;
+    }
+  }
 
   @override
   void dispose() {
@@ -51,59 +94,55 @@ class _LoginFormState extends State<LoginForm> {
         await Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => const VerifyScreen(),
         ));
+      } else if (model.formType == LoginFormType.reset) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const RecoveryEmailSnackBar(),
+        );
       }
       Navigator.of(context).pop();
     } on FirebaseAuthException catch (e) {
-      showExceptionAlertDialog(context,
-          title: model.formType == LoginFormType.signIn
-              ? 'Ops ! Sign in failed'
-              : 'Ops ! Registering failed',
+      await showExceptionAlertDialog(context,
+          title: errorText,
           exception: e);
     }
   }
 
   void _emailEditingComplete() {
-    final newFocus = model.emailValidator.isValid(model.email)
-        ? _passwordFocusNode
-        : _emailFocusNode;
-    FocusScope.of(context).requestFocus(newFocus);
+    if (model.formType == LoginFormType.reset) {
+      _submit();
+    } else {
+      final newFocus = model.emailValidator.isValid(model.email)
+          ? _passwordFocusNode
+          : _emailFocusNode;
+      FocusScope.of(context).requestFocus(newFocus);
+    }
   }
 
-  Future<void> _resetPassword() async {
-    await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const Reset(),
-        ));
-    Navigator.of(context).pop();
-  }
+  void _toggleResetPassword() => model.updateFormType(LoginFormType.reset);
 
   void _toggleFormType() {
-    model.toggleFormType();
+    model.formType == LoginFormType.signIn
+        ? model.updateFormType(LoginFormType.register)
+        : model.updateFormType(LoginFormType.signIn);
     _emailController.clear();
     _passwordController.clear();
   }
 
   GestureDetector _buildFootMessage() {
-    final primaryText = model.formType == LoginFormType.signIn
-        ? 'Don\'t have an account?'
-        : 'Have an account?';
-    final secondaryText =
-        model.formType == LoginFormType.signIn ? 'Sign up' : 'Sign in';
     return GestureDetector(
       onTap: !model.isLoading ? _toggleFormType : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            primaryText,
+            footText,
             style: const TextStyle(fontSize: 20, color: Color(0XFF072BB8)),
           ),
           const SizedBox(width: 10),
           Hero(
             tag: '1',
             child: Text(
-              secondaryText,
+              footHeroText,
               style: const TextStyle(
                   fontSize: 21,
                   fontWeight: FontWeight.bold,
@@ -169,27 +208,42 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  List<Widget> _buildChildren() {
-    final primaryText =
-        model.formType == LoginFormType.signIn ? 'Login' : 'Create an account';
-    final secondaryText =
-        model.formType == LoginFormType.signIn ? 'Forgot Password ?' : '';
+  Text _buildTitle() {
+    return Text(
+      titleText,
+      style: const TextStyle(
+          fontSize: 50,
+          color: Color(0XFF072BB8),
+          fontWeight: FontWeight.w700),
+    );
+  }
 
+  List<Widget> _buildChildrenReset() {
+    _setTexts();
+    double sizeHeight = MediaQuery.of(context).size.height;
     return [
-      Text(
-        model.formType == LoginFormType.signIn ? "Sign In" : "Sign Up",
-        style: const TextStyle(
-            fontSize: 50,
-            color: Color(0XFF072BB8),
-            fontWeight: FontWeight.w700),
+      _buildTitle(),
+      const SizedBox(height: 30),
+      _buildEmailTextField(),
+      SizedBox(height: sizeHeight * 0.05),
+      LoginButton(
+        title: buttonText,
+        onPressed: model.canSubmit ? _submit : null,
       ),
+    ];
+  }
+
+  List<Widget> _buildChildren() {
+    _setTexts();
+    return [
+      _buildTitle(),
       const SizedBox(height: 30),
       _buildEmailTextField(),
       const SizedBox(height: 30),
       _buildPasswordTextField(),
       const SizedBox(height: 60),
       LoginButton(
-        title: primaryText,
+        title: buttonText,
         onPressed: model.canSubmit ? _submit : null,
       ),
       const SizedBox(height: 20),
@@ -197,10 +251,10 @@ class _LoginFormState extends State<LoginForm> {
       const SizedBox(height: 10),
       TextButton(
         child: Text(
-          secondaryText,
+          forgotPassword,
           style: const TextStyle(fontSize: 20, color: Color(0XFF072BB8)),
         ),
-        onPressed: !model.isLoading ? _resetPassword : null,
+        onPressed: !model.isLoading ? _toggleResetPassword : null,
       ),
     ];
   }
@@ -209,12 +263,12 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return model.isLoading
         ? const Center(
-            child: CircularProgressIndicator(),
-          )
+      child: CircularProgressIndicator(),
+    )
         : Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: _buildChildren(),
-          );
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: model.formType == LoginFormType.reset ? _buildChildrenReset() : _buildChildren(),
+    );
   }
 }
