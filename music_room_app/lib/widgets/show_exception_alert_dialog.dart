@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'show_alert_dialog.dart';
+import 'package:music_room_app/views/component/show_alert_dialog.dart';
 
 Future<void> showExceptionAlertDialog(
   BuildContext context, {

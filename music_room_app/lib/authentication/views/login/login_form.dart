@@ -1,6 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD:music_room_app/lib/authentication/views/login/login_form.dart
 import 'package:music_room_app/authentication/views/widgets/login_button.dart';
+=======
+import 'package:music_room_app/services/auth.dart';
+import 'package:music_room_app/views/component/login_signup_button.dart';
+import 'package:music_room_app/views/component/show_exception_alert_dialog.dart';
+import 'package:music_room_app/views/login/validators.dart';
+import 'package:music_room_app/views/login/widgets/reset.dart';
+>>>>>>> 3b4f21342eeafc989a2c37c2b37ac00625ebb210:music_room_app/lib/views/login/login_form.dart
 import 'package:provider/provider.dart';
 import 'package:music_room_app/authentication/views/reset/reset.dart';
 import 'package:music_room_app/authentication/views/verify/verify.dart';
@@ -44,7 +52,17 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+
   void _submit() async {
+<<<<<<< HEAD:music_room_app/lib/authentication/views/login/login_form.dart
     try {
       await model.submit();
       if (model.formType == LoginFormType.register) {
@@ -59,6 +77,34 @@ class _LoginFormState extends State<LoginForm> {
               ? 'Ops ! Sign in failed'
               : 'Ops ! Registering failed',
           exception: e);
+=======
+    setState(() {
+      _submitted = true;
+      _isLoading = true;
+    });
+    try {
+      final auth = Provider.of<AuthBase>(context, listen: false);
+      if (_formType == LoginFormType.signIn) {
+        await auth.signInWithEmail(email: _email, password: _password);
+      } else {
+        await auth.createUserWithEmail(email: _email, password: _password);
+        await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const VerifyScreen(),
+            ));
+      }
+      Navigator.of(context).pop();
+    } on FirebaseAuthException catch (e) {
+        showExceptionAlertDialog(
+          context,
+          title: _formType == LoginFormType.signIn ? 'Ops ! Sign in failed' : 'Ops ! Registering failed',
+          exception : e
+        );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+>>>>>>> 3b4f21342eeafc989a2c37c2b37ac00625ebb210:music_room_app/lib/views/login/login_form.dart
     }
   }
 
@@ -70,6 +116,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future<void> _resetPassword() async {
+<<<<<<< HEAD:music_room_app/lib/authentication/views/login/login_form.dart
     await Navigator.push(
         context,
         MaterialPageRoute(
@@ -77,6 +124,24 @@ class _LoginFormState extends State<LoginForm> {
         ));
     Navigator.of(context).pop();
   }
+=======
+    if (_formType == LoginFormType.signIn) {
+      setState(() {
+        _submitted = true;
+        _isLoading = true;
+      });
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const Reset(),
+            ));
+        Navigator.of(context).pop();
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+>>>>>>> 3b4f21342eeafc989a2c37c2b37ac00625ebb210:music_room_app/lib/views/login/login_form.dart
 
   void _toggleFormType() {
     model.toggleFormType();

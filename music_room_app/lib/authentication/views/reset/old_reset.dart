@@ -1,9 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+<<<<<<< HEAD:music_room_app/lib/authentication/views/reset/old_reset.dart
 import 'package:music_room_app/authentication/views/widgets/login_button.dart';
 import 'package:music_room_app/widgets/constants.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
+=======
+import 'package:music_room_app/views/component/login_signup_button.dart';
+import 'package:music_room_app/views/component/show_exception_alert_dialog.dart';
+import '../../../constants.dart';
+>>>>>>> 3b4f21342eeafc989a2c37c2b37ac00625ebb210:music_room_app/lib/views/login/widgets/reset.dart
 
 class OldReset extends StatefulWidget {
   const OldReset({Key? key}) : super(key: key);
