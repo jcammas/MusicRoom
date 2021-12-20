@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/account/account.dart';
+import 'package:music_room_app/home/home.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:provider/provider.dart';
 
-class MyDrawer extends StatelessWidget {
-  const MyDrawer({Key? key}) : super(key: key);
+class AccountDrawer extends StatelessWidget {
+  const AccountDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +36,14 @@ class MyDrawer extends StatelessWidget {
               color: Color(0XFF072BB8),
             ),
             title: const Text(
-              'Mon compte',
+              'Home',
               style: TextStyle(
                 color: Color(0XFF434343),
                 fontSize: 20,
               ),
             ),
             onTap: () {
-              Navigator.pushNamed(context, Account.routeName);
+              Navigator.pushNamed(context, HomeScreen.routeName);
             },
           ),
         ],

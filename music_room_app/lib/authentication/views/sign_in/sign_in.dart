@@ -14,6 +14,9 @@ class SignInScreen extends StatelessWidget {
     required this.model,
     required this.isLoading,
   }) : super(key: key);
+
+  static String routeName = '/SignInScreen';
+
   final SignInModel model;
   final bool isLoading;
 

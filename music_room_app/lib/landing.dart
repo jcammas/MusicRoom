@@ -8,6 +8,8 @@ import 'services/auth.dart';
 class LandingScreen extends StatelessWidget {
   const LandingScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/';
+
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
