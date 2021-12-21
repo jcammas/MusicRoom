@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/authentication/views/widgets/login_button.dart';
-import 'package:music_room_app/authentication/views/widgets/recovery_email_snackbar.dart';
+import 'package:music_room_app/authentication/views/widgets/email_sent_snackbar.dart';
 import 'package:provider/provider.dart';
-import 'package:music_room_app/authentication/views/verify/verify.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/widgets/constants.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
@@ -90,25 +89,20 @@ class _LoginFormState extends State<LoginForm> {
   void _submit() async {
     try {
       await model.submit();
-      if (model.formType == LoginFormType.register) {
-        await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => const VerifyScreen(),
-        ));
-      } else if (model.formType == LoginFormType.reset) {
+      if (model.formType != LoginFormType.signIn) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const RecoveryEmailSnackBar(),
+          const EmailSentSnackBar(),
         );
       }
       Navigator.of(context).pop();
     } on FirebaseAuthException catch (e) {
-      await showExceptionAlertDialog(context,
-          title: errorText,
-          exception: e);
+      await showExceptionAlertDialog(context, title: errorText, exception: e);
     }
   }
 
   void _emailEditingComplete() {
-    if (model.formType == LoginFormType.reset) {
+    if (model.formType == LoginFormType.reset &&
+        model.emailValidator.isValid(model.email)) {
       _submit();
     } else {
       final newFocus = model.emailValidator.isValid(model.email)
@@ -212,9 +206,7 @@ class _LoginFormState extends State<LoginForm> {
     return Text(
       titleText,
       style: const TextStyle(
-          fontSize: 50,
-          color: Color(0XFF072BB8),
-          fontWeight: FontWeight.w700),
+          fontSize: 50, color: Color(0XFF072BB8), fontWeight: FontWeight.w700),
     );
   }
 
@@ -263,12 +255,14 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return model.isLoading
         ? const Center(
-      child: CircularProgressIndicator(),
-    )
+            child: CircularProgressIndicator(),
+          )
         : Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: model.formType == LoginFormType.reset ? _buildChildrenReset() : _buildChildren(),
-    );
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: model.formType == LoginFormType.reset
+                ? _buildChildrenReset()
+                : _buildChildren(),
+          );
   }
 }

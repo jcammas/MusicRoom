@@ -44,6 +44,20 @@ class Auth implements AuthBase {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+      if (currentUser == null) {
+        await signOut();
+        throw FirebaseAuthException(
+            code: 'ERROR_NO_USER', message: 'User could not be found.');
+      }
+      currentUser!.reload();
+      if (currentUser!.emailVerified == false) {
+        await currentUser!.sendEmailVerification();
+        await signOut();
+        throw FirebaseAuthException(
+            code: 'ERROR_EMAIL_NOT_VERIFIED',
+            message:
+                'You have to verify your email ! Check your inbox. An email has been resent.');
+      }
     } catch (e) {
       rethrow;
     }
@@ -53,12 +67,15 @@ class Auth implements AuthBase {
   Future<User?> createUserWithEmail(
       {required String email, required String password}) async {
     try {
-      final userCredential = await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
       users.add({
         'mail': email, // John Doe
         'password': password, // Stokes and Sons
       });
+      await currentUser!.reload();
+      await currentUser!.sendEmailVerification();
+      await signOut();
       return userCredential.user;
     } catch (e) {
       rethrow;
@@ -125,7 +142,7 @@ class Auth implements AuthBase {
   Future<void> sendPasswordResetEmail({required String email}) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
-    } catch(e) {
+    } catch (e) {
       rethrow;
     }
   }

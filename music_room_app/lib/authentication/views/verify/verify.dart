@@ -60,7 +60,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
           content: 'An email has been sent to you',
           defaultActionText: 'Ok');
       Navigator.of(context).pop();
-    } else if (count > 4) {
+    } else if (count > 3) {
       timer.cancel();
       await showAlertDialog(context,
           title: 'Failed !',

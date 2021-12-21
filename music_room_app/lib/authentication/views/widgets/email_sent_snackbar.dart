@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class RecoveryEmailSnackBar extends SnackBar {
-  const RecoveryEmailSnackBar({
+class EmailSentSnackBar extends SnackBar {
+  const EmailSentSnackBar({
     Key? key,
   }) : super(
           key: key,
@@ -9,7 +9,7 @@ class RecoveryEmailSnackBar extends SnackBar {
           content: const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              'An email has been sent, please check your mail inbox to recover your password.',
+              'An email has been sent, please check your mail inbox',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               textAlign: TextAlign.center,
             ),
