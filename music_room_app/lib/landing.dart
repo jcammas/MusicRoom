@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
 import 'authentication/views/sign_in/sign_in.dart';
 import 'home/home.dart';
@@ -21,7 +22,10 @@ class LandingScreen extends StatelessWidget {
           if (user == null) {
             return SignInScreen.create(context);
           }
-          return const HomeScreen();
+          return Provider<Database>(
+              create: (_) => FirestoreDatabase(uid: user.uid),
+              child: const HomeScreen(),
+          );
         }
         return const Scaffold(
           body: Center(
