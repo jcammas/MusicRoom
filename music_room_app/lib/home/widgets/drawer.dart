@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/account/account.dart';
-import 'package:music_room_app/services/auth.dart';
-import 'package:provider/provider.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthBase>(context, listen: false);
-
     return Drawer(
       child: ListView(
         children: <Widget>[

@@ -7,16 +7,16 @@ class Room {
   required this.owner,
   required this.voteSystem,
   required this.privacySystem});
-  List<User> guests = [];
+  List<UserApp> guests = [];
   Playlist playlist;
-  User owner;
+  UserApp owner;
   String voteSystem;
   String privacySystem;
 
   factory Room.fromMap(Map<String, dynamic> data) {
-    final List<User> guests = data['guests'];
+    final List<UserApp> guests = data['guests'];
     final Playlist playlist = data['playlist'];
-    final User owner = data['owner'];
+    final UserApp owner = data['owner'];
     final String voteSystem = data['voteSystem'];
     final String privacySystem = data['privacySystem'];
     return Room(

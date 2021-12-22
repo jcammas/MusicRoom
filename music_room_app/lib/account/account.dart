@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:music_room_app/home/models/user.dart';
+import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
@@ -9,6 +10,7 @@ import 'package:music_room_app/widgets/show_alert_dialog.dart';
 class Account extends StatefulWidget {
   final String? email;
   final String? name;
+
   const Account({Key? key, this.name, this.email}) : super(key: key);
 
   static const String routeName = '/account';
@@ -154,81 +156,88 @@ class _AccountState extends State<Account> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color(0XFF072BB8),
-          title: const Text(
-            "Account",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text(
-                'Logout',
+    final db = Provider.of<Database>(context, listen: false);
+    return StreamBuilder<UserApp>(
+      stream: db.userStream(),
+      builder: (context, snapshot) {
+        final user = snapshot.data;
+        return Scaffold(
+            appBar: AppBar(
+              backgroundColor: const Color(0XFF072BB8),
+              title: const Text(
+                "Account",
                 style: TextStyle(
-                  fontSize: 18.0,
-                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              onPressed: () => widget._confirmSignOut(context),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.grey[200],
-        //drawer: const AccountDrawer(),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircleAvatar(
-                    radius: 45,
-                    child: ClipOval(
-                      child: Image.asset("images/pp.jpg"),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    'Logout',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white,
                     ),
                   ),
+                  onPressed: () => widget._confirmSignOut(context),
                 ),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "matoulet.cammas@gmail.com",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0XFF434343),
+              ],
+            ),
+            backgroundColor: Colors.grey[200],
+            //drawer: const AccountDrawer(),
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.02,
                   ),
-                ),
-              ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    const Color(0XFF434343),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
+                        radius: 45,
+                        child: ClipOval(
+                          child: Image.asset("images/pp.jpg"),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  _editModal(context);
-                },
-                child: Text(
-                  "Edit my profil".toUpperCase(),
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-              )
-            ],
-          ),
-        ));
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.02,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      user == null ? '' : user.email,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0XFF434343),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                        const Color(0XFF434343),
+                      ),
+                    ),
+                    onPressed: () {
+                      _editModal(context);
+                    },
+                    child: Text(
+                      "Edit my profil".toUpperCase(),
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  )
+                ],
+              ),
+            ));
+      },
+    );
   }
 }
 

@@ -1,18 +1,18 @@
-import 'package:music_room_app/home/models/track.dart';
-
 class Playlist {
-  Playlist({required this.name, required this.id, required this.tracks});
+  Playlist({required this.name, required this.id, required this.owner, this.tracks = const []});
   final String id;
   String name;
-  List<Track> tracks = [];
+  String owner;
+  List<String> tracks;
 
-  factory Playlist.fromMap(Map<String?, dynamic> data) {
+  factory Playlist.fromMap(Map<String?, dynamic> data, String id) {
     final String name = data['name'];
-    final String id = data['id'];
-    final List<Track> tracks = data['tracks'];
+    final String owner = data['owner'];
+    final List<String> tracks = data['tracks'];
     return Playlist(
       name: name,
       id: id,
+      owner : owner,
       tracks : tracks,
     );
   }
@@ -21,6 +21,7 @@ class Playlist {
     return {
       'name': name,
       'id': id,
+      'owner' : owner,
       'tracks' : tracks,
     };
   }
