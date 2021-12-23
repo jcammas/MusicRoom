@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 class Device {
   Device(
       {required this.name,

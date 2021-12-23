@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (_) => const LandingScreen(),
           HomeScreen.routeName: (_) => const HomeScreen(),
-          Account.routeName: (_) => const Account()
+          AccountScreen.routeName: (_) => const AccountScreen(),
         },
       ),
     );

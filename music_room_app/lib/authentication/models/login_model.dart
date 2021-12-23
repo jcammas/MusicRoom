@@ -27,7 +27,6 @@ class LoginModel with EmailAndPasswordValidators, ChangeNotifier {
     try {
       if (formType == LoginFormType.signIn) {
         await auth.signInWithEmail(email: email, password: password);
-        // await auth.checkEmailVerified();
       } else if (formType == LoginFormType.register) {
         await auth.createUserWithEmail(email: email, password: password);
       } else if (formType == LoginFormType.reset){

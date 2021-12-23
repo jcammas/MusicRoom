@@ -1,34 +1,35 @@
+import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/room.dart';
-import 'package:music_room_app/services/database.dart';
 
 import 'device.dart';
 
 class UserApp {
-  UserApp({required this.name, required this.email, required this.id});
-  final String id;
+  UserApp({required this.name, required this.email, required this.uid});
+  final String uid;
   String email;
   String name;
   List<UserApp> friends = [];
   List<Device> devices = [];
+  List<Playlist> playlists = [];
   String? avatarId;
   Room? currentRoom;
   String? defaultRoomPrivacySettings;
   String? defaultRoomVoteSystem;
   String? privacyLevel;
 
-  factory UserApp.fromMap(Map<String, dynamic>? data, String id) {
+  factory UserApp.fromMap(Map<String, dynamic>? data, String uid) {
     if (data != null) {
-      final String userName = data['name'];
-      final String email = data['email'];
+      final String userName = data['name'] ?? 'N/A';
+      final String email = data['email'] ?? 'N/A';
       return UserApp(
-        id: id,
+        uid: uid,
         name: userName,
         email: email,
       );
     }
     else {
       return UserApp(
-        id: id,
+        uid: uid,
         name: "N/A",
         email: "N/A",
       );
@@ -37,7 +38,7 @@ class UserApp {
 
   Map<String, dynamic> toMap() {
     return {
-      'id' : id,
+      'uid' : uid,
       'name': name,
       'email': email,
     };

@@ -17,6 +17,10 @@ abstract class Database {
   Future<void> deletePlaylist(Playlist playlist);
 
   Stream<List<Playlist>> playlistsStream({UserApp user});
+
+  Future<bool> currentUserExists();
+
+  Future<void> updateUser(UserApp user);
 }
 
 class FirestoreDatabase implements Database {
@@ -33,11 +37,23 @@ class FirestoreDatabase implements Database {
       );
 
   @override
+  Future<void> updateUser(UserApp user) =>
+      _service.updateData(
+        path: APIPath.user(uid),
+        data: user.toMap(),
+      );
+
+  @override
+  Future<bool> currentUserExists() async {
+    return _service.documentExists(path: APIPath.user(uid));
+  }
+
+  @override
   Future<void> deleteUser(UserApp user) async {
     // delete where playlist.userId == user.userId
     final allPlaylists = await playlistsStream(user: user).first;
     for (Playlist playlist in allPlaylists) {
-      if (playlist.owner == user.id) {
+      if (playlist.owner == user.uid) {
         await deletePlaylist(playlist);
       }
     }
@@ -73,7 +89,7 @@ class FirestoreDatabase implements Database {
       _service.collectionStream<Playlist>(
         path: APIPath.playlists(uid),
         queryBuilder: user != null
-            ? (query) => query.where('userId', isEqualTo: user.id)
+            ? (query) => query.where('userId', isEqualTo: user.uid)
             : null,
         builder: (data, documentID) => Playlist.fromMap(data, documentID),
         sort: (lhs, rhs) => rhs.name.compareTo(lhs.name),

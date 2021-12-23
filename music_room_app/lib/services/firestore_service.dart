@@ -13,6 +13,28 @@ class FirestoreService {
     await reference.set(data);
   }
 
+  Future<void> updateData({
+    required String path,
+    required Map<String, dynamic> data,
+  }) async {
+    final reference = FirebaseFirestore.instance.doc(path);
+    await reference.update(data);
+
+  }
+
+  bool _docExists(DocumentSnapshot doc) {
+    if (doc.exists) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> documentExists({required String path}) async {
+    var docRef = FirebaseFirestore.instance.doc(path);
+    return docRef.get().then(_docExists);
+  }
+
   Future<void> deleteData({required String path}) async {
     final reference = FirebaseFirestore.instance.doc(path);
     await reference.delete();
@@ -32,7 +54,7 @@ class FirestoreService {
     return snapshots.map((snapshot) {
       final result = snapshot.docs
           .map((snapshot) =>
-              builder(snapshot.data() as Map<String, dynamic>, snapshot.id))
+          builder(snapshot.data() as Map<String, dynamic>, snapshot.id))
           .where((value) => value != null)
           .toList();
       if (sort != null) {
