@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:music_room_app/account/account.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer({Key? key, this.uid}) : super(key: key);
-  final String? uid;
+  const MyDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +39,7 @@ class MyDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
-              Navigator.of(context).pushNamed(AccountScreen.routeName, arguments: uid);
+              Navigator.of(context).pushNamed(AccountScreen.routeName);
             },
           ),
         ],

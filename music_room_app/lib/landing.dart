@@ -14,6 +14,7 @@ class LandingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
+    final db = Provider.of<Database>(context, listen: false);
     return StreamBuilder<User?>(
       stream: auth.authStateChanges(),
       builder: (context, snapshot) {
@@ -22,10 +23,8 @@ class LandingScreen extends StatelessWidget {
           if (user == null) {
             return SignInScreen.create(context);
           }
-          return Provider<Database>(
-              create: (_) => FirestoreDatabase(uid: user.uid),
-              child: const HomeScreen(),
-          );
+          db.uid = user.uid;
+          return const HomeScreen();
         }
         return const Scaffold(
           body: Center(

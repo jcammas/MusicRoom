@@ -49,7 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
-    String? uid = auth.currentUser == null ? null : auth.currentUser!.uid;
     _setUpUser(context, auth);
     return Scaffold(
       appBar: AppBar(
@@ -75,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       backgroundColor: Colors.grey[200],
-      drawer: MyDrawer(uid : uid),
+      drawer: const MyDrawer(),
       body: const Center(),
     );
   }

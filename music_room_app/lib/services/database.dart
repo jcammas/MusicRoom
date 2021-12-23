@@ -21,31 +21,37 @@ abstract class Database {
   Future<bool> currentUserExists();
 
   Future<void> updateUser(UserApp user);
+
+  set uid(String uid);
 }
 
 class FirestoreDatabase implements Database {
-  FirestoreDatabase({required this.uid});
+  FirestoreDatabase();
 
-  final String uid;
+  late String _uid;
 
   final _service = FirestoreService.instance;
 
+
+  @override
+  set uid(String uid) => _uid = uid;
+
   @override
   Future<void> setUser(UserApp user) => _service.setData(
-        path: APIPath.user(uid),
+        path: APIPath.user(_uid),
         data: user.toMap(),
       );
 
   @override
   Future<void> updateUser(UserApp user) =>
       _service.updateData(
-        path: APIPath.user(uid),
+        path: APIPath.user(_uid),
         data: user.toMap(),
       );
 
   @override
   Future<bool> currentUserExists() async {
-    return _service.documentExists(path: APIPath.user(uid));
+    return _service.documentExists(path: APIPath.user(_uid));
   }
 
   @override
@@ -58,36 +64,36 @@ class FirestoreDatabase implements Database {
       }
     }
     // delete user
-    await _service.deleteData(path: APIPath.user(uid));
+    await _service.deleteData(path: APIPath.user(_uid));
   }
 
   @override
   Stream<UserApp> userStream() => _service.documentStream(
-        path: APIPath.user(uid),
+        path: APIPath.user(_uid),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
 
   @override
   Stream<List<UserApp>> usersStream() => _service.collectionStream(
-        path: APIPath.users(uid),
+        path: APIPath.users(_uid),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
 
   @override
   Future<void> setPlaylist(Playlist playlist) => _service.setData(
-        path: APIPath.playlist(uid, playlist.id),
+        path: APIPath.playlist(_uid, playlist.id),
         data: playlist.toMap(),
       );
 
   @override
   Future<void> deletePlaylist(Playlist playlist) => _service.deleteData(
-        path: APIPath.playlist(uid, playlist.id),
+        path: APIPath.playlist(_uid, playlist.id),
       );
 
   @override
   Stream<List<Playlist>> playlistsStream({UserApp? user}) =>
       _service.collectionStream<Playlist>(
-        path: APIPath.playlists(uid),
+        path: APIPath.playlists(_uid),
         queryBuilder: user != null
             ? (query) => query.where('userId', isEqualTo: user.uid)
             : null,

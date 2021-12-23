@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
-import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
@@ -31,10 +30,7 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String uid = ModalRoute.of(context)?.settings.arguments as String;
-    return Provider<Database>(
-      create: (_) => FirestoreDatabase(uid: uid),
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0XFF072BB8),
           title: const Text(
@@ -66,7 +62,6 @@ class AccountScreen extends StatelessWidget {
             child: AccountForm(),
           ),
         ),
-      ),
     );
   }
 }
