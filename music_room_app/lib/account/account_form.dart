@@ -5,8 +5,6 @@ import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
 
-// import 'widgets/AccountDrawer.dart';
-
 class AccountForm extends StatefulWidget {
   final String? email;
   final String? name;
@@ -170,67 +168,70 @@ class _AccountFormState extends State<AccountForm> {
       stream: db.userStream(),
       builder: (context, snapshot) {
         final user = snapshot.data;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  radius: 45,
-                  child: ClipOval(
-                    child: Image.asset("images/pp.jpg"),
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
+              ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    radius: 45,
+                    child: ClipOval(
+                      child: Image.asset("images/pp.jpg"),
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                user == null ? '' : user.name,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0XFF434343),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
+              ),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  user == null ? '' : user.name,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0XFF434343),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                user == null ? 'No User Connected' : user.email,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0XFF434343),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
+              ),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  user == null ? 'No User Connected' : user.email,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0XFF434343),
+                  ),
                 ),
               ),
-            ),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                  const Color(0XFF434343),
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                    const Color(0XFF434343),
+                  ),
+                ),
+                onPressed: () {
+                  _editModal(context, user, auth.currentUser, db);
+                },
+                child: Text(
+                  "Edit my profil".toUpperCase(),
+                  style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
               ),
-              onPressed: () {
-                _editModal(context, user, auth.currentUser, db);
-              },
-              child: Text(
-                "Edit my profil".toUpperCase(),
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-            )
-          ],
+            ],
+          ),
         );
       },
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/services/database.dart';
+import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
@@ -51,28 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final auth = Provider.of<AuthBase>(context, listen: false);
     _setUpUser(context, auth);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0XFF072BB8),
-        title: const Text(
-          "MusicRoom",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text(
-              'Logout',
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.white,
-              ),
-            ),
-            onPressed: () => widget._confirmSignOut(context),
-          ),
-        ],
-      ),
+      appBar: customAppBar(appText: 'Music Room', context: context),
       backgroundColor: Colors.grey[200],
       drawer: const MyDrawer(),
       body: const Center(),
