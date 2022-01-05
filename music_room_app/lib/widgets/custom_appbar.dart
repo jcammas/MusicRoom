@@ -9,7 +9,7 @@ Future<void> _confirmSignOut(BuildContext context) async {
   final didRequestSignOut = await showAlertDialog(
     context,
     title: 'Logout',
-    content: 'Are you sure that you want to logout?',
+    content: Text('Are you sure that you want to logout?'),
     cancelActionText: 'Cancel',
     defaultActionText: 'Logout',
   );
@@ -44,8 +44,7 @@ AppBar customAppBar(
   );
 }
 
-AppBar customSignInAppBar(
-    {Key? key, required String appText}) {
+AppBar customSignInAppBar({Key? key, required String appText}) {
   return AppBar(
     title: Text(appText,
         style: const TextStyle(

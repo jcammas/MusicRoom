@@ -161,8 +161,7 @@ class Auth implements AuthBase {
       if (_firebaseAuth.currentUser != null) {
         await _firebaseAuth.currentUser?.updateEmail(newEmail);
         await _firebaseAuth.currentUser?.sendEmailVerification();
-      }
-      else {
+      } else {
         throw FirebaseAuthException(
           code: 'NO_USER_CONNECTED',
           message: 'User has been disconnected',
@@ -178,8 +177,7 @@ class Auth implements AuthBase {
     try {
       if (_firebaseAuth.currentUser != null) {
         await _firebaseAuth.currentUser?.updateDisplayName(newName);
-      }
-      else {
+      } else {
         throw FirebaseAuthException(
           code: 'NO_USER_CONNECTED',
           message: 'User has been disconnected',
@@ -195,8 +193,7 @@ class Auth implements AuthBase {
     try {
       if (_firebaseAuth.currentUser != null) {
         await _firebaseAuth.currentUser?.updatePassword(newPassword);
-      }
-      else {
+      } else {
         throw FirebaseAuthException(
           code: 'NO_USER_CONNECTED',
           message: 'User has been disconnected',
@@ -212,8 +209,7 @@ class Auth implements AuthBase {
     try {
       if (_firebaseAuth.currentUser != null) {
         await _firebaseAuth.currentUser?.delete();
-      }
-      else {
+      } else {
         throw FirebaseAuthException(
           code: 'NO_USER_CONNECTED',
           message: 'User has been disconnected',
