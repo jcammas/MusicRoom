@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
     final didRequestSignOut = await showAlertDialog(
       context,
       title: 'Logout',
-      content: Text('Are you sure that you want to logout?'),
+      content: const Text('Are you sure that you want to logout?'),
       cancelActionText: 'Cancel',
       defaultActionText: 'Logout',
     );

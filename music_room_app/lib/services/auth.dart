@@ -28,6 +28,8 @@ abstract class AuthBase {
 
   Future<void> deleteCurrentUser();
 
+  Future<void> reAuthenticateUser(String password);
+
   Future<void> sendPasswordResetEmail(String email);
 
   Future<void> signOut();
@@ -205,9 +207,27 @@ class Auth implements AuthBase {
   }
 
   @override
+  Future<void> reAuthenticateUser(String password) async {
+    try {
+    if (currentUser != null && currentUser?.email != null) {
+      AuthCredential credential = EmailAuthProvider.credential(
+          email: currentUser!.email!, password: password);
+      currentUser?.reauthenticateWithCredential(credential);
+    } else {
+      throw FirebaseAuthException(
+        code: 'NO_USER_CONNECTED',
+        message: 'User has been disconnected',
+      );
+    }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> deleteCurrentUser() async {
     try {
-      if (_firebaseAuth.currentUser != null) {
+      if (currentUser != null) {
         await _firebaseAuth.currentUser?.delete();
       } else {
         throw FirebaseAuthException(

@@ -36,13 +36,14 @@ class CustomSettingsTile extends AbstractTile {
         if (type == SettingType.delete) {
           await showAlertDialog(context,
                   title: 'Deleting account',
-                  content: Text('Are you sure ?'),
+                  content: const Text('Are you sure ?'),
                   defaultActionText: 'Sure',
                   cancelActionText: 'Cancel')
               .then((dynamic confirmed) async {
             if (confirmed == true) {
               try {
-                await model.deleteUser(user);
+                String password = "musicroom";
+                await model.deleteUser(user, password);
                 Navigator.of(context).pop();
               } on Exception catch (e) {
                 await showExceptionAlertDialog(context,
@@ -62,7 +63,7 @@ class CustomSettingsTile extends AbstractTile {
                 await model.updateEmail(user);
                 await showAlertDialog(context,
                     title: 'New Email Sent',
-                    content: Text(
+                    content: const Text(
                         'Please check your inbox to verify your new email address.'),
                     defaultActionText: 'Ok');
                 break;
