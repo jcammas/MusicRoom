@@ -20,7 +20,15 @@ abstract class AuthBase {
   Future<User?> createUserWithEmail(
       {required String email, required String password});
 
-  Future<void> sendPasswordResetEmail({required String email});
+  Future<void> updateUserEmail(String newEmail);
+
+  Future<void> updateUserName(String newName);
+
+  Future<void> updateUserPassword(String newPassword);
+
+  Future<void> deleteCurrentUser();
+
+  Future<void> sendPasswordResetEmail(String email);
 
   Future<void> signOut();
 }
@@ -44,6 +52,20 @@ class Auth implements AuthBase {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+      if (currentUser == null) {
+        await signOut();
+        throw FirebaseAuthException(
+            code: 'ERROR_NO_USER', message: 'User could not be found.');
+      }
+      currentUser!.reload();
+      if (currentUser!.emailVerified == false) {
+        await currentUser!.sendEmailVerification();
+        await signOut();
+        throw FirebaseAuthException(
+            code: 'ERROR_EMAIL_NOT_VERIFIED',
+            message:
+                'You have to verify your email ! Check your inbox. An email has been resent.');
+      }
     } catch (e) {
       rethrow;
     }
@@ -53,12 +75,15 @@ class Auth implements AuthBase {
   Future<User?> createUserWithEmail(
       {required String email, required String password}) async {
     try {
-      final userCredential = await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
       users.add({
         'mail': email, // John Doe
         'password': password, // Stokes and Sons
       });
+      await currentUser!.reload();
+      await currentUser!.sendEmailVerification();
+      await signOut();
       return userCredential.user;
     } catch (e) {
       rethrow;
@@ -122,10 +147,79 @@ class Auth implements AuthBase {
   }
 
   @override
-  Future<void> sendPasswordResetEmail({required String email}) async {
+  Future<void> sendPasswordResetEmail(String email) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
-    } catch(e) {
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateUserEmail(String newEmail) async {
+    try {
+      if (_firebaseAuth.currentUser != null) {
+        await _firebaseAuth.currentUser?.updateEmail(newEmail);
+        await _firebaseAuth.currentUser?.sendEmailVerification();
+      }
+      else {
+        throw FirebaseAuthException(
+          code: 'NO_USER_CONNECTED',
+          message: 'User has been disconnected',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateUserName(String newName) async {
+    try {
+      if (_firebaseAuth.currentUser != null) {
+        await _firebaseAuth.currentUser?.updateDisplayName(newName);
+      }
+      else {
+        throw FirebaseAuthException(
+          code: 'NO_USER_CONNECTED',
+          message: 'User has been disconnected',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateUserPassword(String newPassword) async {
+    try {
+      if (_firebaseAuth.currentUser != null) {
+        await _firebaseAuth.currentUser?.updatePassword(newPassword);
+      }
+      else {
+        throw FirebaseAuthException(
+          code: 'NO_USER_CONNECTED',
+          message: 'User has been disconnected',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteCurrentUser() async {
+    try {
+      if (_firebaseAuth.currentUser != null) {
+        await _firebaseAuth.currentUser?.delete();
+      }
+      else {
+        throw FirebaseAuthException(
+          code: 'NO_USER_CONNECTED',
+          message: 'User has been disconnected',
+        );
+      }
+    } catch (e) {
       rethrow;
     }
   }

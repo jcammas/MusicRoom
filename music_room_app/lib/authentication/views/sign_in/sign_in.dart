@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:music_room_app/authentication/views/login/login.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
@@ -14,6 +15,9 @@ class SignInScreen extends StatelessWidget {
     required this.model,
     required this.isLoading,
   }) : super(key: key);
+
+  static String routeName = '/SignInScreen';
+
   final SignInModel model;
   final bool isLoading;
 
@@ -71,11 +75,7 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Music Room'),
-        elevation: 2.0,
-        backgroundColor: const Color(0XFF072BB8),
-      ),
+      appBar: customSignInAppBar(appText: 'Music Room'),
       body: _buildContent(context),
       backgroundColor: Colors.grey[200],
     );

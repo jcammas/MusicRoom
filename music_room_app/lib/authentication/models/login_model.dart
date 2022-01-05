@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:music_room_app/authentication/models/validators.dart';
+import 'package:music_room_app/widgets/validators.dart';
 import 'package:music_room_app/services/auth.dart';
 
 enum LoginFormType { signIn, register, reset }
 
-class LoginModel with EmailAndPasswordValidators, ChangeNotifier {
+class LoginModel with ChangeNotifier {
   LoginModel({
     required this.auth,
     this.email = '',
@@ -30,7 +29,7 @@ class LoginModel with EmailAndPasswordValidators, ChangeNotifier {
       } else if (formType == LoginFormType.register) {
         await auth.createUserWithEmail(email: email, password: password);
       } else if (formType == LoginFormType.reset){
-        await auth.sendPasswordResetEmail(email: email);
+        await auth.sendPasswordResetEmail(email);
       }
     } catch (e) {
       updateWith(isLoading: false);
@@ -39,18 +38,26 @@ class LoginModel with EmailAndPasswordValidators, ChangeNotifier {
   }
 
   bool get canSubmit {
-    return emailValidator.isValid(email) &&
-        (passwordValidator.isValid(password) ||
+    return emailIsValid &&
+        (passwordIsValid ||
             formType == LoginFormType.reset) &&
         !isLoading;
   }
 
   bool get showPasswordError {
-    return submitted && !passwordValidator.isValid(password);
+    return submitted && !passwordIsValid;
   }
 
   bool get showEmailError {
-    return submitted && !emailValidator.isValid(email);
+    return submitted && !emailIsValid;
+  }
+
+  bool get emailIsValid {
+    return CustomStringValidator.isValid(email, TextInputType.emailAddress);
+  }
+
+  bool get passwordIsValid {
+    return CustomStringValidator.isValid(password, TextInputType.visiblePassword);
   }
 
   void updateFormType(LoginFormType formType) => updateWith(

@@ -1,63 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/services/auth.dart';
-import 'package:provider/provider.dart';
+import 'package:music_room_app/account/account.dart';
+import 'package:music_room_app/home/home.dart';
+import 'package:music_room_app/home/widgets/drawer_tile.dart';
+import 'package:music_room_app/landing.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthBase>(context, listen: false);
-
     return Drawer(
       child: ListView(
         children: <Widget>[
-          DrawerHeader(
-            child: const Text(
-              'MusicRoom',
-              style: TextStyle(color: Colors.white, fontSize: 30),
+          if (ModalRoute.of(context)!.settings.name != HomeScreen.routeName &&
+              ModalRoute.of(context)!.settings.name != LandingScreen.routeName)
+            const DrawerHeader(
+              margin: EdgeInsets.all(0),
+              child: DrawerTile(
+                  icon: Icons.home_outlined,
+                  text: 'Home',
+                  route: HomeScreen.routeName),
             ),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0XFF072BB8),
-                  const Color(0XFF072BB8).withOpacity(0.7),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.account_circle_outlined,
-              size: 36,
-              color: Color(0XFF072BB8),
-            ),
-            title: const Text(
-              'Mon compte',
-              style: TextStyle(
-                color: Color(0XFF434343),
-                fontSize: 20,
-              ),
-            ),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.logout,
-              size: 36,
-              color: Color(0XFF072BB8),
-            ),
-            title: const Text(
-              'Déconnexion',
-              style: TextStyle(
-                color: Color(0XFF434343),
-                fontSize: 20,
-              ),
-            ),
-            onTap: () => auth.signOut(),
-          ),
+          const DrawerTile(
+              icon: Icons.add_business_outlined, text: 'Room', route: null),
+          const DrawerTile(
+              icon: Icons.music_note_outlined, text: 'Library', route: null),
+          const DrawerTile(
+              icon: Icons.accessibility_new_outlined,
+              text: 'Friends',
+              route: null),
+          const DrawerTile(
+              icon: Icons.account_circle_outlined,
+              text: 'My account',
+              route: AccountScreen.routeName),
         ],
       ),
     );
