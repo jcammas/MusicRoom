@@ -20,7 +20,15 @@ abstract class AuthBase {
   Future<User?> createUserWithEmail(
       {required String email, required String password});
 
-  Future<void> sendPasswordResetEmail({required String email});
+  Future<void> updateUserEmail(String newEmail);
+
+  Future<void> updateUserName(String newName);
+
+  Future<void> updateUserPassword(String newPassword);
+
+  Future<void> deleteCurrentUser();
+
+  Future<void> sendPasswordResetEmail(String email);
 
   Future<void> signOut();
 }
@@ -139,9 +147,78 @@ class Auth implements AuthBase {
   }
 
   @override
-  Future<void> sendPasswordResetEmail({required String email}) async {
+  Future<void> sendPasswordResetEmail(String email) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateUserEmail(String newEmail) async {
+    try {
+      if (_firebaseAuth.currentUser != null) {
+        await _firebaseAuth.currentUser?.updateEmail(newEmail);
+        await _firebaseAuth.currentUser?.sendEmailVerification();
+      }
+      else {
+        throw FirebaseAuthException(
+          code: 'NO_USER_CONNECTED',
+          message: 'User has been disconnected',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateUserName(String newName) async {
+    try {
+      if (_firebaseAuth.currentUser != null) {
+        await _firebaseAuth.currentUser?.updateDisplayName(newName);
+      }
+      else {
+        throw FirebaseAuthException(
+          code: 'NO_USER_CONNECTED',
+          message: 'User has been disconnected',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateUserPassword(String newPassword) async {
+    try {
+      if (_firebaseAuth.currentUser != null) {
+        await _firebaseAuth.currentUser?.updatePassword(newPassword);
+      }
+      else {
+        throw FirebaseAuthException(
+          code: 'NO_USER_CONNECTED',
+          message: 'User has been disconnected',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteCurrentUser() async {
+    try {
+      if (_firebaseAuth.currentUser != null) {
+        await _firebaseAuth.currentUser?.delete();
+      }
+      else {
+        throw FirebaseAuthException(
+          code: 'NO_USER_CONNECTED',
+          message: 'User has been disconnected',
+        );
+      }
     } catch (e) {
       rethrow;
     }

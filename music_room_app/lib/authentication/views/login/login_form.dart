@@ -101,13 +101,11 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _emailEditingComplete() {
-    if (model.formType == LoginFormType.reset &&
-        model.emailValidator.isValid(model.email)) {
+    if (model.formType == LoginFormType.reset && model.emailIsValid) {
       _submit();
     } else {
-      final newFocus = model.emailValidator.isValid(model.email)
-          ? _passwordFocusNode
-          : _emailFocusNode;
+      final newFocus =
+          model.emailIsValid ? _passwordFocusNode : _emailFocusNode;
       FocusScope.of(context).requestFocus(newFocus);
     }
   }

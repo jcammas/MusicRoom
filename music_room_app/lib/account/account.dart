@@ -15,9 +15,9 @@ class AccountScreen extends StatelessWidget {
       appBar: customAppBar(appText: 'My Account', context: context),
       backgroundColor: Colors.grey[200],
       drawer: const MyDrawer(),
-      body: const AnnotatedRegion<SystemUiOverlayStyle>(
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: AccountForm2(),
+        child: AccountForm2.create(context),
       ),
     );
   }
