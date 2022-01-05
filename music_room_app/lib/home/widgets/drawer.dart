@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/account/account.dart';
+import 'package:music_room_app/home/home.dart';
 import 'package:music_room_app/home/widgets/drawer_tile.dart';
+import 'package:music_room_app/landing.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({Key? key}) : super(key: key);
@@ -10,22 +12,15 @@ class MyDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: <Widget>[
-          DrawerHeader(
-            child: const Text(
-              'MusicRoom',
-              style: TextStyle(color: Colors.white, fontSize: 30),
+          if (ModalRoute.of(context)!.settings.name != HomeScreen.routeName &&
+              ModalRoute.of(context)!.settings.name != LandingScreen.routeName)
+            const DrawerHeader(
+              margin: EdgeInsets.all(0),
+              child: DrawerTile(
+                  icon: Icons.home_outlined,
+                  text: 'Home',
+                  route: HomeScreen.routeName),
             ),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0XFF072BB8),
-                  const Color(0XFF072BB8).withOpacity(0.7),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
           const DrawerTile(
               icon: Icons.add_business_outlined, text: 'Room', route: null),
           const DrawerTile(
