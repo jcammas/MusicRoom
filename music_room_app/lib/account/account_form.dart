@@ -1,233 +1,120 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_settings_ui/flutter_settings_ui.dart';
+import 'package:music_room_app/account/widgets/custom_settings_tile.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
+import 'account_model.dart';
 
 class AccountForm extends StatefulWidget {
-  final String? email;
-  final String? name;
+  const AccountForm({Key? key, required this.model}) : super(key: key);
+  final AccountModel model;
 
-  const AccountForm({Key? key, this.name, this.email}) : super(key: key);
-
-  @override
-  _AccountFormState createState() => _AccountFormState();
-}
-
-class _AccountFormState extends State<AccountForm> {
-  final nameController = TextEditingController();
-  final passwordController = TextEditingController();
-  String tempName = '';
-  String tempPassword = '';
-
-  _updateName(String value) => tempName = value;
-
-  _updatePassword(String value) => tempPassword = value;
-
-  _updateUserDB(UserApp? user, User? currentUser, Database db) async {
-    if (user != null && tempName != '') {
-      user.name = tempName;
-      await db.updateUser(user);
-    }
-    if (currentUser != null && tempPassword != '') {
-      await currentUser.updatePassword(tempPassword);
-    }
-    if (currentUser != null && tempName != '') {
-      await currentUser.updateDisplayName(tempName);
-    }
-    if (tempName != '' || tempPassword != 'null') {
-      Navigator.of(context).pop();
-    }
-  }
-
-  _editModal(context, UserApp? user, User? currentUser, Database db) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black12,
-      builder: (BuildContext context) {
-        return Dialog(
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 15, vertical: 100),
-          backgroundColor: Colors.transparent,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          child: Card(
-            color: Colors.white,
-            elevation: 5,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Row(
-                  children: [
-                    Flexible(
-                      child: Center(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: const Text(
-                            "Edit my profil",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0XFF434343),
-                              fontWeight: FontWeight.w600,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                ListTile(
-                  title: TextFormField(
-                    controller: nameController,
-                    autofocus: false,
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      icon: const Icon(Icons.account_circle_rounded,
-                          color: Colors.black),
-                      border: const UnderlineInputBorder(),
-                      hintText: 'Name',
-                      hintStyle: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    onChanged: _updateName,
-                    textInputAction: TextInputAction.next,
-                  ),
-                ),
-                ListTile(
-                  title: TextFormField(
-                    controller: passwordController,
-                    autofocus: false,
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      icon: const Icon(Icons.password_rounded,
-                          color: Colors.black),
-                      border: const UnderlineInputBorder(),
-                      hintText: 'Password',
-                      hintStyle: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    onChanged: _updatePassword,
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          const Color(0XFF04BE96),
-                        ),
-                      ),
-                      onPressed: () {
-                        _updateUserDB(user, currentUser, db);
-                      },
-                      child: Text(
-                        "Confirm".toUpperCase(),
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.03,
-                    ),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          const Color(0XFFB90808),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        "Cancel".toUpperCase(),
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        );
-      },
+  static Widget create(BuildContext context) {
+    final auth = Provider.of<AuthBase>(context, listen: false);
+    final db = Provider.of<Database>(context, listen: false);
+    return ChangeNotifierProvider<AccountModel>(
+      create: (_) => AccountModel(auth: auth, db: db),
+      child: Consumer<AccountModel>(
+        builder: (_, model, __) => AccountForm(model: model),
+      ),
     );
   }
 
   @override
+  State<AccountForm> createState() => _AccountFormState();
+}
+
+class _AccountFormState extends State<AccountForm> {
+  late Map<String, dynamic> settingsData;
+
+  Map<String, dynamic> fillSettingsData(UserApp? user) {
+    return <String, dynamic>{
+      'Name': user == null ? 'N/A' : user.name,
+      'Email': user == null ? 'N/A' : user.email,
+    };
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final db = Provider.of<Database>(context, listen: false);
-    final auth = Provider.of<AuthBase>(context, listen: false);
+    final double screenHeight = MediaQuery.of(context).size.height;
     return StreamBuilder<UserApp>(
-      stream: db.userStream(),
+      stream: widget.model.getUserStream(),
       builder: (context, snapshot) {
-        final user = snapshot.data;
+        UserApp? user = snapshot.data;
+        settingsData = fillSettingsData(user);
         return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
+                height: screenHeight * 0.02,
               ),
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: CircleAvatar(
                     radius: 45,
                     child: ClipOval(
-                      child: Image.asset("images/pp.jpg"),
+                      child: Image.asset("images/avatar_random.png"),
                     ),
                   ),
                 ),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
+                height: screenHeight * 0.02,
               ),
               Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  user == null ? '' : user.name,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0XFF434343),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  user == null ? 'No User Connected' : user.email,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0XFF434343),
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    const Color(0XFF434343),
-                  ),
-                ),
-                onPressed: () {
-                  _editModal(context, user, auth.currentUser, db);
-                },
-                child: Text(
-                  "Edit my profil".toUpperCase(),
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                height: screenHeight * 0.7,
+                child: SettingsList(
+                  sections: [
+                    SettingsSection(
+                      tiles: [
+                        CustomSettingsTile(
+                            type: SettingType.name,
+                            title: 'Name',
+                            model: widget.model,
+                            user: user,
+                            subtitle: settingsData['Name'].toString(),
+                            iconData: Icons.face),
+                        CustomSettingsTile(
+                            type: SettingType.email,
+                            title: 'Email',
+                            model: widget.model,
+                            user: user,
+                            subtitle: settingsData['Email'].toString(),
+                            iconData: Icons.email),
+                        CustomSettingsTile(
+                            type: SettingType.password,
+                            title: 'Change Password',
+                            model: widget.model,
+                            user: user,
+                            iconData: Icons.lock),
+                        SettingsTile(
+                          title: 'Devices Settings',
+                          leading: const Icon(Icons.radio),
+                          onPressed: (BuildContext context) {},
+                        ),
+                        SettingsTile(
+                          title: 'Privacy Settings',
+                          leading: const Icon(Icons.privacy_tip),
+                          onPressed: (BuildContext context) {},
+                        ),
+                        SettingsTile(
+                          title: 'Default Room Settings',
+                          leading: const Icon(Icons.music_note),
+                          onPressed: (BuildContext context) {},
+                        ),
+                        CustomSettingsTile(
+                            type: SettingType.delete,
+                            title: 'Delete Account',
+                            model: widget.model,
+                            user: user,
+                            iconData: Icons.delete_forever),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -237,7 +124,3 @@ class _AccountFormState extends State<AccountForm> {
     );
   }
 }
-
-// Photo de profil
-// Nom / mail
-// Editer le profil

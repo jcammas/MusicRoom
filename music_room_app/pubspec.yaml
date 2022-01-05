@@ -67,7 +67,8 @@ flutter:
   assets:
     - images/facebook-logo.png
     - images/google-logo.png
-    - images/pp.jpg
+    - images/avatar_julien.jpg
+    - images/avatar_random.png
 #    - images/avatar.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see

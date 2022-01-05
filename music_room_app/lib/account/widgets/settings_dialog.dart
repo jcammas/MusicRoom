@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/widgets/constants.dart';
-
 import '../account_model.dart';
 import 'custom_settings_tile.dart';
 
@@ -26,8 +24,7 @@ void _submit(BuildContext context, AccountModel model, SettingType type)
 
 Future<String?> showSettingsDialog(BuildContext context, String settingName,
     String? currentValue, Widget? leading, AccountModel model, SettingType type) async {
-  // final TextEditingController settingController = TextEditingController();
-  // final FocusNode settingFocusNode = FocusNode();
+  model.updateSettingValue(currentValue ?? '');
   return await showDialog(
       context: context,
       barrierDismissible: false,
@@ -42,15 +39,12 @@ Future<String?> showSettingsDialog(BuildContext context, String settingName,
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: TextFormField(
-                  // controller: settingController,
-                  // focusNode: settingFocusNode,
                   keyboardType: _getTextInputType(type),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.left,
                   obscureText: type == SettingType.password ? true : false,
                   textInputAction: TextInputAction.done,
                   initialValue: currentValue,
-                  decoration: kTextFieldDecoration.copyWith(
-                    labelText: settingName,
+                  decoration: InputDecoration(
                     errorText: model.showError ? 'Can\'t be empty' : null,
                     prefixIcon: leading,
                   ),

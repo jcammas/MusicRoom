@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
-import 'account_form2.dart';
+import 'account_form.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({Key? key}) : super(key: key);
@@ -13,11 +13,11 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(appText: 'My Account', context: context),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: const Color(0xFFEFEFF4),
       drawer: const MyDrawer(),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: AccountForm2.create(context),
+        child: AccountForm.create(context),
       ),
     );
   }

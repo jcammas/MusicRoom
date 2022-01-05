@@ -25,7 +25,11 @@ class DrawerTile extends StatelessWidget {
       ),
       onTap: () {
         if (route != null) {
-          Navigator.of(context).pushNamed(route!);
+          if (ModalRoute.of(context)?.settings.name == '/') {
+            Navigator.of(context).pushNamed(route!);
+          } else {
+            Navigator.of(context).pushReplacementNamed(route!);
+          }
         }
       },
     );
