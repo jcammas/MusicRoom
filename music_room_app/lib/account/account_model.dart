@@ -50,8 +50,9 @@ class AccountModel with ChangeNotifier {
     }
   }
 
-  Future<void> deleteUser(UserApp? user) async {
+  Future<void> deleteUser(UserApp? user, String password) async {
     try {
+      await auth.reAuthenticateUser(password);
       if (user != null) {
         await db.deleteUser(user);
       }

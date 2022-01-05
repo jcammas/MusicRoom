@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
     final didRequestSignOut = await showAlertDialog(
       context,
       title: 'Logout',
-      content: 'Are you sure that you want to logout?',
+      content: const Text('Are you sure that you want to logout?'),
       cancelActionText: 'Cancel',
       defaultActionText: 'Logout',
     );
@@ -39,10 +39,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final bool exist = await db.currentUserExists();
     if (auth.currentUser != null) {
       if (!exist) {
-      db.setUser(UserApp(
-      name: auth.currentUser!.displayName ?? 'N/A',
-      email: auth.currentUser!.email ?? 'N/A',
-      uid: auth.currentUser!.uid));
+        db.setUser(UserApp(
+            name: auth.currentUser!.displayName ?? 'N/A',
+            email: auth.currentUser!.email ?? 'N/A',
+            uid: auth.currentUser!.uid));
       }
     }
   }
