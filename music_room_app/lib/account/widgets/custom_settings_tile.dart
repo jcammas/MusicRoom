@@ -44,7 +44,8 @@ class CustomSettingsTile extends AbstractTile {
                 .then((dynamic confirmed) async {
               if (confirmed == true) {
                 try {
-                  await model.deleteUser(user);
+                  String password = "musicroom";
+                  await model.deleteUser(user, password);
                   Navigator.of(context).pop();
                 } on Exception catch (e) {
                   await showExceptionAlertDialog(context,
