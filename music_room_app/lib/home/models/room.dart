@@ -2,11 +2,13 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/user.dart';
 
 class Room {
-  Room({  required this.guests,
-  required this.playlist,
-  required this.owner,
-  required this.voteSystem,
-  required this.privacySystem});
+  Room(
+      {required this.guests,
+      required this.playlist,
+      required this.owner,
+      required this.voteSystem,
+      required this.privacySystem});
+
   List<UserApp> guests = [];
   Playlist playlist;
   UserApp owner;
@@ -20,11 +22,11 @@ class Room {
     final String voteSystem = data['voteSystem'];
     final String privacySystem = data['privacySystem'];
     return Room(
-        guests : guests,
-        playlist : playlist,
-        owner : owner,
-        voteSystem : voteSystem,
-        privacySystem : privacySystem,
+      guests: guests,
+      playlist: playlist,
+      owner: owner,
+      voteSystem: voteSystem,
+      privacySystem: privacySystem,
     );
   }
 

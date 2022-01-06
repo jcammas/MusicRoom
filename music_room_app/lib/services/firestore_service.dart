@@ -19,7 +19,6 @@ class FirestoreService {
   }) async {
     final reference = FirebaseFirestore.instance.doc(path);
     await reference.update(data);
-
   }
 
   bool _docExists(DocumentSnapshot doc) {
@@ -54,7 +53,7 @@ class FirestoreService {
     return snapshots.map((snapshot) {
       final result = snapshot.docs
           .map((snapshot) =>
-          builder(snapshot.data() as Map<String, dynamic>, snapshot.id))
+              builder(snapshot.data() as Map<String, dynamic>, snapshot.id))
           .where((value) => value != null)
           .toList();
       if (sort != null) {

@@ -10,21 +10,34 @@ TextInputType _getTextInputType(SettingType type) {
       return TextInputType.emailAddress;
     case SettingType.password:
       return TextInputType.visiblePassword;
+    case SettingType.delete:
+      return TextInputType.visiblePassword;
     default:
       return TextInputType.text;
   }
 }
 
-void _submit(BuildContext context, AccountModel model, SettingType type)
-{
+void _submit(BuildContext context, AccountModel model, SettingType type) {
   if (model.canSubmit(type) == true) {
     Navigator.of(context).pop();
   }
 }
 
-Future<String?> showSettingsDialog(BuildContext context, String settingName,
-    String? currentValue, Widget? leading, AccountModel model, SettingType type) async {
+Future<String?> showSettingsDialog(
+    BuildContext context,
+    String settingName,
+    String? currentValue,
+    Widget? leading,
+    AccountModel model,
+    SettingType type) async {
   model.updateSettingValue(currentValue ?? '');
+  final String titleText =
+      type == SettingType.delete ? 'Type your password :' : 'Make a Change !';
+  final bool obscureText = type == SettingType.password
+      ? true
+      : type == SettingType.delete
+          ? true
+          : false;
   return await showDialog(
       context: context,
       barrierDismissible: false,
@@ -34,14 +47,14 @@ Future<String?> showSettingsDialog(BuildContext context, String settingName,
           return SimpleDialog(
             contentPadding: EdgeInsets.zero,
             titlePadding: const EdgeInsets.fromLTRB(24, 10, 24, 0),
-            title: const Center(child: Text('Make a change !')),
+            title: Center(child: Text(titleText)),
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: TextFormField(
                   keyboardType: _getTextInputType(type),
                   textAlign: TextAlign.left,
-                  obscureText: type == SettingType.password ? true : false,
+                  obscureText: obscureText,
                   textInputAction: TextInputAction.done,
                   initialValue: currentValue,
                   decoration: InputDecoration(

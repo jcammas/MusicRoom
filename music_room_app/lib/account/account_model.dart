@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:music_room_app/account/widgets/custom_settings_tile.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/database.dart';
+import 'package:music_room_app/widgets/sign_in_type.dart';
 import 'package:music_room_app/widgets/validators.dart';
 import 'package:music_room_app/services/auth.dart';
 
 class AccountModel with ChangeNotifier {
-  AccountModel({required this.auth, required this.db, this.settingValue = '', this.submitted = false, this.isLoading = false});
+  AccountModel(
+      {required this.auth,
+      required this.db,
+      this.settingValue = '',
+      this.submitted = false,
+      this.isLoading = false});
 
   final AuthBase auth;
   final Database db;
@@ -50,9 +56,9 @@ class AccountModel with ChangeNotifier {
     }
   }
 
-  Future<void> deleteUser(UserApp? user, String password) async {
+  Future<void> deleteUser(UserApp? user) async {
     try {
-      await auth.reAuthenticateUser(password);
+      await auth.reAuthenticateUser(settingValue);
       if (user != null) {
         await db.deleteUser(user);
       }
@@ -67,11 +73,13 @@ class AccountModel with ChangeNotifier {
   }
 
   bool get inputIsValidAsEmail {
-    return CustomStringValidator.isValid(settingValue, TextInputType.emailAddress);
+    return CustomStringValidator.isValid(
+        settingValue, TextInputType.emailAddress);
   }
 
   bool get inputIsValidAsPassword {
-    return CustomStringValidator.isValid(settingValue, TextInputType.visiblePassword);
+    return CustomStringValidator.isValid(
+        settingValue, TextInputType.visiblePassword);
   }
 
   bool get inputIsValidAsText {
@@ -81,6 +89,8 @@ class AccountModel with ChangeNotifier {
   void updateSettingValue(String value) => settingValue = value;
 
   void isSubmitted() => submitted = true;
+
+  SignInType findSignInType() => auth.findSignInType();
 
   Stream<UserApp> getUserStream() => db.userStream();
 

@@ -28,7 +28,7 @@ class LoginModel with ChangeNotifier {
         await auth.signInWithEmail(email: email, password: password);
       } else if (formType == LoginFormType.register) {
         await auth.createUserWithEmail(email: email, password: password);
-      } else if (formType == LoginFormType.reset){
+      } else if (formType == LoginFormType.reset) {
         await auth.sendPasswordResetEmail(email);
       }
     } catch (e) {
@@ -39,8 +39,7 @@ class LoginModel with ChangeNotifier {
 
   bool get canSubmit {
     return emailIsValid &&
-        (passwordIsValid ||
-            formType == LoginFormType.reset) &&
+        (passwordIsValid || formType == LoginFormType.reset) &&
         !isLoading;
   }
 
@@ -57,7 +56,8 @@ class LoginModel with ChangeNotifier {
   }
 
   bool get passwordIsValid {
-    return CustomStringValidator.isValid(password, TextInputType.visiblePassword);
+    return CustomStringValidator.isValid(
+        password, TextInputType.visiblePassword);
   }
 
   void updateFormType(LoginFormType formType) => updateWith(

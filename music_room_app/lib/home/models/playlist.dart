@@ -1,5 +1,10 @@
 class Playlist {
-  Playlist({required this.name, required this.id, required this.owner, this.tracks = const []});
+  Playlist(
+      {required this.name,
+      required this.id,
+      required this.owner,
+      this.tracks = const []});
+
   final String id;
   String name;
   String owner;
@@ -12,8 +17,8 @@ class Playlist {
     return Playlist(
       name: name,
       id: id,
-      owner : owner,
-      tracks : tracks,
+      owner: owner,
+      tracks: tracks,
     );
   }
 
@@ -21,8 +26,8 @@ class Playlist {
     return {
       'name': name,
       'id': id,
-      'owner' : owner,
-      'tracks' : tracks,
+      'owner': owner,
+      'tracks': tracks,
     };
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:music_room_app/account/account.dart';
-import 'package:music_room_app/home/home.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
 import 'landing.dart';
@@ -32,11 +31,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        //home: const LandingScreen(),
+        // home: const LandingScreen(),
         initialRoute: "/",
         routes: {
           '/': (_) => const LandingScreen(),
-          HomeScreen.routeName: (_) => const HomeScreen(),
           AccountScreen.routeName: (_) => const AccountScreen(),
         },
       ),

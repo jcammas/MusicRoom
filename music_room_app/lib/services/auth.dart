@@ -1,12 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:music_room_app/widgets/sign_in_type.dart';
 
 abstract class AuthBase {
   User? get currentUser;
-
-  CollectionReference get users;
 
   Stream<User?> authStateChanges();
 
@@ -33,6 +31,8 @@ abstract class AuthBase {
   Future<void> sendPasswordResetEmail(String email);
 
   Future<void> signOut();
+
+  SignInType findSignInType();
 }
 
 class Auth implements AuthBase {
@@ -43,10 +43,6 @@ class Auth implements AuthBase {
 
   @override
   User? get currentUser => _firebaseAuth.currentUser;
-
-  @override
-  CollectionReference get users =>
-      FirebaseFirestore.instance.collection('user_info');
 
   @override
   Future<void> signInWithEmail(
@@ -79,10 +75,6 @@ class Auth implements AuthBase {
     try {
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
-      users.add({
-        'mail': email, // John Doe
-        'password': password, // Stokes and Sons
-      });
       await currentUser!.reload();
       await currentUser!.sendEmailVerification();
       await signOut();
@@ -92,19 +84,16 @@ class Auth implements AuthBase {
     }
   }
 
-  @override
-  Future<User?> signInWithGoogle() async {
+  Future<AuthCredential> _getGoogleCredentials() async {
     final googleSignIn = GoogleSignIn();
     final googleUser = await googleSignIn.signIn();
     if (googleUser != null) {
       final googleAuth = await googleUser.authentication;
       if (googleAuth.idToken != null) {
-        final userCredential = await _firebaseAuth
-            .signInWithCredential(GoogleAuthProvider.credential(
+        return (GoogleAuthProvider.credential(
           idToken: googleAuth.idToken,
           accessToken: googleAuth.accessToken,
         ));
-        return userCredential.user;
       } else {
         throw FirebaseAuthException(
           code: 'ERROR_MISSING_GOOGLE_ID_TOKEN',
@@ -120,7 +109,17 @@ class Auth implements AuthBase {
   }
 
   @override
-  Future<User?> signInWithFacebook() async {
+  Future<User?> signInWithGoogle() async {
+    try {
+      final userCredential = await _firebaseAuth
+          .signInWithCredential(await _getGoogleCredentials());
+      return userCredential.user;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<AuthCredential> _getFacebookCredentials() async {
     final fb = FacebookLogin();
     final response = await fb.logIn(permissions: [
       FacebookPermission.publicProfile,
@@ -129,10 +128,7 @@ class Auth implements AuthBase {
     switch (response.status) {
       case FacebookLoginStatus.success:
         final accessToken = response.accessToken;
-        final userCredential = await _firebaseAuth.signInWithCredential(
-          FacebookAuthProvider.credential(accessToken!.token),
-        );
-        return userCredential.user;
+        return FacebookAuthProvider.credential(accessToken!.token);
       case FacebookLoginStatus.cancel:
         throw FirebaseAuthException(
           code: 'ERROR_ABORTED_BY_USER',
@@ -145,6 +141,17 @@ class Auth implements AuthBase {
         );
       default:
         throw UnimplementedError();
+    }
+  }
+
+  @override
+  Future<User?> signInWithFacebook() async {
+    try {
+      final userCredential = await _firebaseAuth
+          .signInWithCredential(await _getFacebookCredentials());
+      return userCredential.user;
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -207,18 +214,39 @@ class Auth implements AuthBase {
   }
 
   @override
+  SignInType findSignInType() {
+    if (currentUser != null &&
+        currentUser!.providerData.first.providerId == 'google.com') {
+      return SignInType.google;
+    } else if (currentUser != null &&
+        currentUser!.providerData.first.providerId == 'facebook.com') {
+      return SignInType.facebook;
+    } else {
+      return SignInType.email;
+    }
+  }
+
+  @override
   Future<void> reAuthenticateUser(String password) async {
     try {
-    if (currentUser != null && currentUser?.email != null) {
-      AuthCredential credential = EmailAuthProvider.credential(
-          email: currentUser!.email!, password: password);
-      currentUser?.reauthenticateWithCredential(credential);
-    } else {
-      throw FirebaseAuthException(
-        code: 'NO_USER_CONNECTED',
-        message: 'User has been disconnected',
-      );
-    }
+      final AuthCredential credential;
+      final SignInType type = findSignInType();
+      if (currentUser != null && currentUser?.email != null) {
+        if (type == SignInType.google) {
+          credential = await _getGoogleCredentials();
+        } else if (type == SignInType.facebook) {
+          credential = await _getFacebookCredentials();
+        } else {
+          credential = EmailAuthProvider.credential(
+              email: currentUser!.email!, password: password);
+        }
+        await currentUser?.reauthenticateWithCredential(credential);
+      } else {
+        throw FirebaseAuthException(
+          code: 'NO_USER_CONNECTED',
+          message: 'User has been disconnected',
+        );
+      }
     } catch (e) {
       rethrow;
     }

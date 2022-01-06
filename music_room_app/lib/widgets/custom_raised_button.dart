@@ -9,7 +9,7 @@ class CustomRaisedButton extends StatelessWidget {
     this.height = 50.0,
     required this.onPressed,
     this.width,
-  })  : super(key: key);
+  }) : super(key: key);
   final Widget child;
   final Color? color;
   final double borderRadius;
