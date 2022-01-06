@@ -86,7 +86,7 @@ class _AccountFormState extends State<AccountForm> {
                             subtitle: settingsData['Email'].toString(),
                             iconData: Icons.email),
                         CustomSettingsTile(
-                            type: SettingType.password,
+                            type: SettingType.newPassword,
                             title: 'Change Password',
                             model: widget.model,
                             user: user,

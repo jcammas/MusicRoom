@@ -8,9 +8,8 @@ TextInputType _getTextInputType(SettingType type) {
       return TextInputType.name;
     case SettingType.email:
       return TextInputType.emailAddress;
-    case SettingType.password:
-      return TextInputType.visiblePassword;
-    case SettingType.delete:
+    case SettingType.oldPassword:
+    case SettingType.newPassword:
       return TextInputType.visiblePassword;
     default:
       return TextInputType.text;
@@ -31,11 +30,11 @@ Future<String?> showSettingsDialog(
     AccountModel model,
     SettingType type) async {
   model.updateSettingValue(currentValue ?? '');
-  final String titleText =
-      type == SettingType.delete ? 'Type your password :' : 'Make a Change !';
-  final bool obscureText = type == SettingType.password
-      ? true
-      : type == SettingType.delete
+  final String titleText = type == SettingType.oldPassword
+      ? 'Type your password :'
+      : 'Make a Change !';
+  final bool obscureText =
+      (type == SettingType.oldPassword || type == SettingType.newPassword)
           ? true
           : false;
   return await showDialog(
