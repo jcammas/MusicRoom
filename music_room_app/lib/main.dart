@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:music_room_app/account/account.dart';
 import 'package:music_room_app/services/database.dart';
+import 'package:music_room_app/spotify_library/library.dart';
+import 'package:music_room_app/spotify_library/spotify_connection_monitor.dart';
 import 'package:provider/provider.dart';
 import 'landing.dart';
 import 'services/auth.dart';
@@ -36,6 +38,8 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (_) => const LandingScreen(),
           AccountScreen.routeName: (_) => const AccountScreen(),
+          LibraryScreen.routeName: (_) => const LibraryScreen(),
+          SpotifyConnectionMonitor.routeName: (_) => const SpotifyConnectionMonitor(),
         },
       ),
     );
