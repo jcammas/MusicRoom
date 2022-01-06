@@ -15,10 +15,10 @@ Future<void> _confirmSignOut(BuildContext context) async {
   );
   if (didRequestSignOut == true) {
     auth.signOut();
-  }
-  String? currentRoute = ModalRoute.of(context)?.settings.name;
-  if (currentRoute != '/') {
-    Navigator.of(context).pop();
+    String? currentRoute = ModalRoute.of(context)?.settings.name;
+    if (currentRoute != '/') {
+      Navigator.of(context).pop();
+    }
   }
 }
 
