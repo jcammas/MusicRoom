@@ -495,7 +495,7 @@ class _SpotifyConnectionMonitorState extends State<SpotifyConnectionMonitor> {
   Future<void> queue() async {
     try {
       await SpotifySdk.queue(
-          spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
+          spotifyUri: 'spotify:track:1Nukcy7xk7AbS7MtkaiOe3');
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -620,7 +620,7 @@ class _SpotifyConnectionMonitorState extends State<SpotifyConnectionMonitor> {
   Future<void> addToLibrary() async {
     try {
       await SpotifySdk.addToLibrary(
-          spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
+          spotifyUri: 'spotify:track:1Nukcy7xk7AbS7MtkaiOe3');
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {

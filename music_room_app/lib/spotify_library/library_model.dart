@@ -15,4 +15,5 @@ class LibraryModel with ChangeNotifier {
     await SpotifySdk.connectToSpotifyRemote(
         clientId: spotifyClientId, redirectUrl: spotifyRedirectUri);
   }
+
 }
