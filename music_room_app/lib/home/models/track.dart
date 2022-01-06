@@ -1,5 +1,6 @@
 class Track {
   Track({required this.name, required this.id, required this.votes});
+
   final String id;
   String name;
   int votes;
@@ -11,7 +12,7 @@ class Track {
     return Track(
       name: name,
       id: id,
-      votes : votes,
+      votes: votes,
     );
   }
 
@@ -19,7 +20,7 @@ class Track {
     return {
       'name': name,
       'id': id,
-      'votes' : votes,
+      'votes': votes,
     };
   }
 }

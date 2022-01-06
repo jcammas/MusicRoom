@@ -1,10 +1,14 @@
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/room.dart';
-
 import 'device.dart';
 
 class UserApp {
-  UserApp({required this.name, required this.email, required this.uid});
+  UserApp({
+    required this.name,
+    required this.email,
+    required this.uid,
+  });
+
   final String uid;
   String email;
   String name;
@@ -26,19 +30,14 @@ class UserApp {
         name: userName,
         email: email,
       );
-    }
-    else {
-      return UserApp(
-        uid: uid,
-        name: "N/A",
-        email: "N/A",
-      );
+    } else {
+      return UserApp(uid: uid, name: "N/A", email: "N/A");
     }
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'uid' : uid,
+      'uid': uid,
       'name': name,
       'email': email,
     };

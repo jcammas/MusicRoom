@@ -4,6 +4,7 @@ class Device {
       required this.id,
       required this.permission,
       required this.controllingUser});
+
   final String id;
   String name;
   String permission;

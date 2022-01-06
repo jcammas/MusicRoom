@@ -5,6 +5,7 @@ import 'package:music_room_app/services/auth.dart';
 
 class SignInModel {
   SignInModel({required this.auth, required this.isLoading});
+
   final AuthBase auth;
   final ValueNotifier<bool> isLoading;
 
@@ -18,7 +19,9 @@ class SignInModel {
     }
   }
 
-  Future<User?> signInWithGoogle() async => await _signIn(auth.signInWithGoogle);
+  Future<User?> signInWithGoogle() async =>
+      await _signIn(auth.signInWithGoogle);
 
-  Future<User?> signInWithFacebook() async => await _signIn(auth.signInWithFacebook);
+  Future<User?> signInWithFacebook() async =>
+      await _signIn(auth.signInWithFacebook);
 }

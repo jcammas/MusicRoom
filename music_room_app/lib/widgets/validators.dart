@@ -5,8 +5,7 @@ class CustomStringValidator {
   static bool isValid(String value, TextInputType type) {
     bool isValid = true;
     isValid = isValid && value.isNotEmpty;
-    if (type == TextInputType.emailAddress)
-    {
+    if (type == TextInputType.emailAddress) {
       isValid = isValid && EmailValidator.validate(value);
     }
     return isValid;
