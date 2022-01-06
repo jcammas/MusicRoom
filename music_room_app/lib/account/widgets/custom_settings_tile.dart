@@ -7,7 +7,7 @@ import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import '../account_model.dart';
 
-enum SettingType { name, email, password, delete }
+enum SettingType { name, email, oldPassword, newPassword, delete }
 
 class CustomSettingsTile extends AbstractTile {
   const CustomSettingsTile(
@@ -33,30 +33,58 @@ class CustomSettingsTile extends AbstractTile {
       Widget? leading,
       AccountModel model,
       SettingType type) async {
-    if (type != SettingType.delete ||
-        model.findSignInType() == SignInType.email) {
-      await showSettingsDialog(context, title, subtitle, leading, model, type);
-    }
+    SignInType signInType = model.findSignInType();
     try {
       switch (type) {
         case SettingType.name:
+          await showSettingsDialog(
+              context, title, subtitle, leading, model, type);
           await model.updateName(user);
           break;
+
         case SettingType.email:
-          await model.updateEmail(user);
-          await showAlertDialog(context,
-              title: 'New Email Sent',
-              content: const Text(
-                  'Please check your inbox to verify your new email address.'),
-              defaultActionText: 'Ok');
+          if (signInType == SignInType.email) {
+            await showSettingsDialog(context, title, '', leading, model,
+                SettingType.oldPassword);
+            await model.reAuthenticateUser();
+            await showSettingsDialog(
+                context, title, subtitle, leading, model, type);
+            await model.updateEmail(user);
+            await showAlertDialog(context,
+                title: 'New Email Sent',
+                content: const Text(
+                    'Please check your inbox to verify your new email address.'),
+                defaultActionText: 'Ok');
+          } else {
+            throw Exception(
+                'You can\'t update your email with a Google or Facebook signIn.');
+          }
           break;
-        case SettingType.password:
-          await model.updatePassword();
+
+        case SettingType.newPassword:
+          if (signInType == SignInType.email) {
+            await showSettingsDialog(context, title, '', leading, model,
+                SettingType.oldPassword);
+            await model.reAuthenticateUser();
+            await showSettingsDialog(
+                context, title, subtitle, leading, model, type);
+            await model.updatePassword();
+          } else {
+            throw Exception(
+                'You can\'t update your password with a Google or Facebook signIn.');
+          }
           break;
+
         case SettingType.delete:
+          if (signInType == SignInType.email) {
+            await showSettingsDialog(
+                context, title, '', leading, model, SettingType.oldPassword);
+          }
+          await model.reAuthenticateUser();
           await model.deleteUser(user);
           Navigator.of(context).pop();
           break;
+
         default:
           break;
       }

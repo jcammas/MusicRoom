@@ -56,9 +56,17 @@ class AccountModel with ChangeNotifier {
     }
   }
 
-  Future<void> deleteUser(UserApp? user) async {
+  Future<void> reAuthenticateUser() async {
     try {
       await auth.reAuthenticateUser(settingValue);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
+  Future<void> deleteUser(UserApp? user) async {
+    try {
       if (user != null) {
         await db.deleteUser(user);
       }
@@ -100,7 +108,8 @@ class AccountModel with ChangeNotifier {
         return (inputIsValidAsText);
       case SettingType.email:
         return (inputIsValidAsEmail);
-      case SettingType.password:
+      case SettingType.newPassword:
+      case SettingType.oldPassword:
         return (inputIsValidAsPassword);
       default:
         return (inputIsValidAsText);
