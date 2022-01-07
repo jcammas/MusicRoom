@@ -44,6 +44,11 @@ class MyDrawer extends StatelessWidget {
               icon: Icons.account_circle_outlined,
               text: 'My account',
               route: AccountScreen.routeName),
+          const DrawerTile(
+            icon: Icons.chat,
+            text: "Messenger",
+            route: null,
+          )
         ],
       ),
     );
