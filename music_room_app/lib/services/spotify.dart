@@ -6,19 +6,19 @@ import 'package:http/http.dart' as http;
 import 'package:music_room_app/widgets/spotify_constants.dart';
 
 abstract class SpotifyService {
-  Future<void> getCurrentUserId();
+  Future<String?> getAuthorizationCode();
 }
 
 class Spotify implements SpotifyService {
-
-  final _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  final _chars =
+      'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
   final Random _rnd = Random();
 
   String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
       length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
   @override
-  Future<void> getCurrentUserId() async {
+  Future<String?> getAuthorizationCode() async {
     try {
       var scope = 'user-read-private user-read-email';
       var state = getRandomString(16);
@@ -29,20 +29,19 @@ class Spotify implements SpotifyService {
         'redirect_uri': spotifyRedirectUri,
         'state': state,
       };
-      final uri =
-      Uri.https('accounts.spotify.com', 'authorize', queryParameters);
+      final Uri uri =
+          Uri.https('accounts.spotify.com', 'authorize', queryParameters);
       final result = await FlutterWebAuth.authenticate(
         url: uri.toString(),
         callbackUrlScheme: spotifyCallbackUrlScheme,
       );
-
-// Extract token from resulting url
-      final token = Uri.parse(result).queryParameters['token'];
-      print('token');
-      print(token);
+      if (state != Uri.parse(result).queryParameters['state']) {
+        throw Exception(
+            "Error : return \"state\" code different from request's. Rejected due to security concerns.");
+      }
+      return Uri.parse(result).queryParameters['code'];
     } catch (e) {
-      print(e.toString());
+      rethrow;
     }
   }
-
 }
