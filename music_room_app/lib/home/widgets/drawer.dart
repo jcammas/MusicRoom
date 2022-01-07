@@ -13,14 +13,17 @@ class MyDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: <Widget>[
-          if (ModalRoute.of(context)!.settings.name != LandingScreen.routeName)
-            const DrawerHeader(
-              margin: EdgeInsets.all(0),
-              child: DrawerTile(
-                  icon: Icons.home_outlined,
-                  text: 'Home',
-                  route: LandingScreen.routeName),
+          DrawerHeader(
+            child: SizedBox(
+              child: Image.asset("assets/image/music.jpg"),
             ),
+            decoration: BoxDecoration(color: Colors.lightBlue[50]),
+          ),
+          if (ModalRoute.of(context)!.settings.name != LandingScreen.routeName)
+            const DrawerTile(
+                icon: Icons.home_outlined,
+                text: 'Home',
+                route: LandingScreen.routeName),
           const DrawerTile(
               icon: Icons.add_business_outlined, text: 'Room', route: null),
           const DrawerTile(
