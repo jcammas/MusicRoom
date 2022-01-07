@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:music_room_app/widgets/spotify_constants.dart';
 
 abstract class SpotifyService {
-  Future<String?> getAuthorizationCode();
+  Future<String?> getOAuth2Token();
 }
 
 class Spotify implements SpotifyService {
@@ -18,7 +17,7 @@ class Spotify implements SpotifyService {
       length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
   @override
-  Future<String?> getAuthorizationCode() async {
+  Future<String?> getOAuth2Token() async {
     try {
       var scope = 'user-read-private user-read-email';
       var state = getRandomString(16);
@@ -29,17 +28,42 @@ class Spotify implements SpotifyService {
         'redirect_uri': spotifyRedirectUri,
         'state': state,
       };
-      final Uri uri =
-          Uri.https('accounts.spotify.com', 'authorize', queryParameters);
+      final Uri uriGetCode =
+      Uri.https('accounts.spotify.com', 'authorize', queryParameters);
       final result = await FlutterWebAuth.authenticate(
-        url: uri.toString(),
+        url: uriGetCode.toString(),
         callbackUrlScheme: spotifyCallbackUrlScheme,
       );
       if (state != Uri.parse(result).queryParameters['state']) {
         throw Exception(
             "Error : return \"state\" code different from request's. Rejected due to security concerns.");
       }
-      return Uri.parse(result).queryParameters['code'];
+      final code = Uri.parse(result).queryParameters['code'];
+
+      // String credentials = spotifyClientId + ':' + spotifyClientSecret;
+      String credentials = spotifyClientId;
+      String encoded = base64Url.encode(utf8.encode(credentials));
+      String encoded64 = base64.encode(utf8.encode(credentials));
+     // String decoded = utf8.decode(base64Url.decode(encoded));
+
+      final Uri uriGetToken =
+      Uri.https('accounts.spotify.com', 'api/token');
+      final response = await http.post(uriGetToken, body: {
+        'redirect_uri': spotifyRedirectUri,
+        'grant_type': 'authorization_code',
+        'code': code,
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + encoded
+      });
+
+
+
+      final accessToken = jsonDecode(response.body)['access_token'] as String?;
+
+      return accessToken;
+
     } catch (e) {
       rethrow;
     }
