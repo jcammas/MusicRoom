@@ -51,12 +51,12 @@ class _LibraryFormState extends State<LibraryForm> {
               ListTile(
                 leading: Image.asset("images/avatar_random.png"),
                 title: const Text("some_playlist_name"),
-                onTap: spotify.getOAuth2Token,
+                onTap: spotify.getOAuth2TokenPKCE,
               ),
               ListTile(
                 leading: Image.asset("images/avatar_random.png"),
                 title: const Text("some_playlist_name"),
-                onTap: spotify.getOAuth2Token,
+                onTap: spotify.getOAuth2TokenWithSecret,
               ),
             ],
           ),
