@@ -7,4 +7,8 @@ class APIPath {
       'user_info/$uid/playlists/$playlistId';
 
   static String playlists(String uid) => 'user_info/$uid/playlists';
+
+  static String spotifyProfile(String uid, String spotifyProfileId) =>
+      'user_info/$uid/spotify_profile/$spotifyProfileId';
+
 }

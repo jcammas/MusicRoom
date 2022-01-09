@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:music_room_app/account/account.dart';
 import 'package:music_room_app/services/database.dart';
+import 'package:music_room_app/services/spotify.dart';
 import 'package:music_room_app/spotify_library/library.dart';
 import 'package:music_room_app/spotify_library/spotify_connection_monitor.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         providers: [
     Provider<AuthBase>(create: (context) => Auth()),
     Provider<Database>(create: (context) => FirestoreDatabase()),
+    Provider<SpotifyService>(create: (context) => Spotify())
     ],
       child: MaterialApp(
         title: 'Music Room',

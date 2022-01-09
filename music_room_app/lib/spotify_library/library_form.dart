@@ -12,8 +12,9 @@ class LibraryForm extends StatefulWidget {
 
   static Widget create(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
+    final spotify = Provider.of<SpotifyService>(context, listen: false);
     return ChangeNotifierProvider<LibraryModel>(
-      create: (_) => LibraryModel(db: db),
+      create: (_) => LibraryModel(db: db, spotify: spotify),
       child: Consumer<LibraryModel>(
         builder: (_, model, __) => LibraryForm(model: model),
       ),
@@ -28,7 +29,6 @@ class _LibraryFormState extends State<LibraryForm> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    Spotify spotify = Spotify();
     return StreamBuilder<List<Playlist>>(
       stream: widget.model.getPlaylistsStream(),
       builder: (context, snapshot) {
@@ -50,13 +50,13 @@ class _LibraryFormState extends State<LibraryForm> {
             children: [
               ListTile(
                 leading: Image.asset("images/avatar_random.png"),
-                title: const Text("some_playlist_name"),
-                onTap: spotify.getOAuth2TokenPKCE,
+                title: const Text("Save Current User Spotify Profile in Database"),
+                onTap: widget.model.saveCurrentUserProfile,
               ),
               ListTile(
                 leading: Image.asset("images/avatar_random.png"),
-                title: const Text("some_playlist_name"),
-                onTap: spotify.getOAuth2TokenWithSecret,
+                title: const Text("Same..."),
+                onTap: widget.model.saveCurrentUserProfile,
               ),
             ],
           ),
