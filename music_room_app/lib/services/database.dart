@@ -1,4 +1,5 @@
 import 'package:music_room_app/home/models/playlist.dart';
+import 'package:music_room_app/home/models/spotify_profile.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'api_path.dart';
 import 'firestore_service.dart';
@@ -12,6 +13,8 @@ abstract class Database {
 
   Stream<UserApp> userStream();
 
+  Future<List<UserApp>> usersList();
+
   Future<void> setPlaylist(Playlist playlist);
 
   Future<void> deletePlaylist(Playlist playlist);
@@ -21,6 +24,8 @@ abstract class Database {
   Future<bool> currentUserExists();
 
   Future<void> updateUser(UserApp user);
+
+  Future<void> setSpotifyProfile(SpotifyProfile profile);
 
   set uid(String uid);
 }
@@ -32,7 +37,6 @@ class FirestoreDatabase implements Database {
 
   final _service = FirestoreService.instance;
 
-
   @override
   set uid(String uid) => _uid = uid;
 
@@ -43,10 +47,16 @@ class FirestoreDatabase implements Database {
       );
 
   @override
-  Future<void> updateUser(UserApp user) =>
-      _service.updateData(
+  Future<void> updateUser(UserApp user) => _service.updateData(
         path: APIPath.user(_uid),
         data: user.toMap(),
+      );
+
+  @override
+  Future<void> setSpotifyProfile(SpotifyProfile profile) =>
+      _service.setDataWithMergeOption(
+        path: APIPath.spotifyProfile(_uid, profile.id),
+        data: profile.toMap(),
       );
 
   @override
@@ -75,9 +85,15 @@ class FirestoreDatabase implements Database {
 
   @override
   Stream<List<UserApp>> usersStream() => _service.collectionStream(
-        path: APIPath.users(_uid),
+        path: APIPath.users(),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
+
+  @override
+  Future<List<UserApp>> usersList() async => await _service.getCollection(
+    path: APIPath.users(),
+    builder: (data, documentId) => UserApp.fromMap(data, documentId),
+  );
 
   @override
   Future<void> setPlaylist(Playlist playlist) => _service.setData(

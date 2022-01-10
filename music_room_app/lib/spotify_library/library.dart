@@ -12,13 +12,12 @@ class LibraryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            appBar: customAppBar(appText: 'Library', context: context),
-            backgroundColor: const Color(0xFFEFEFF4),
-            drawer: const MyDrawer(),
-            body: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: SystemUiOverlayStyle.light,
-              child: LibraryForm.create(context)
-                    ),
-            );
+      appBar: customAppBar(appText: 'Library', context: context),
+      backgroundColor: const Color(0xFFEFEFF4),
+      drawer: const MyDrawer(),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light,
+          child: LibraryForm.create(context)),
+    );
   }
 }
