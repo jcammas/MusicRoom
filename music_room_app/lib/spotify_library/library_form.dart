@@ -50,13 +50,13 @@ class _LibraryFormState extends State<LibraryForm> {
             children: [
               ListTile(
                 leading: Image.asset("images/avatar_random.png"),
-                title: const Text("Save Current User Spotify Profile in Database"),
-                onTap: widget.model.saveCurrentUserProfile,
+                title: const Text("Save Current User Spotify Profile + Playlists in Database"),
+                onTap: widget.model.refreshPlaylists,
               ),
               ListTile(
                 leading: Image.asset("images/avatar_random.png"),
                 title: const Text("Same..."),
-                onTap: widget.model.saveCurrentUserProfile,
+                onTap: widget.model.refreshPlaylists,
               ),
             ],
           ),

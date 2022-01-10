@@ -13,6 +13,8 @@ abstract class Database {
 
   Stream<UserApp> userStream();
 
+  Future<List<UserApp>> usersList();
+
   Future<void> setPlaylist(Playlist playlist);
 
   Future<void> deletePlaylist(Playlist playlist);
@@ -83,9 +85,15 @@ class FirestoreDatabase implements Database {
 
   @override
   Stream<List<UserApp>> usersStream() => _service.collectionStream(
-        path: APIPath.users(_uid),
+        path: APIPath.users(),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
+
+  @override
+  Future<List<UserApp>> usersList() async => await _service.getCollection(
+    path: APIPath.users(),
+    builder: (data, documentId) => UserApp.fromMap(data, documentId),
+  );
 
   @override
   Future<void> setPlaylist(Playlist playlist) => _service.setData(
