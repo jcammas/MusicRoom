@@ -35,7 +35,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        // home: const LandingScreen(),
         initialRoute: "/",
         routes: {
           '/': (_) => const LandingScreen(),
@@ -43,7 +42,7 @@ class MyApp extends StatelessWidget {
           LibraryScreen.routeName: (_) => const LibraryScreen(),
           SpotifyConnectionMonitor.routeName: (_) =>
               const SpotifyConnectionMonitor(),
-          MessengerScreen.routeName: (_) => const MessengerScreen(),
+          MessengerScreen.routeName: (_) => MessengerScreen(),
           ChatScreen.routeName: (_) => const ChatScreen(),
         },
       ),
