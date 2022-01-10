@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
-
 import 'package:music_room_app/widgets/custom_appbar.dart';
 
 class MessengerScreen extends StatefulWidget {
@@ -31,7 +30,7 @@ class _MessengerScreenState extends State<MessengerScreen> {
         .where("name", isEqualTo: searchController.text)
         .get()
         .then((value) {
-      if (value.docs.length < 1) {
+      if (value.docs.isEmpty) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("No User found")));
         setState(() {
@@ -40,9 +39,9 @@ class _MessengerScreenState extends State<MessengerScreen> {
         return;
       }
       value.docs.forEach((e) {
-        if (user.data()["email"] != widget.user!.email) {
-          searchResult.add(user.data());
-        }
+        // if (user.data()["email"] != widget.user!.email) {
+        //   searchResult.add(user.data());
+        // }
         setState(() {
           isLoading = false;
         });
