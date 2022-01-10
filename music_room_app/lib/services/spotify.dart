@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -8,7 +9,7 @@ import 'package:music_room_app/widgets/spotify_constants.dart';
 abstract class SpotifyService {
   Future<Map<String, dynamic>?> getCurrentUserProfile();
 
-  Future<Map<String, dynamic>?> getCurrentUserPlaylists(String spotifyId);
+  Future<List<dynamic>> getCurrentUserPlaylists();
 }
 
 class Spotify implements SpotifyService {
@@ -61,7 +62,7 @@ class Spotify implements SpotifyService {
           spotifyClientId,
           spotifyRedirectUri,
           discoveryUrl: spotifyDiscoveryUrl,
-          scopes: ['user-read-private', 'user-read-email'],
+          scopes: spotifyScopes,
         ),
       );
       await _saveWithSecuredStorage(
@@ -79,10 +80,16 @@ class Spotify implements SpotifyService {
           spotifyClientId, spotifyRedirectUri,
           discoveryUrl: spotifyDiscoveryUrl,
           refreshToken: refreshToken,
-          scopes: ['user-read-private', 'user-read-email']));
+          scopes: spotifyScopes));
       await _saveWithSecuredStorage(
           newAccessToken: result?.accessToken,
           newExpirationTime: result?.accessTokenExpirationDateTime);
+    } on PlatformException catch (e) {
+      if (e.code == 'token_failed') {
+        _getOAuth2TokenPKCE();
+      } else {
+        rethrow;
+      }
     } catch (e) {
       rethrow;
     }
@@ -93,12 +100,12 @@ class Spotify implements SpotifyService {
       if (accessToken == null ||
           refreshToken == null ||
           expirationTime == null) {
-        _refreshWithSecuredStorage();
+        await _refreshWithSecuredStorage();
       }
       if (accessToken == null ||
           refreshToken == null ||
           expirationTime == null) {
-        _getOAuth2TokenPKCE();
+        await _getOAuth2TokenPKCE();
       }
       if (accessToken == null ||
           refreshToken == null ||
@@ -135,12 +142,12 @@ class Spotify implements SpotifyService {
   }
 
   @override
-  Future<Map<String, dynamic>?> getCurrentUserPlaylists(
-      String spotifyId) async {
+  Future<List<dynamic>> getCurrentUserPlaylists({int? limit}) async {
     try {
       await _refreshTokens();
-      final Uri uri =
-          Uri.https('api.spotify.com', 'v1/users/' + spotifyId + '/playlists');
+      String limitStr = limit == null ? '50' : limit.toString();
+      final Uri uri = Uri.https('api.spotify.com',
+          'v1/me/playlists', {'limit': limitStr});
       final response = await http.get(uri, headers: {
         'Authorization': 'Bearer ' + accessToken!,
       });
@@ -148,7 +155,11 @@ class Spotify implements SpotifyService {
         String reason = response.reasonPhrase ?? 'No Error Message';
         throw HttpException('Could not get Playlists : ' + reason);
       }
-      return jsonDecode(response.body);
+      final Map<String, dynamic> decoded = jsonDecode(response.body);
+      if (decoded['items'] == null) {
+        throw Exception('Could not find playlists in API response');
+      }
+      return decoded['items'];
     } catch (e) {
       rethrow;
     }

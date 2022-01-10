@@ -26,42 +26,45 @@ class LibraryForm extends StatefulWidget {
 }
 
 class _LibraryFormState extends State<LibraryForm> {
+  get model => widget.model;
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     return StreamBuilder<List<Playlist>>(
-      stream: widget.model.getPlaylistsStream(),
-      builder: (context, snapshot) {
-        // List<Playlist>? playlists = snapshot.data;
-        // return ListItemsBuilder<Playlist>(
-        //   snapshot: snapshot,
-        //   itemBuilder: (context, playlist) => Dismissible(
-        //     key: Key('playlist-${playlist.id}'),
-        //     background: Container(color: Colors.red),
-        //     direction: DismissDirection.endToStart,
-        //     child: PlaylistListTile(
-        //       playlist: playlist,
-        //       onTap: () => PlaylistEntriesPage.show(context, playlist),
-        //     ),
-        //   ),
-        // );
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              ListTile(
-                leading: Image.asset("images/avatar_random.png"),
-                title: const Text("Save Current User Spotify Profile + Playlists in Database"),
-                onTap: widget.model.refreshPlaylists,
-              ),
-              ListTile(
-                leading: Image.asset("images/avatar_random.png"),
-                title: const Text("Same..."),
-                onTap: widget.model.refreshPlaylists,
-              ),
-            ],
-          ),
-        );
-      },
-    );
+            stream: model.getPlaylistsStream(),
+            builder: (context, snapshot) {
+              // List<Playlist>? playlists = snapshot.data;
+              // return ListItemsBuilder<Playlist>(
+              //   snapshot: snapshot,
+              //   itemBuilder: (context, playlist) => Dismissible(
+              //     key: Key('playlist-${playlist.id}'),
+              //     background: Container(color: Colors.red),
+              //     direction: DismissDirection.endToStart,
+              //     child: PlaylistListTile(
+              //       playlist: playlist,
+              //       onTap: () => PlaylistEntriesPage.show(context, playlist),
+              //     ),
+              //   ),
+              // );
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Image.asset("images/avatar_random.png"),
+                      title: const Text(
+                          "Save Current User Spotify Profile + Playlists in Database"),
+                      onTap: widget.model.refreshPlaylists,
+                    ),
+                    ListTile(
+                      leading: Image.asset("images/avatar_random.png"),
+                      title: const Text("Same..."),
+                      onTap: widget.model.refreshPlaylists,
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
   }
 }

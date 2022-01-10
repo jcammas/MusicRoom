@@ -1,7 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/spotify_profile.dart';
-import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
@@ -26,9 +26,17 @@ class LibraryModel with ChangeNotifier {
           await spotify.getCurrentUserProfile();
       SpotifyProfile userProfile = SpotifyProfile.fromMap(profileMap);
       await db.setSpotifyProfile(userProfile);
-      final Map<String, dynamic>? playlists =
-      await spotify.getCurrentUserPlaylists(userProfile.id);
-      print(playlists!.entries.toString());
+      final List<dynamic> playlistsList =
+          await spotify.getCurrentUserPlaylists();
+      final List<Playlist> playlists = playlistsList
+          .whereType<Map<String, dynamic>>()
+          .map((playlist) => playlist['id'] != null
+              ? Playlist.fromMap(playlist, playlist['id'])
+              : null)
+          .whereType<Playlist>()
+          .toList();
+      await db.savePlaylists(playlists);
+      await db.setUserPlaylists(playlists);
     } catch (e) {
       rethrow;
     }
