@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/messenger/chat.dart';
-import 'package:music_room_app/messenger/models/message_model.dart';
+import 'package:music_room_app/messenger/stuff/chat.dart';
+import 'package:music_room_app/messenger/stuff/message_model.dart';
 
 class RecentChats extends StatelessWidget {
   const RecentChats({Key? key}) : super(key: key);

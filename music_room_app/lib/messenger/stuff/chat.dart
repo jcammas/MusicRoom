@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
-import 'package:music_room_app/messenger/models/user_model.dart';
+import 'package:music_room_app/messenger/stuff/user_model.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 
-import 'models/message_model.dart';
+import 'message_model.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);

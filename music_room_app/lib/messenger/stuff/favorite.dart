@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/messenger/models/message_model.dart';
+import 'package:music_room_app/messenger/stuff/message_model.dart';
 
-import '../chat.dart';
+import '../stuff/chat.dart';
 
 class Favorite extends StatelessWidget {
   const Favorite({Key? key}) : super(key: key);

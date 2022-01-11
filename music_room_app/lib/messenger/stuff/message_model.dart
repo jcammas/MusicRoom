@@ -1,4 +1,4 @@
-import 'package:music_room_app/messenger/models/user_model.dart';
+import 'package:music_room_app/messenger/stuff/user_model.dart';
 
 class Message {
   final User? sender;

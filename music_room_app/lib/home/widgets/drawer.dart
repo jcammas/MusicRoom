@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:music_room_app/account/account.dart';
 import 'package:music_room_app/home/widgets/drawer_tile.dart';
 import 'package:music_room_app/landing.dart';
-import 'package:music_room_app/messenger/messenger.dart';
+import 'package:music_room_app/messenger/chats_page.dart';
+import 'package:music_room_app/messenger/stuff/messenger.dart';
 import 'package:music_room_app/spotify_library/library.dart';
 import 'package:music_room_app/spotify_library/spotify_connection_monitor.dart';
 
@@ -48,7 +49,7 @@ class MyDrawer extends StatelessWidget {
           const DrawerTile(
             icon: Icons.chat,
             text: "Messenger",
-            route: MessengerScreen.routeName,
+            route: ChatsPage.routeName,
           )
         ],
       ),

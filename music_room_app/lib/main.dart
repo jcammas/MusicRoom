@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:music_room_app/account/account.dart';
-import 'package:music_room_app/messenger/chat.dart';
-import 'package:music_room_app/messenger/messenger.dart';
+import 'package:music_room_app/messenger/stuff/chat.dart';
+import 'package:music_room_app/messenger/chats_page.dart';
+import 'package:music_room_app/messenger/stuff/messenger.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
 import 'package:music_room_app/spotify_library/library.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
           SpotifyConnectionMonitor.routeName: (_) =>
               const SpotifyConnectionMonitor(),
           MessengerScreen.routeName: (_) => MessengerScreen(),
+          ChatsPage.routeName: (_) => const ChatsPage(),
           ChatScreen.routeName: (_) => const ChatScreen(),
         },
       ),

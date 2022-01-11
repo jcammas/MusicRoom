@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:music_room_app/messenger/chat.dart';
-import 'package:music_room_app/messenger/models/user_model.dart';
-import 'package:music_room_app/messenger/widgets/search_manager.dart';
+import 'package:music_room_app/messenger/stuff/chat.dart';
+import 'package:music_room_app/messenger/stuff/search_manager.dart';
+import 'package:music_room_app/messenger/stuff/user_model.dart';
+
 import 'package:provider/provider.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/home/models/user.dart';
