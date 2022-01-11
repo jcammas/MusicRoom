@@ -35,11 +35,6 @@ abstract class Database {
 class FirestoreDatabase implements Database {
   FirestoreDatabase();
 
-  bool isLoading = false;
-  List<UserApp> _users = [];
-
-  UnmodifiableListView<UserApp> get users => UnmodifiableListView(_users);
-
   late String _uid;
 
   final _service = FirestoreService.instance;

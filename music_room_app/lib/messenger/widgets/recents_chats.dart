@@ -11,9 +11,6 @@ class RecentChats extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     return Expanded(
       child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-        ),
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(30),
@@ -26,7 +23,7 @@ class RecentChats extends StatelessWidget {
                 return GestureDetector(
                   onTap: () {
                     Object arguments = {
-                      "user": chat.sender,
+                      "user": chat.sender!.name,
                     };
                     Navigator.pushNamed(context, ChatScreen.routeName,
                         arguments: arguments);

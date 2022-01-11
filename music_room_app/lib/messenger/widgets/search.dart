@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:music_room_app/messenger/chat.dart';
 import 'package:music_room_app/messenger/models/user_model.dart';
 import 'package:music_room_app/messenger/widgets/search_manager.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +48,8 @@ class _SearchFriendsState extends State<SearchFriends> {
   @override
   Widget build(BuildContext context) {
     model.getUsers();
-    List<UserApp> filteredUsers = model.getFilteredByName(searchController.text);
+    List<UserApp> filteredUsers =
+        model.getFilteredByName(searchController.text);
     return Expanded(
       child: Column(
         children: [
@@ -67,9 +69,7 @@ class _SearchFriendsState extends State<SearchFriends> {
                       ),
                       prefixIcon: Icon(Icons.search),
                     ),
-                    onChanged: (value) {
-                      print(value);
-                    },
+                    onTap: () {},
                   ),
                 ),
                 IconButton(
@@ -79,41 +79,55 @@ class _SearchFriendsState extends State<SearchFriends> {
               ],
             ),
           ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              child: RefreshIndicator(
-                  displacement: 100,
-                  onRefresh:
-                      model.getUsers,
-                  child: model.isLoading
-                      ? const CircularProgressIndicator()
-                      : filteredUsers.isNotEmpty
-                          ? ListView.builder(
-                              itemCount: filteredUsers.length,
-                              itemBuilder: (_, i) {
-                                return Text(filteredUsers[i].name);
-                              })
-                          : const SizedBox()),
-            ),
-          ),
-          // FutureBuilder<List<UserApp>>(
-          //     future: db.usersList(),
-          //     builder: (context, snapshot) {
-          //       if (snapshot.hasData) {
-          //         return ListView.builder(
-          //             itemCount: snapshot.data!.length,
-          //             shrinkWrap: true,
-          //             itemBuilder: (context, i) {
-          //               return Text(snapshot.data![i].name);
-          //             });
-          //       } else if (snapshot.hasError) {
-          //         return Text('Error: ${snapshot.error}');
-          //       }
-          //       return const Center(
-          //         child: CircularProgressIndicator(),
-          //       );
-          //     }),
+          searchController.text.isEmpty
+              ? const SizedBox()
+              : Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: RefreshIndicator(
+                        displacement: 100,
+                        onRefresh: model.getUsers,
+                        child: model.isLoading
+                            ? const CircularProgressIndicator()
+                            : filteredUsers.isNotEmpty
+                                ? SizedBox(
+                                    child: ListView.builder(
+                                        itemCount: filteredUsers.length,
+                                        itemBuilder: (_, i) {
+                                          return GestureDetector(
+                                            child: ListTile(
+                                              leading: CircleAvatar(
+                                                radius: 45,
+                                                child: ClipOval(
+                                                  child: Image.asset(
+                                                      "images/avatar_random.png"),
+                                                ),
+                                              ),
+                                              title: Text(
+                                                filteredUsers[i].name,
+                                                style: const TextStyle(
+                                                    color: Colors.blueGrey,
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              Object arguments = {
+                                                "user": filteredUsers[i].name
+                                              };
+                                              Navigator.pushNamed(
+                                                  context, ChatScreen.routeName,
+                                                  arguments: arguments);
+                                              setState(() =>
+                                                  searchController.clear());
+                                            },
+                                          );
+                                        }),
+                                  )
+                                : const SizedBox()),
+                  ),
+                ),
         ],
       ),
     );

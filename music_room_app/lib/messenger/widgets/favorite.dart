@@ -20,20 +20,14 @@ class Favorite extends StatelessWidget {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                const Text(
+              children: const <Widget>[
+                Text(
                   'Favorite contacts',
                   style: TextStyle(
                       color: Colors.blueGrey,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                       letterSpacing: 1.2),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.more_horiz),
-                  iconSize: 30,
-                  color: Colors.blueGrey,
                 ),
               ],
             ),
@@ -48,7 +42,7 @@ class Favorite extends StatelessWidget {
                   return GestureDetector(
                     onTap: () {
                       Object arguments = {
-                        "user": favorites[i],
+                        "user": favorites[i].name,
                       };
                       Navigator.pushNamed(context, ChatScreen.routeName,
                           arguments: arguments);

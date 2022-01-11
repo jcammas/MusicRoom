@@ -118,10 +118,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final arg = ModalRoute.of(context)!.settings.arguments as Map;
-    User user = arg["user"];
+    String user = arg["user"];
 
     return Scaffold(
-        appBar: customAppBar(appText: user.name, context: context),
+        appBar: customAppBar(appText: user, context: context),
         backgroundColor: const Color(0xFFEFEFF4),
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
