@@ -68,7 +68,7 @@ class AccountModel with ChangeNotifier {
   Future<void> deleteUser(UserApp? user) async {
     try {
       if (user != null) {
-        await db.deleteUser(user);
+        await db.deleteUser(user: user);
       }
       await auth.deleteCurrentUser();
     } catch (e) {

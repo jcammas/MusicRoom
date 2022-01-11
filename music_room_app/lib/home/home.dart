@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Future<void> _setUpUser(BuildContext context, AuthBase auth) async {
     final db = Provider.of<Database>(context, listen: false);
-    final bool exist = await db.currentUserExists();
+    final bool exist = await db.userExists();
     if (auth.currentUser != null) {
       if (!exist) {
         db.setUser(UserApp(
