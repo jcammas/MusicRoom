@@ -4,12 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:music_room_app/home/models/playlist.dart';
+import 'package:music_room_app/home/models/spotify_profile.dart';
+import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/widgets/spotify_constants.dart';
 
 abstract class SpotifyService {
-  Future<Map<String, dynamic>?> getCurrentUserProfile();
+  Future<SpotifyProfile> getCurrentUserProfile();
 
-  Future<List<dynamic>> getCurrentUserPlaylists();
+  Future<List<Playlist>> getCurrentUserPlaylists();
+
+  Future<List<dynamic>> getPlaylistTracks(String playlistId, {int? limit});
 }
 
 class Spotify implements SpotifyService {
@@ -124,7 +129,7 @@ class Spotify implements SpotifyService {
   }
 
   @override
-  Future<Map<String, dynamic>?> getCurrentUserProfile() async {
+  Future<SpotifyProfile> getCurrentUserProfile() async {
     try {
       await _refreshTokens();
       final Uri uri = Uri.https('api.spotify.com', 'v1/me');
@@ -135,19 +140,20 @@ class Spotify implements SpotifyService {
         String reason = response.reasonPhrase ?? 'No Error Message';
         throw HttpException('Could not get CurrentUser Profile : ' + reason);
       }
-      return jsonDecode(response.body);
+      Map<String, dynamic> profileMap = jsonDecode(response.body);
+      return SpotifyProfile.fromMap(profileMap);
     } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<List<dynamic>> getCurrentUserPlaylists({int? limit}) async {
+  Future<List<Playlist>> getCurrentUserPlaylists({int? limit}) async {
     try {
       await _refreshTokens();
       String limitStr = limit == null ? '50' : limit.toString();
-      final Uri uri = Uri.https('api.spotify.com',
-          'v1/me/playlists', {'limit': limitStr});
+      final Uri uri =
+          Uri.https('api.spotify.com', 'v1/me/playlists', {'limit': limitStr});
       final response = await http.get(uri, headers: {
         'Authorization': 'Bearer ' + accessToken!,
       });
@@ -159,7 +165,47 @@ class Spotify implements SpotifyService {
       if (decoded['items'] == null) {
         throw Exception('Could not find playlists in API response');
       }
-      return decoded['items'];
+      final List<dynamic> playlistsList = decoded['items'];
+      return playlistsList
+          .whereType<Map<String, dynamic>>()
+          .map((playlist) => playlist['id'] != null
+              ? Playlist.fromMap(playlist, playlist['id'])
+              : null)
+          .whereType<Playlist>()
+          .toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<dynamic>> getPlaylistTracks(String playlistId,
+      {int? limit}) async {
+    try {
+      await _refreshTokens();
+      String limitStr = limit == null ? '50' : limit.toString();
+      final Uri uri = Uri.https('api.spotify.com',
+          'v1/playlists/' + playlistId + '/tracks', {'limit': limitStr});
+      final response = await http.get(uri, headers: {
+        'Authorization': 'Bearer ' + accessToken!,
+      });
+      if (response.statusCode != 200) {
+        String reason = response.reasonPhrase ?? 'No Error Message';
+        throw HttpException(
+            'Could not get tracks of playlist ' + playlistId + ' : ' + reason);
+      }
+      final Map<String, dynamic> decoded = jsonDecode(response.body);
+      if (decoded['items'] == null) {
+        throw Exception('Could not find tracks in API response');
+      }
+      List<dynamic> trackData = decoded['items'];
+      return trackData
+          .whereType<Map<String, dynamic>>()
+          .map((track) => track['id'] != null
+          ? Track.fromMap(track, track['id'])
+          : null)
+          .whereType<Track>()
+          .toList();
     } catch (e) {
       rethrow;
     }

@@ -29,11 +29,11 @@ class UserApp {
     if (data != null) {
       final String userName = data['name'] ?? 'N/A';
       final String email = data['email'] ?? 'N/A';
-      Map<String, dynamic>? playlistsData = data['playlists'];
       SpotifyProfile? spotifyProfile;
       if (data['spotify_profile'] != null) {
         spotifyProfile = SpotifyProfile.fromMap(data['spotify_profile']);
       }
+      Map<String, dynamic>? playlistsData = data['playlists'];
       Map<String, Playlist> playlists = {};
       if (playlistsData != null) {
         playlistsData.updateAll((id, data) => Playlist.fromMap(data, id));
