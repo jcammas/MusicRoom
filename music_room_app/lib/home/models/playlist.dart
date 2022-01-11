@@ -12,7 +12,7 @@ class Playlist {
 
   final String id;
   String name;
-  List<String> tracksList;
+  List<dynamic> tracksList;
   Map<String, dynamic>? owner;
   String? description;
   bool? collaborative;
@@ -22,7 +22,7 @@ class Playlist {
 
   factory Playlist.fromMap(Map<String?, dynamic> data, String id) {
     final String name = data['name'] ?? 'N/A';
-    final List<String> tracksList = data['tracks_list'] ?? [];
+    final List<dynamic> tracksList = data['tracks_list'] ?? [];
     final Map<String, dynamic> owner = data['owner'] ?? 'N/A';
     final String? description = data['description'];
     final bool? collaborative = data['collaborative'];

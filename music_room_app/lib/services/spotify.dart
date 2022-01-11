@@ -86,7 +86,7 @@ class Spotify implements SpotifyService {
           newExpirationTime: result?.accessTokenExpirationDateTime);
     } on PlatformException catch (e) {
       if (e.code == 'token_failed') {
-        _getOAuth2TokenPKCE();
+        await _getOAuth2TokenPKCE();
       } else {
         rethrow;
       }

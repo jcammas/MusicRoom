@@ -7,17 +7,15 @@ import 'firestore_service.dart';
 abstract class Database {
   Future<void> setUser(UserApp user);
 
-  Future<void> deleteUser(UserApp user);
+  Future<void> deleteUser({UserApp user});
 
   Stream<List<UserApp>> usersStream();
 
   Stream<UserApp> userStream({UserApp? user});
 
-  Future<List<UserApp>> usersList();
+  Future<List<UserApp>> getUsersList();
 
   Future<UserApp> getUser();
-
-  Stream<List<Playlist>> playlistsStream({UserApp? user});
 
   Future<bool> userExists({UserApp? user});
 
@@ -27,11 +25,17 @@ abstract class Database {
 
   Future<void> savePlaylists(List<Playlist> playlists);
 
+  Future<void> deleteUserPlaylist(Playlist playlist, {UserApp? user});
+
   Future<void> setUserPlaylist(Playlist playlist, {UserApp? user});
 
   Future<void> setUserPlaylists(List<Playlist> playlists, {UserApp? user});
 
   Future<void> setSpotifyProfile(SpotifyProfile profile);
+
+  Stream<List<Playlist>> playlistsStream({UserApp? user});
+
+  Future<List<Playlist>> getUserPlaylists({UserApp? user});
 
   set uid(String uid);
 }
@@ -70,8 +74,9 @@ class FirestoreDatabase implements Database {
       .documentExists(path: APIPath.user(user == null ? _uid : user.uid));
 
   @override
-  Future<void> deleteUser(UserApp user) async {
-    await _service.deleteDocument(path: APIPath.user(_uid));
+  Future<void> deleteUser({UserApp? user}) async {
+    await _service.deleteDocument(
+        path: APIPath.user(user == null ? _uid : user.uid));
   }
 
   @override
@@ -87,7 +92,7 @@ class FirestoreDatabase implements Database {
       );
 
   @override
-  Future<List<UserApp>> usersList() async => await _service.getCollection(
+  Future<List<UserApp>> getUsersList() async => await _service.getCollection(
         path: APIPath.users(),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
@@ -108,6 +113,13 @@ class FirestoreDatabase implements Database {
       playlists.forEach(savePlaylist);
 
   @override
+  Future<void> deleteUserPlaylist(Playlist playlist, {UserApp? user}) async {
+    await _service.deleteDocument(
+        path:
+            APIPath.userPlaylist(user == null ? _uid : user.uid, playlist.id));
+  }
+
+  @override
   Future<void> setUserPlaylist(Playlist playlist, {UserApp? user}) async {
     await _service.setDocumentWithMergeOption(
       path: APIPath.userPlaylist(user == null ? _uid : user.uid, playlist.id),
@@ -125,9 +137,17 @@ class FirestoreDatabase implements Database {
 
   @override
   Stream<List<Playlist>> playlistsStream({UserApp? user}) =>
-      _service.collectionStream<Playlist>(
+      _service.collectionStream(
         path: APIPath.userPlaylists(user == null ? _uid : user.uid),
         builder: (data, documentID) => Playlist.fromMap(data, documentID),
-        sort: (lhs, rhs) => rhs.name.compareTo(lhs.name),
+        sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
+      );
+
+  @override
+  Future<List<Playlist>> getUserPlaylists({UserApp? user}) async =>
+      await _service.getCollection<Playlist>(
+        path: APIPath.userPlaylists(user == null ? _uid : user.uid),
+        builder: (data, documentID) => Playlist.fromMap(data, documentID),
+        sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
       );
 }
