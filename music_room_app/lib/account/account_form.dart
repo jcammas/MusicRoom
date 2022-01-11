@@ -5,18 +5,18 @@ import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
-import 'account_model.dart';
+import 'account_manager.dart';
 
 class AccountForm extends StatefulWidget {
   const AccountForm({Key? key, required this.model}) : super(key: key);
-  final AccountModel model;
+  final AccountManager model;
 
   static Widget create(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
     final db = Provider.of<Database>(context, listen: false);
-    return ChangeNotifierProvider<AccountModel>(
-      create: (_) => AccountModel(auth: auth, db: db),
-      child: Consumer<AccountModel>(
+    return ChangeNotifierProvider<AccountManager>(
+      create: (_) => AccountManager(auth: auth, db: db),
+      child: Consumer<AccountManager>(
         builder: (_, model, __) => AccountForm(model: model),
       ),
     );
