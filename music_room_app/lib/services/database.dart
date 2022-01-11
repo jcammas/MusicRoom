@@ -40,9 +40,6 @@ class FirestoreDatabase implements Database {
 
   UnmodifiableListView<UserApp> get users => UnmodifiableListView(_users);
 
-  UserApp getFilteredByName(String userName) =>
-      users.firstWhere((element) => element.name == userName);
-
   late String _uid;
 
   final _service = FirestoreService.instance;

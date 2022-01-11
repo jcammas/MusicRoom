@@ -1,12 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/messenger/models/user_model.dart';
+import 'package:music_room_app/messenger/widgets/search_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/home/models/user.dart';
 
 class SearchFriends extends StatefulWidget {
-  const SearchFriends({Key? key}) : super(key: key);
+  SearchFriends({Key? key, required this.model}) : super(key: key);
+
+  SearchModel model;
+
+  static Widget create(BuildContext context) {
+    final db = Provider.of<Database>(context, listen: false);
+    return ChangeNotifierProvider<SearchModel>(
+      create: (_) => SearchModel(db: db),
+      child: Consumer<SearchModel>(
+        builder: (_, model, __) => SearchFriends(model: model),
+      ),
+    );
+  }
 
   @override
   _SearchFriendsState createState() => _SearchFriendsState();
@@ -14,6 +27,8 @@ class SearchFriends extends StatefulWidget {
 
 class _SearchFriendsState extends State<SearchFriends> {
   TextEditingController searchController = TextEditingController();
+
+  SearchModel get model => widget.model;
 
   @override
   void initState() {
@@ -31,11 +46,8 @@ class _SearchFriendsState extends State<SearchFriends> {
 
   @override
   Widget build(BuildContext context) {
-    FirestoreDatabase db =
-        Provider.of<FirestoreDatabase>(context, listen: false);
-    List<UserApp>? filteredName =
-        db.getFilteredByName(searchController.text) as List<UserApp>;
-
+    model.getUsers();
+    List<UserApp> filteredUsers = model.getFilteredByName(searchController.text);
     return Expanded(
       child: Column(
         children: [
@@ -73,36 +85,35 @@ class _SearchFriendsState extends State<SearchFriends> {
               child: RefreshIndicator(
                   displacement: 100,
                   onRefresh:
-                      Provider.of<FirestoreDatabase>(context, listen: false)
-                          .usersList,
-                  child: db.isLoading
-                      ? CircularProgressIndicator()
-                      : filteredName.length > 0
+                      model.getUsers,
+                  child: model.isLoading
+                      ? const CircularProgressIndicator()
+                      : filteredUsers.isNotEmpty
                           ? ListView.builder(
-                              itemCount: filteredName.length,
+                              itemCount: filteredUsers.length,
                               itemBuilder: (_, i) {
-                                return Text(filteredName[i].name);
+                                return Text(filteredUsers[i].name);
                               })
-                          : Text('Aucun user')),
+                          : const SizedBox()),
             ),
           ),
-          FutureBuilder<List<UserApp>>(
-              future: db.usersList(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, i) {
-                        return Text(snapshot.data![i].name);
-                      });
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }),
+          // FutureBuilder<List<UserApp>>(
+          //     future: db.usersList(),
+          //     builder: (context, snapshot) {
+          //       if (snapshot.hasData) {
+          //         return ListView.builder(
+          //             itemCount: snapshot.data!.length,
+          //             shrinkWrap: true,
+          //             itemBuilder: (context, i) {
+          //               return Text(snapshot.data![i].name);
+          //             });
+          //       } else if (snapshot.hasError) {
+          //         return Text('Error: ${snapshot.error}');
+          //       }
+          //       return const Center(
+          //         child: CircularProgressIndicator(),
+          //       );
+          //     }),
         ],
       ),
     );

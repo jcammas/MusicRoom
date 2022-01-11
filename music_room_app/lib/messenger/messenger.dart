@@ -22,8 +22,8 @@ class _MessengerScreenState extends State<MessengerScreen> {
       backgroundColor: const Color(0xFFEFEFF4),
       drawer: const MyDrawer(),
       body: Column(
-        children: const <Widget>[
-          SearchFriends(),
+        children: <Widget>[
+          SearchFriends.create(context),
         ],
       ),
     );
