@@ -26,11 +26,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          Provider<AuthBase>(create: (context) => Auth()),
-          Provider<Database>(create: (context) => FirestoreDatabase()),
-          Provider<SpotifyService>(create: (context) => Spotify())
-        ],
+      providers: [
+        Provider<AuthBase>(create: (context) => Auth()),
+        Provider<Database>(create: (context) => FirestoreDatabase()),
+        Provider<FirestoreDatabase>(
+          create: (context) => FirestoreDatabase(),
+        ),
+        Provider<SpotifyService>(create: (context) => Spotify())
+      ],
       child: MaterialApp(
         title: 'Music Room',
         debugShowCheckedModeBanner: false,

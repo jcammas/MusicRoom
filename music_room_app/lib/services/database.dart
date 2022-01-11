@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/spotify_profile.dart';
 import 'package:music_room_app/home/models/user.dart';
@@ -32,6 +34,14 @@ abstract class Database {
 
 class FirestoreDatabase implements Database {
   FirestoreDatabase();
+
+  bool isLoading = false;
+  List<UserApp> _users = [];
+
+  UnmodifiableListView<UserApp> get users => UnmodifiableListView(_users);
+
+  UserApp getFilteredByName(String userName) =>
+      users.firstWhere((element) => element.name == userName);
 
   late String _uid;
 
@@ -91,9 +101,9 @@ class FirestoreDatabase implements Database {
 
   @override
   Future<List<UserApp>> usersList() async => await _service.getCollection(
-    path: APIPath.users(),
-    builder: (data, documentId) => UserApp.fromMap(data, documentId),
-  );
+        path: APIPath.users(),
+        builder: (data, documentId) => UserApp.fromMap(data, documentId),
+      );
 
   @override
   Future<void> setPlaylist(Playlist playlist) => _service.setData(
