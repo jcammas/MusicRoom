@@ -3,6 +3,7 @@ import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 import 'package:music_room_app/account/widgets/custom_settings_tile.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/auth.dart';
+import 'package:music_room_app/services/bluetooth.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
 import 'account_manager.dart';
@@ -14,8 +15,9 @@ class AccountForm extends StatefulWidget {
   static Widget create(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
     final db = Provider.of<Database>(context, listen: false);
+    final bluetoothService = Provider.of<BluetoothService>(context, listen: false);
     return ChangeNotifierProvider<AccountManager>(
-      create: (_) => AccountManager(auth: auth, db: db),
+      create: (_) => AccountManager(auth: auth, db: db, bluetoothService: bluetoothService),
       child: Consumer<AccountManager>(
         builder: (_, model, __) => AccountForm(manager: model),
       ),

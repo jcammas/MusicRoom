@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/account/widgets/custom_settings_tile.dart';
 import 'package:music_room_app/home/models/user.dart';
+import 'package:music_room_app/services/bluetooth.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/widgets/sign_in_type.dart';
 import 'package:music_room_app/widgets/validators.dart';
@@ -10,18 +11,21 @@ class AccountManager with ChangeNotifier {
   AccountManager(
       {required this.auth,
       required this.db,
+        required this.bluetoothService,
       this.settingValue = '',
       this.submitted = false,
       this.isLoading = false});
 
   final AuthBase auth;
   final Database db;
+  final BluetoothService bluetoothService;
   String settingValue;
   bool submitted;
   bool isLoading;
 
   Future<void> updateName(UserApp? user) async {
     try {
+      await bluetoothService.scanDevices();
       await auth.updateUserName(settingValue);
       if (user != null) {
         user.name = settingValue;

@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "870791210894-j16s8unl9g5cuvmacip7cmh4o70t6db3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.music_room_app",
+            "certificate_hash": "6df176a1d6c8cc42cdca1df938b36605a3daf000"
+          }
+        },
+        {
           "client_id": "870791210894-pputaom3aq61pbv6u3lnqbn76plg181n.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
