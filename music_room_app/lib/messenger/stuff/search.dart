@@ -11,13 +11,13 @@ import 'package:music_room_app/home/models/user.dart';
 class SearchFriends extends StatefulWidget {
   SearchFriends({Key? key, required this.model}) : super(key: key);
 
-  SearchModel model;
+  SearchManager model;
 
   static Widget create(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
-    return ChangeNotifierProvider<SearchModel>(
-      create: (_) => SearchModel(db: db),
-      child: Consumer<SearchModel>(
+    return ChangeNotifierProvider<SearchManager>(
+      create: (_) => SearchManager(db: db),
+      child: Consumer<SearchManager>(
         builder: (_, model, __) => SearchFriends(model: model),
       ),
     );
@@ -30,7 +30,7 @@ class SearchFriends extends StatefulWidget {
 class _SearchFriendsState extends State<SearchFriends> {
   TextEditingController searchController = TextEditingController();
 
-  SearchModel get model => widget.model;
+  SearchManager get model => widget.model;
 
   @override
   void initState() {

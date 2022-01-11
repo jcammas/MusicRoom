@@ -6,8 +6,8 @@ import 'package:music_room_app/widgets/sign_in_type.dart';
 import 'package:music_room_app/widgets/validators.dart';
 import 'package:music_room_app/services/auth.dart';
 
-class AccountModel with ChangeNotifier {
-  AccountModel(
+class AccountManager with ChangeNotifier {
+  AccountManager(
       {required this.auth,
       required this.db,
       this.settingValue = '',

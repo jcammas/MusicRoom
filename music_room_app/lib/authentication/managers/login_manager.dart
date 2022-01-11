@@ -4,8 +4,8 @@ import 'package:music_room_app/services/auth.dart';
 
 enum LoginFormType { signIn, register, reset }
 
-class LoginModel with ChangeNotifier {
-  LoginModel({
+class LoginManager with ChangeNotifier {
+  LoginManager({
     required this.auth,
     this.email = '',
     this.password = '',

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../account_model.dart';
+import '../account_manager.dart';
 import 'custom_settings_tile.dart';
 
 TextInputType _getTextInputType(SettingType type) {
@@ -16,7 +16,7 @@ TextInputType _getTextInputType(SettingType type) {
   }
 }
 
-void _submit(BuildContext context, AccountModel model, SettingType type) {
+void _submit(BuildContext context, AccountManager model, SettingType type) {
   if (model.canSubmit(type) == true) {
     Navigator.of(context).pop();
   }
@@ -27,7 +27,7 @@ Future<String?> showSettingsDialog(
     String settingName,
     String? currentValue,
     Widget? leading,
-    AccountModel model,
+    AccountManager model,
     SettingType type) async {
   model.updateSettingValue(currentValue ?? '');
   final String titleText = type == SettingType.oldPassword

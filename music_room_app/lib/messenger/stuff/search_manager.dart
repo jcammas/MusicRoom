@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/database.dart';
 
-class SearchModel with ChangeNotifier {
-  SearchModel({required this.db});
+class SearchManager with ChangeNotifier {
+  SearchManager({required this.db});
 
   Database db;
   bool isLoading = true;

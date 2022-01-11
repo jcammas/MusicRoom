@@ -4,7 +4,7 @@ import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:music_room_app/authentication/views/login/login.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
-import 'package:music_room_app/authentication/models/sign_in_model.dart';
+import 'package:music_room_app/authentication/managers/sign_in_manager.dart';
 import 'package:music_room_app/services/auth.dart';
 import '../widgets/sign_in_button.dart';
 import '../widgets/social_sign_in_button.dart';
@@ -18,7 +18,7 @@ class SignInScreen extends StatelessWidget {
 
   static String routeName = '/SignInScreen';
 
-  final SignInModel model;
+  final SignInManager model;
   final bool isLoading;
 
   static Widget create(BuildContext context) {
@@ -26,9 +26,9 @@ class SignInScreen extends StatelessWidget {
     return ChangeNotifierProvider<ValueNotifier<bool>>(
       create: (_) => ValueNotifier<bool>(false),
       child: Consumer<ValueNotifier<bool>>(
-        builder: (_, isLoading, __) => Provider<SignInModel>(
-          create: (_) => SignInModel(auth: auth, isLoading: isLoading),
-          child: Consumer<SignInModel>(
+        builder: (_, isLoading, __) => Provider<SignInManager>(
+          create: (_) => SignInManager(auth: auth, isLoading: isLoading),
+          child: Consumer<SignInManager>(
             builder: (_, manager, __) =>
                 SignInScreen(model: manager, isLoading: isLoading.value),
           ),
