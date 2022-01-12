@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/widgets/constants.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
-import 'package:music_room_app/authentication/models/login_manager.dart';
+import 'package:music_room_app/authentication/managers/login_manager.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key, required this.model}) : super(key: key);

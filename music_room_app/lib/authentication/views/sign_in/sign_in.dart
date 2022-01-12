@@ -4,7 +4,7 @@ import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:music_room_app/authentication/views/login/login.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
-import 'package:music_room_app/authentication/models/sign_in_manager.dart';
+import 'package:music_room_app/authentication/managers/sign_in_manager.dart';
 import 'package:music_room_app/services/auth.dart';
 import '../widgets/sign_in_button.dart';
 import '../widgets/social_sign_in_button.dart';
