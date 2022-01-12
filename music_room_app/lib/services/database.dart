@@ -46,9 +46,11 @@ abstract class Database {
 
   Future<void> setPlaylistTracks(List<Track> tracks, Playlist playlist);
 
-  Future<void> setUserPlaylistTrack(Track track, Playlist playlist, {UserApp? user});
+  Future<void> setUserPlaylistTrack(Track track, Playlist playlist,
+      {UserApp? user});
 
-  Future<void> setUserPlaylistTracks(List<Track> tracks, Playlist playlist, {UserApp? user});
+  Future<void> setUserPlaylistTracks(List<Track> tracks, Playlist playlist,
+      {UserApp? user});
 
   set uid(String uid);
 }
@@ -122,8 +124,11 @@ class FirestoreDatabase implements Database {
           path: APIPath.playlist(playlist.id), data: playlist.toMap());
 
   @override
-  Future<void> savePlaylists(List<Playlist> playlists) async =>
-      playlists.forEach(savePlaylist);
+  Future<void> savePlaylists(List<Playlist> playlists) async {
+    for (var playlist in playlists) {
+      await savePlaylist(playlist);
+    }
+  }
 
   @override
   Future<void> deleteUserPlaylist(Playlist playlist, {UserApp? user}) async {
@@ -144,7 +149,7 @@ class FirestoreDatabase implements Database {
   Future<void> setUserPlaylists(List<Playlist> playlists,
       {UserApp? user}) async {
     for (var playlist in playlists) {
-      setUserPlaylist(playlist, user: user);
+      await setUserPlaylist(playlist, user: user);
     }
   }
 
@@ -170,8 +175,11 @@ class FirestoreDatabase implements Database {
           path: APIPath.track(track.id), data: track.toMap());
 
   @override
-  Future<void> saveTracks(List<Track> tracks) async =>
-      tracks.forEach(saveTrack);
+  Future<void> saveTracks(List<Track> tracks) async {
+    for (var track in tracks) {
+      await saveTrack(track);
+    }
+  }
 
   @override
   Future<void> setPlaylistTrack(Track track, Playlist playlist) async {
@@ -182,26 +190,27 @@ class FirestoreDatabase implements Database {
   }
 
   @override
-  Future<void> setPlaylistTracks(List<Track> tracks,
-      Playlist playlist) async {
+  Future<void> setPlaylistTracks(List<Track> tracks, Playlist playlist) async {
     for (var track in tracks) {
-      setPlaylistTrack(track, playlist);
+      await setPlaylistTrack(track, playlist);
     }
   }
 
   @override
-  Future<void> setUserPlaylistTrack(Track track, Playlist playlist, {UserApp? user}) async {
+  Future<void> setUserPlaylistTrack(Track track, Playlist playlist,
+      {UserApp? user}) async {
     await _service.setDocumentWithMergeOption(
-      path: APIPath.userPlaylistTrack(user == null ? _uid : user.uid, playlist.id, track.id),
+      path: APIPath.userPlaylistTrack(
+          user == null ? _uid : user.uid, playlist.id, track.id),
       data: track.toMap(),
     );
   }
 
   @override
-  Future<void> setUserPlaylistTracks(List<Track> tracks,
-      Playlist playlist, {UserApp? user}) async {
+  Future<void> setUserPlaylistTracks(List<Track> tracks, Playlist playlist,
+      {UserApp? user}) async {
     for (var track in tracks) {
-      setUserPlaylistTrack(track, playlist, user: user);
+      await setUserPlaylistTrack(track, playlist, user: user);
     }
   }
 }
