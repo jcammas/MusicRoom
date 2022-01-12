@@ -14,7 +14,7 @@ abstract class Database {
 
   Stream<UserApp> userStream({UserApp? user});
 
-  Future<List<UserApp>> getUsersList();
+  Future<List<UserApp>> getAllUsers();
 
   Future<UserApp> getUser();
 
@@ -25,6 +25,10 @@ abstract class Database {
   Future<void> savePlaylist(Playlist playlist);
 
   Future<void> savePlaylists(List<Playlist> playlists);
+
+  Future<List<Playlist>> getAllPlaylists();
+
+  Future<Playlist> getPlaylist(String playlistId);
 
   Future<void> deleteUserPlaylist(Playlist playlist, {UserApp? user});
 
@@ -107,7 +111,7 @@ class FirestoreDatabase implements Database {
       );
 
   @override
-  Future<List<UserApp>> getUsersList() async => await _service.getCollection(
+  Future<List<UserApp>> getAllUsers() async => await _service.getCollection(
         path: APIPath.users(),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
@@ -120,7 +124,7 @@ class FirestoreDatabase implements Database {
 
   @override
   Future<void> savePlaylist(Playlist playlist) async =>
-      await _service.setDocumentWithMergeOption(
+      await _service.setDocument(
           path: APIPath.playlist(playlist.id), data: playlist.toMap());
 
   @override
@@ -131,6 +135,18 @@ class FirestoreDatabase implements Database {
   }
 
   @override
+  Future<List<Playlist>> getAllPlaylists() async => await _service.getCollection(
+    path: APIPath.playlists(),
+    builder: (data, documentId) => Playlist.fromMap(data, documentId),
+  );
+
+  @override
+  Future<Playlist> getPlaylist(String playlistId) async => await _service.getDocument(
+    path: APIPath.playlist(playlistId),
+    builder: (data, documentId) => Playlist.fromMap(data, documentId),
+  );
+
+  @override
   Future<void> deleteUserPlaylist(Playlist playlist, {UserApp? user}) async {
     await _service.deleteDocument(
         path:
@@ -139,7 +155,7 @@ class FirestoreDatabase implements Database {
 
   @override
   Future<void> setUserPlaylist(Playlist playlist, {UserApp? user}) async {
-    await _service.setDocumentWithMergeOption(
+    await _service.setDocument(
       path: APIPath.userPlaylist(user == null ? _uid : user.uid, playlist.id),
       data: playlist.toMap(),
     );
@@ -171,7 +187,7 @@ class FirestoreDatabase implements Database {
 
   @override
   Future<void> saveTrack(Track track) async =>
-      await _service.setDocumentWithMergeOption(
+      await _service.setDocument(
           path: APIPath.track(track.id), data: track.toMap());
 
   @override
@@ -183,7 +199,7 @@ class FirestoreDatabase implements Database {
 
   @override
   Future<void> setPlaylistTrack(Track track, Playlist playlist) async {
-    await _service.setDocumentWithMergeOption(
+    await _service.setDocument(
       path: APIPath.playlistTrack(playlist.id, track.id),
       data: track.toMap(),
     );
@@ -199,12 +215,24 @@ class FirestoreDatabase implements Database {
   @override
   Future<void> setUserPlaylistTrack(Track track, Playlist playlist,
       {UserApp? user}) async {
-    await _service.setDocumentWithMergeOption(
+    await _service.setDocument(
       path: APIPath.userPlaylistTrack(
           user == null ? _uid : user.uid, playlist.id, track.id),
       data: track.toMap(),
     );
   }
+
+  // @override
+  // Future<void> _runBatch(List<Track> tracks, Playlist playlist,
+  //     {UserApp? user}) async {
+  //   int finished = 0;
+  //   for (var track in tracks) {
+  //     setUserPlaylistTrack(track, playlist, user: user).then((void confirmed) async {finished+=1;});
+  //   }
+  //   while(finished != tracks.length) {
+  //     (1);
+  //   }
+  // }
 
   @override
   Future<void> setUserPlaylistTracks(List<Track> tracks, Playlist playlist,

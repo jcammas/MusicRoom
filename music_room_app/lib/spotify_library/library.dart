@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
-import 'package:music_room_app/home/models/spotify_profile.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
@@ -31,30 +30,28 @@ class LibraryScreen extends StatelessWidget {
     }
   }
 
-  Future<void> refreshPlaylistTracks(BuildContext context, Playlist playlist) async {
+  Future<void> refreshPlaylistTracks(
+      BuildContext context, Playlist playlist) async {
     final db = Provider.of<Database>(context, listen: false);
     final spotify = Provider.of<SpotifyService>(context, listen: false);
     List<Track> trackList = await spotify.getPlaylistTracks(playlist.id);
-    db.saveTracks(trackList);
-    db.setPlaylistTracks(trackList, playlist);
-    await db.setUserPlaylistTracks(trackList, playlist);
+    Future.wait([
+      db.saveTracks(trackList),
+      db.setPlaylistTracks(trackList, playlist),
+      db.setUserPlaylistTracks(trackList, playlist)
+    ]);
   }
 
   Future<void> refreshPlaylists(BuildContext context) async {
     try {
-      int i = 0;
       final db = Provider.of<Database>(context, listen: false);
       final spotify = Provider.of<SpotifyService>(context, listen: false);
       spotify.getCurrentUserProfile().then(db.setSpotifyProfile);
       final List<Playlist> playlists = await spotify.getCurrentUserPlaylists();
-      await db.savePlaylists(playlists);
-      await db.setUserPlaylists(playlists);
-      for (var playlist in playlists) {
-        await refreshPlaylistTracks(context, playlist);
-        i += 1;
-        print("Just saved playlist number " + i.toString() + ": " + playlist.name);
-        print(DateTime.now().toIso8601String());
-      }
+      Future.wait([
+        db.savePlaylists(playlists),
+        db.setUserPlaylists(playlists),
+      ]);
     } on PlatformException catch (e) {
       showExceptionAlertDialog(context,
           title: 'Refreshing Failed',

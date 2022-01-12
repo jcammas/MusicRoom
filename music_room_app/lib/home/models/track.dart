@@ -35,40 +35,48 @@ class Track {
   int? popularity;
   int? trackNumber;
 
-  factory Track.fromMap(Map<String?, dynamic> data, String id) {
-    final String name = data['name'] ?? 'N/A';
-    final int votes = data['votes'] ?? 0;
-    final Map<String, dynamic>? album = data['album'];
-    final List<dynamic>? artists = data['artists'];
-    final int? discNumber = data['disc_number'];
-    final int? durationMs = data['duration_ms'];
-    final bool? explicit = data['explicit'];
-    final Map<String, dynamic>? externalIds = data['external_ids'];
-    final String? type = data['type'];
-    final bool? isPlayable = data['is_playable'];
-    final Track? linkedFrom = data['linked_from'];
-    final bool? isLocal = data['is_local'];
-    final Map<String, dynamic>? restrictions = data['restrictions'];
-    final int? popularity = data['popularity'];
-    final int? trackNumber = data['track_number'];
-    return Track(
-      id: id,
-      name: name,
-      votes: votes,
-      album: album,
-      artists: artists,
-      discNumber: discNumber,
-      durationMs: durationMs,
-      explicit: explicit,
-      externalIds: externalIds,
-      type: type,
-      isPlayable: isPlayable,
-      linkedFrom: linkedFrom,
-      isLocal: isLocal,
-      restrictions: restrictions,
-      popularity: popularity,
-      trackNumber: trackNumber,
-    );
+  factory Track.fromMap(Map<String, dynamic>? data, String id) {
+    if (data != null) {
+      final String name = data['name'] ?? 'N/A';
+      final int votes = data['votes'] ?? 0;
+      final Map<String, dynamic>? album = data['album'];
+      final List<dynamic>? artists = data['artists'];
+      final int? discNumber = data['disc_number'];
+      final int? durationMs = data['duration_ms'];
+      final bool? explicit = data['explicit'];
+      final Map<String, dynamic>? externalIds = data['external_ids'];
+      final String? type = data['type'];
+      final bool? isPlayable = data['is_playable'];
+      final Track? linkedFrom = data['linked_from'];
+      final bool? isLocal = data['is_local'];
+      final Map<String, dynamic>? restrictions = data['restrictions'];
+      final int? popularity = data['popularity'];
+      final int? trackNumber = data['track_number'];
+      return Track(
+        id: id,
+        name: name,
+        votes: votes,
+        album: album,
+        artists: artists,
+        discNumber: discNumber,
+        durationMs: durationMs,
+        explicit: explicit,
+        externalIds: externalIds,
+        type: type,
+        isPlayable: isPlayable,
+        linkedFrom: linkedFrom,
+        isLocal: isLocal,
+        restrictions: restrictions,
+        popularity: popularity,
+        trackNumber: trackNumber,
+      );
+    } else {
+      return Track(
+        id: 'N/A',
+        name: 'N/A',
+        votes: 0
+      );
+    }
   }
 
   Map<String, dynamic> toMap() {
