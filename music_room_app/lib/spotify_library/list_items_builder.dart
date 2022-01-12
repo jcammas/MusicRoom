@@ -4,13 +4,15 @@ import 'empty_content.dart';
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 
 class ListItemsBuilder<T> extends StatelessWidget {
-  const ListItemsBuilder({
-    Key? key,
-    required this.snapshot,
-    required this.itemBuilder,
-  }) : super(key: key);
+  const ListItemsBuilder(
+      {Key? key,
+      required this.snapshot,
+      required this.itemBuilder,
+      required this.emptyScreen})
+      : super(key: key);
   final AsyncSnapshot<List<T>> snapshot;
   final ItemWidgetBuilder<T> itemBuilder;
+  final StatelessWidget emptyScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +22,12 @@ class ListItemsBuilder<T> extends StatelessWidget {
         if (items.isNotEmpty) {
           return _buildList(items);
         } else {
-          return const EmptyContent();
+          return emptyScreen;
         }
       } else if (snapshot.hasError) {
         return const EmptyContent(
-          title: 'Something went wrong',
-          message: 'Can\'t load items right now',
-        );
+            title: 'Something went wrong',
+            message: 'Can\'t load items right now');
       }
     }
     return const Center(child: CircularProgressIndicator());

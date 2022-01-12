@@ -7,11 +7,11 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
+import 'package:music_room_app/spotify_library/empty_content.dart';
 import 'package:music_room_app/spotify_library/widgets/track_tile.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
-import 'empty_content.dart';
 import 'list_items_builder.dart';
 
 class PlaylistPage extends StatelessWidget {
@@ -25,9 +25,20 @@ class PlaylistPage extends StatelessWidget {
   final Spotify spotify;
   final Playlist playlist;
 
+  static Future<void> loadPlaylistTracks(
+      Playlist playlist, Database db, Spotify spotify) async {
+    List<Track> trackList = await spotify.getPlaylistTracks(playlist.id);
+    db.saveTracks(trackList);
+    db.setPlaylistTracks(trackList, playlist);
+    await db.setUserPlaylistTracks(trackList, playlist);
+  }
+
   static Future<void> show(BuildContext context, Playlist playlist) async {
     final database = Provider.of<Database>(context, listen: false);
     final spotify = Provider.of<Spotify>(context, listen: false);
+    await database.userPlaylistHasTracks(playlist)
+        ? null
+        : loadPlaylistTracks(playlist, database, spotify);
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
@@ -37,14 +48,8 @@ class PlaylistPage extends StatelessWidget {
     );
   }
 
-  Future<void> refreshPlaylistTracks(BuildContext context) async {
-    List<Track> trackList = await spotify.getPlaylistTracks(playlist.id);
-    Future.wait([
-      db.setUserPlaylistTracks(trackList, playlist),
-      db.saveTracks(trackList),
-      db.setPlaylistTracks(trackList, playlist),
-    ]);
-  }
+  Future<void> refreshPlaylistTracks(BuildContext context) async =>
+      loadPlaylistTracks(playlist, db, spotify);
 
   Future<void> _deleteTrack(BuildContext context, Track track) async {
     try {
@@ -95,6 +100,7 @@ class PlaylistPage extends StatelessWidget {
       builder: (context, snapshot) {
         return ListItemsBuilder<Track>(
           snapshot: snapshot,
+          emptyScreen: const EmptyContent(),
           itemBuilder: (context, track) => Dismissible(
             key: Key('playlist-${track.id}'),
             background: Container(color: Colors.red),

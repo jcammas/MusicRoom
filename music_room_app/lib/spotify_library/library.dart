@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
-import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
+import 'package:music_room_app/spotify_library/empty_library.dart';
 import 'package:music_room_app/spotify_library/playlist_page.dart';
 import 'package:music_room_app/spotify_library/widgets/playlist_tile.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
@@ -29,18 +29,6 @@ class LibraryScreen extends StatelessWidget {
         exception: e,
       );
     }
-  }
-
-  Future<void> refreshPlaylistTracks(
-      BuildContext context, Playlist playlist) async {
-    final db = Provider.of<Database>(context, listen: false);
-    final spotify = Provider.of<Spotify>(context, listen: false);
-    List<Track> trackList = await spotify.getPlaylistTracks(playlist.id);
-    Future.wait([
-      db.saveTracks(trackList),
-      db.setPlaylistTracks(trackList, playlist),
-      db.setUserPlaylistTracks(trackList, playlist)
-    ]);
   }
 
   Future<void> refreshPlaylists(BuildContext context) async {
@@ -85,6 +73,7 @@ class LibraryScreen extends StatelessWidget {
       builder: (context, snapshot) {
         return ListItemsBuilder<Playlist>(
           snapshot: snapshot,
+          emptyScreen: EmptyLibrary(refreshFunction: refreshPlaylists),
           itemBuilder: (context, playlist) => Dismissible(
             key: Key('playlist-${playlist.id}'),
             background: Container(color: Colors.red),

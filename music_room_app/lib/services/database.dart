@@ -30,6 +30,8 @@ abstract class Database {
 
   Future<Playlist> getPlaylist(Playlist playlist);
 
+  Future<bool> userHasPlaylists({UserApp? user});
+
   Future<void> deleteUserPlaylist(Playlist playlist, {UserApp? user});
 
   Future<void> setUserPlaylist(Playlist playlist, {UserApp? user});
@@ -43,6 +45,8 @@ abstract class Database {
   Stream<List<Playlist>> userPlaylistsStream({UserApp? user});
 
   Future<List<Playlist>> getUserPlaylists({UserApp? user});
+
+  Future<bool> userPlaylistHasTracks(Playlist playlist, {UserApp? user});
 
   Future<void> saveTrack(Track track);
 
@@ -61,7 +65,8 @@ abstract class Database {
   Future<void> deleteUserPlaylistTrack(Playlist playlist, Track track,
       {UserApp? user});
 
-  Stream<List<Track>> userPlaylistTracksStream(Playlist playlist, {UserApp? user});
+  Stream<List<Track>> userPlaylistTracksStream(Playlist playlist,
+      {UserApp? user});
 
   set uid(String uid);
 }
@@ -213,6 +218,18 @@ class FirestoreDatabase implements Database {
   }
 
   @override
+  Future<bool> userHasPlaylists({UserApp? user}) async =>
+      await _service.collectionIsNotEmpty(
+          path: APIPath.userPlaylists(
+              user == null ? _uid : user.uid));
+
+  @override
+  Future<bool> userPlaylistHasTracks(Playlist playlist, {UserApp? user}) async =>
+      await _service.collectionIsNotEmpty(
+          path: APIPath.userPlaylistTracks(
+              user == null ? _uid : user.uid, playlist.id));
+
+  @override
   Future<void> setPlaylistTrack(Track track, Playlist playlist) async {
     await _service.setDocument(
       path: APIPath.playlistTrack(playlist.id, track.id),
@@ -254,11 +271,12 @@ class FirestoreDatabase implements Database {
   }
 
   @override
-  Stream<List<Track>> userPlaylistTracksStream(Playlist playlist, {UserApp? user}) =>
-    _service.collectionStream(
-      path: APIPath.userPlaylistTracks(user == null ? _uid : user.uid, playlist.id),
-      builder: (data, documentID) => Track.fromMap(data, documentID),
-      sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
-    );
-
+  Stream<List<Track>> userPlaylistTracksStream(Playlist playlist,
+          {UserApp? user}) =>
+      _service.collectionStream(
+        path: APIPath.userPlaylistTracks(
+            user == null ? _uid : user.uid, playlist.id),
+        builder: (data, documentID) => Track.fromMap(data, documentID),
+        sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
+      );
 }

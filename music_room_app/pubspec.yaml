@@ -45,6 +45,7 @@ dependencies:
   http: ^0.13.4
   flutter_appauth: ^2.2.0
   flutter_secure_storage: ^5.0.2
+  google_fonts: ^2.2.0
 
 dev_dependencies:
   flutter_test:
@@ -73,8 +74,8 @@ flutter:
     - images/google-logo.png
     - images/avatar_julien.jpg
     - images/avatar_random.png
+    - images/spotify_icon.png
     - assets/image/music.jpg
-#    - images/avatar.jpg
 
 # An image asset can refer to one or more resolution-specific "variants", see
 # https://flutter.dev/assets-and-images/#resolution-aware.
