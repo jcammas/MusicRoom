@@ -6,6 +6,7 @@ import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
+import 'package:music_room_app/spotify_library/playlist_page.dart';
 import 'package:music_room_app/spotify_library/widgets/playlist_tile.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
@@ -33,7 +34,7 @@ class LibraryScreen extends StatelessWidget {
   Future<void> refreshPlaylistTracks(
       BuildContext context, Playlist playlist) async {
     final db = Provider.of<Database>(context, listen: false);
-    final spotify = Provider.of<SpotifyService>(context, listen: false);
+    final spotify = Provider.of<Spotify>(context, listen: false);
     List<Track> trackList = await spotify.getPlaylistTracks(playlist.id);
     Future.wait([
       db.saveTracks(trackList),
@@ -45,7 +46,7 @@ class LibraryScreen extends StatelessWidget {
   Future<void> refreshPlaylists(BuildContext context) async {
     try {
       final db = Provider.of<Database>(context, listen: false);
-      final spotify = Provider.of<SpotifyService>(context, listen: false);
+      final spotify = Provider.of<Spotify>(context, listen: false);
       spotify.getCurrentUserProfile().then(db.setSpotifyProfile);
       final List<Playlist> playlists = await spotify.getCurrentUserPlaylists();
       Future.wait([
@@ -80,7 +81,7 @@ class LibraryScreen extends StatelessWidget {
   Widget _buildContents(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
     return StreamBuilder<List<Playlist>>(
-      stream: db.playlistsStream(),
+      stream: db.userPlaylistsStream(),
       builder: (context, snapshot) {
         return ListItemsBuilder<Playlist>(
           snapshot: snapshot,
@@ -91,7 +92,7 @@ class LibraryScreen extends StatelessWidget {
             onDismissed: (direction) => _delete(context, playlist),
             child: PlaylistTile(
               playlist: playlist,
-              onTap: () => {},
+              onTap: () => PlaylistPage.show(context, playlist),
               // onTap: () => PlaylistEntriesPage.show(context, playlist),
             ),
           ),

@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         providers: [
           Provider<AuthBase>(create: (context) => Auth()),
           Provider<Database>(create: (context) => FirestoreDatabase()),
-          Provider<SpotifyService>(create: (context) => Spotify())
+          Provider<Spotify>(create: (context) => SpotifyService())
         ],
       child: MaterialApp(
         title: 'Music Room',
