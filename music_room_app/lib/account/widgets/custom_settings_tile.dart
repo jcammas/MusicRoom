@@ -5,7 +5,7 @@ import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/widgets/sign_in_type.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
-import '../account_model.dart';
+import '../account_manager.dart';
 
 enum SettingType { name, email, oldPassword, newPassword, delete }
 
@@ -20,7 +20,7 @@ class CustomSettingsTile extends AbstractTile {
       this.iconData})
       : super(key: key);
   final String title;
-  final AccountModel model;
+  final AccountManager model;
   final IconData? iconData;
   final String? subtitle;
   final UserApp? user;
@@ -31,7 +31,7 @@ class CustomSettingsTile extends AbstractTile {
       String settingName,
       String? currentValue,
       Widget? leading,
-      AccountModel model,
+      AccountManager model,
       SettingType type) async {
     SignInType signInType = model.findSignInType();
     try {

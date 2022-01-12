@@ -34,21 +34,17 @@ class LibraryScreen extends StatelessWidget {
     try {
       final db = Provider.of<Database>(context, listen: false);
       final spotify = Provider.of<SpotifyService>(context, listen: false);
-      final Map<String, dynamic>? profileMap =
-          await spotify.getCurrentUserProfile();
-      SpotifyProfile userProfile = SpotifyProfile.fromMap(profileMap);
+      final SpotifyProfile userProfile = await spotify.getCurrentUserProfile();
       await db.setSpotifyProfile(userProfile);
-      final List<dynamic> playlistsList =
-          await spotify.getCurrentUserPlaylists();
-      final List<Playlist> playlists = playlistsList
-          .whereType<Map<String, dynamic>>()
-          .map((playlist) => playlist['id'] != null
-              ? Playlist.fromMap(playlist, playlist['id'])
-              : null)
-          .whereType<Playlist>()
-          .toList();
+      final List<Playlist> playlists = await spotify.getCurrentUserPlaylists();
       await db.savePlaylists(playlists);
       await db.setUserPlaylists(playlists);
+
+    } on PlatformException catch (e) {
+      showExceptionAlertDialog(context,
+          title: 'Refreshing Failed',
+          exception: PlatformException(
+              code: e.code, message: 'Spotify import has been cancelled.'));
     } on Exception catch (e) {
       showExceptionAlertDialog(context,
           title: 'Refreshing Failed', exception: e);
