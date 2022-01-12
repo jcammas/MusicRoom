@@ -14,7 +14,7 @@ abstract class SpotifyService {
 
   Future<List<Playlist>> getCurrentUserPlaylists();
 
-  Future<List<dynamic>> getPlaylistTracks(String playlistId, {int? limit});
+  Future<List<Track>> getPlaylistTracks(String playlistId, {int? limit});
 }
 
 class Spotify implements SpotifyService {
@@ -179,8 +179,7 @@ class Spotify implements SpotifyService {
   }
 
   @override
-  Future<List<dynamic>> getPlaylistTracks(String playlistId,
-      {int? limit}) async {
+  Future<List<Track>> getPlaylistTracks(String playlistId, {int? limit}) async {
     try {
       await _refreshTokens();
       String limitStr = limit == null ? '50' : limit.toString();
@@ -201,9 +200,11 @@ class Spotify implements SpotifyService {
       List<dynamic> trackData = decoded['items'];
       return trackData
           .whereType<Map<String, dynamic>>()
-          .map((track) => track['id'] != null
-          ? Track.fromMap(track, track['id'])
-          : null)
+          .map((track) => track['track'] != null
+              ? track['track']['id'] != null
+                  ? Track.fromMap(track['track'], track['track']['id'])
+                  : null
+              : null)
           .whereType<Track>()
           .toList();
     } catch (e) {

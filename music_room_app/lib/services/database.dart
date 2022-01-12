@@ -1,5 +1,6 @@
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/spotify_profile.dart';
+import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'api_path.dart';
 import 'firestore_service.dart';
@@ -36,6 +37,18 @@ abstract class Database {
   Stream<List<Playlist>> playlistsStream({UserApp? user});
 
   Future<List<Playlist>> getUserPlaylists({UserApp? user});
+
+  Future<void> saveTrack(Track track);
+
+  Future<void> saveTracks(List<Track> tracks);
+
+  Future<void> setPlaylistTrack(Track track, Playlist playlist);
+
+  Future<void> setPlaylistTracks(List<Track> tracks, Playlist playlist);
+
+  Future<void> setUserPlaylistTrack(Track track, Playlist playlist, {UserApp? user});
+
+  Future<void> setUserPlaylistTracks(List<Track> tracks, Playlist playlist, {UserApp? user});
 
   set uid(String uid);
 }
@@ -150,4 +163,45 @@ class FirestoreDatabase implements Database {
         builder: (data, documentID) => Playlist.fromMap(data, documentID),
         sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
       );
+
+  @override
+  Future<void> saveTrack(Track track) async =>
+      await _service.setDocumentWithMergeOption(
+          path: APIPath.track(track.id), data: track.toMap());
+
+  @override
+  Future<void> saveTracks(List<Track> tracks) async =>
+      tracks.forEach(saveTrack);
+
+  @override
+  Future<void> setPlaylistTrack(Track track, Playlist playlist) async {
+    await _service.setDocumentWithMergeOption(
+      path: APIPath.playlistTrack(playlist.id, track.id),
+      data: track.toMap(),
+    );
+  }
+
+  @override
+  Future<void> setPlaylistTracks(List<Track> tracks,
+      Playlist playlist) async {
+    for (var track in tracks) {
+      setPlaylistTrack(track, playlist);
+    }
+  }
+
+  @override
+  Future<void> setUserPlaylistTrack(Track track, Playlist playlist, {UserApp? user}) async {
+    await _service.setDocumentWithMergeOption(
+      path: APIPath.userPlaylistTrack(user == null ? _uid : user.uid, playlist.id, track.id),
+      data: track.toMap(),
+    );
+  }
+
+  @override
+  Future<void> setUserPlaylistTracks(List<Track> tracks,
+      Playlist playlist, {UserApp? user}) async {
+    for (var track in tracks) {
+      setUserPlaylistTrack(track, playlist, user: user);
+    }
+  }
 }

@@ -5,7 +5,6 @@ class Track {
     required this.votes,
     this.album,
     this.artists,
-    this.availableMarkets,
     this.discNumber,
     this.durationMs,
     this.explicit,
@@ -24,7 +23,6 @@ class Track {
   int votes;
   Map<String, dynamic>? album;
   List<dynamic>? artists;
-  List<String>? availableMarkets;
   int? discNumber;
   int? durationMs;
   bool? explicit;
@@ -42,7 +40,6 @@ class Track {
     final int votes = data['votes'] ?? 0;
     final Map<String, dynamic>? album = data['album'];
     final List<dynamic>? artists = data['artists'];
-    final List<String>? availableMarkets = data['available_markets'];
     final int? discNumber = data['disc_number'];
     final int? durationMs = data['duration_ms'];
     final bool? explicit = data['explicit'];
@@ -60,7 +57,6 @@ class Track {
       votes: votes,
       album: album,
       artists: artists,
-      availableMarkets: availableMarkets,
       discNumber: discNumber,
       durationMs: durationMs,
       explicit: explicit,
@@ -82,7 +78,6 @@ class Track {
       'votes': votes,
       'album': album,
       'artists': artists,
-      'available_markets': availableMarkets,
       'disc_number': discNumber,
       'duration_ms': durationMs,
       'explicit': explicit,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/spotify_profile.dart';
+import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
@@ -10,6 +11,7 @@ import 'package:music_room_app/spotify_library/widgets/playlist_tile.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:spotify_sdk/enums/repeat_mode_enum.dart';
 import 'list_items_builder.dart';
 
 class LibraryScreen extends StatelessWidget {
@@ -32,6 +34,8 @@ class LibraryScreen extends StatelessWidget {
 
   Future<void> refreshPlaylists(BuildContext context) async {
     try {
+      int i = 0;
+      int j = 0;
       final db = Provider.of<Database>(context, listen: false);
       final spotify = Provider.of<SpotifyService>(context, listen: false);
       final SpotifyProfile userProfile = await spotify.getCurrentUserProfile();
@@ -39,7 +43,15 @@ class LibraryScreen extends StatelessWidget {
       final List<Playlist> playlists = await spotify.getCurrentUserPlaylists();
       await db.savePlaylists(playlists);
       await db.setUserPlaylists(playlists);
-
+      for (var playlist in playlists) {
+        List<Track> trackList = await spotify.getPlaylistTracks(playlist.id);
+        await db.saveTracks(trackList);
+        await db.setPlaylistTracks(trackList, playlist);
+        await db.setUserPlaylistTracks(trackList, playlist);
+        i += 1;
+        j += trackList.length;
+        print(i.toString() + ' / ' + j.toString());
+      }
     } on PlatformException catch (e) {
       showExceptionAlertDialog(context,
           title: 'Refreshing Failed',

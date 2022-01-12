@@ -55,8 +55,6 @@ class UserApp {
       'uid': uid,
       'name': name,
       'email': email,
-      'playlists': playlists,
-      'spotify_profile': spotifyProfile
     };
   }
 }

@@ -14,7 +14,7 @@ class Playlist {
 
   final String id;
   String name;
-  List<Track> tracksList;
+  Map<String, Track> tracksList;
   Map<String, dynamic>? owner;
   String? description;
   bool? collaborative;
@@ -30,14 +30,11 @@ class Playlist {
     final bool? public = data['public'];
     final List<dynamic> images = data['images'] ?? List.empty();
     final Map<String, dynamic>? tracksData = data['tracks'];
-    List<Track> tracksList = List.empty();
-    final List<dynamic> tracksListData = data['tracks_list'] ?? List.empty();
-    if (tracksListData.isNotEmpty) {
-      tracksList = tracksListData
-          .map((track) =>
-              track['id'] != null ? Track.fromMap(track, track['id']) : null)
-          .whereType<Track>()
-          .toList();
+    Map<String, Track>  tracksList = {};
+    Map<String, dynamic>? tracksListData = data['tracks_list'];
+    if (tracksListData != null) {
+      tracksListData.updateAll((id, track) => Track.fromMap(track, id));
+      tracksList = tracksListData.cast();
     }
     return Playlist(
       name: name,
@@ -56,7 +53,6 @@ class Playlist {
     return {
       'name': name,
       'id': id,
-      'tracks_list': tracksList,
       'owner': owner,
       'description': description,
       'collaborative': collaborative,
