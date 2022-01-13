@@ -5,7 +5,7 @@ import 'package:music_room_app/messenger/chat.dart';
 import 'package:music_room_app/messenger/messenger.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
-import 'package:music_room_app/spotify_library/library.dart';
+import 'package:music_room_app/spotify_library/library/library.dart';
 import 'package:music_room_app/spotify_library/spotify_connection_monitor.dart';
 import 'package:provider/provider.dart';
 import 'landing.dart';

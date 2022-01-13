@@ -4,13 +4,13 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
-import 'package:music_room_app/spotify_library/empty_library.dart';
-import 'package:music_room_app/spotify_library/playlist_page.dart';
-import 'package:music_room_app/spotify_library/widgets/playlist_tile.dart';
+import 'package:music_room_app/spotify_library/library/empty_library.dart';
+import 'package:music_room_app/spotify_library/playlist/playlist_page.dart';
+import 'package:music_room_app/spotify_library/library/playlist_tile.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
-import 'list_items_manager.dart';
-import 'list_items_builder.dart';
+import '../list_items_manager.dart';
+import '../list_items_builder.dart';
 
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({Key? key}) : super(key: key);

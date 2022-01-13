@@ -8,10 +8,11 @@ import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
 import 'package:music_room_app/spotify_library/empty_content.dart';
 import 'package:music_room_app/spotify_library/list_items_manager.dart';
-import 'package:music_room_app/spotify_library/widgets/track_tile.dart';
+import 'package:music_room_app/spotify_library/playlist/track_tile.dart';
+import 'package:music_room_app/spotify_library/track/track_page.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
-import 'list_items_builder.dart';
+import '../list_items_builder.dart';
 
 class PlaylistPage extends StatelessWidget {
   const PlaylistPage(
@@ -65,10 +66,7 @@ class PlaylistPage extends StatelessWidget {
     if (playlist != null) {
       return _buildContents(context, playlist);
     } else {
-      return const EmptyContent(
-        title: 'Something went wrong',
-        message: 'Can\'t load items right now',
-      );
+      return const Center(child: CircularProgressIndicator());
     }
   }
 
@@ -90,8 +88,7 @@ class PlaylistPage extends StatelessWidget {
                 onDismissed: (direction) => manager.deleteItem(context, track),
                 child: TrackTile(
                   track: track,
-                  onTap: () => {},
-                  // onTap: () => PlaylistEntriesPage.show(context, playlist),
+                  onTap: () => TrackPage.show(context, playlist, track),
                 ),
               ),
             ),
