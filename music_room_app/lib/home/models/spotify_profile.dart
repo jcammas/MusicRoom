@@ -1,4 +1,8 @@
-class SpotifyProfile {
+import 'package:music_room_app/services/api_path.dart';
+
+import 'database_model.dart';
+
+class SpotifyProfile implements DatabaseModel {
   SpotifyProfile(
       {required this.displayName,
       required this.email,
@@ -21,6 +25,9 @@ class SpotifyProfile {
   String? product;
   String? type;
   String? uri;
+
+  @override
+  get docId => DBPath.spotifyProfile(id);
 
   factory SpotifyProfile.fromMap(Map<String, dynamic>? data) {
     if (data != null) {
@@ -51,6 +58,7 @@ class SpotifyProfile {
     }
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'country': country,

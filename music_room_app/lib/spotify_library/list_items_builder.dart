@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_room_app/spotify_library/list_items_manager.dart';
 import 'empty_content.dart';
 
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
@@ -8,15 +9,17 @@ class ListItemsBuilder<T> extends StatelessWidget {
       {Key? key,
       required this.snapshot,
       required this.itemBuilder,
-      required this.emptyScreen})
+      required this.emptyScreen,
+      required this.manager})
       : super(key: key);
   final AsyncSnapshot<List<T>> snapshot;
-  final ItemWidgetBuilder<T> itemBuilder;
+  final ItemWidgetBuilder itemBuilder;
+  final ListItemsManager manager;
   final StatelessWidget emptyScreen;
 
   @override
   Widget build(BuildContext context) {
-    if (snapshot.hasData) {
+    if (snapshot.hasData && manager.isLoading == false) {
       final List<T>? items = snapshot.data;
       if (items != null) {
         if (items.isNotEmpty) {

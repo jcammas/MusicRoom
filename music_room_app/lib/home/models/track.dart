@@ -1,4 +1,8 @@
-class Track {
+import 'package:music_room_app/services/api_path.dart';
+
+import 'database_model.dart';
+
+class Track implements DatabaseModel {
   Track({
     required this.name,
     required this.id,
@@ -34,6 +38,9 @@ class Track {
   Map<String, dynamic>? restrictions;
   int? popularity;
   int? trackNumber;
+
+  @override
+  get docId => DBPath.track(id);
 
   factory Track.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
@@ -79,6 +86,7 @@ class Track {
     }
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'name': name,

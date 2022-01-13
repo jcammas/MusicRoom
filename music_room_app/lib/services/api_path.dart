@@ -1,29 +1,47 @@
-class APIPath {
-  static String user(String uid) => 'user_info/$uid';
-
+class DBPath {
   static String users() => 'user_info/';
-
-  static String playlist(String playlistId) => 'playlists/$playlistId';
 
   static String playlists() => 'playlists/';
 
-  static String userPlaylist(String uid, String playlistId) => 'user_info/$uid/playlists/$playlistId';
+  static String tracks() => 'tracks_list/';
 
-  static String userPlaylists(String uid) => 'user_info/$uid/playlists/';
+  static String spotifyProfiles() => 'spotify_profile/';
 
-  static String track(String trackId) => 'tracks/$trackId';
+  static String devices() => 'devices/';
 
-  static String tracks() => 'tracks/';
+  static String rooms() => 'rooms/';
 
-  static String playlistTrack(String playlistId, String trackId) => '/playlists/$playlistId/tracks_list/$trackId';
+  static String user(String uid) => users() + uid;
 
-  static String playlistTracks(String playlistId) => '/playlists/$playlistId/tracks_list/';
+  static String playlist(String playlistId) => playlists() + playlistId;
 
-  static String userPlaylistTrack(String uid, String playlistId, String trackId) => 'user_info/$uid/playlists/$playlistId/tracks_list/$trackId';
+  static String track(String trackId) => tracks() + trackId;
 
-  static String userPlaylistTracks(String uid, String playlistId) => 'user_info/$uid/playlists/$playlistId/tracks_list/';
+  static String spotifyProfile(String spotifyProfileId) =>
+      spotifyProfiles() + spotifyProfileId;
 
-  static String spotifyProfile(String uid, String spotifyProfileId) =>
-      'user_info/$uid/spotify_profile/$spotifyProfileId';
+  static String device(String deviceId) => devices() + deviceId;
+
+  static String room(String roomId) => rooms() + roomId;
+
+  static String userPlaylist(String uid, String playlistId) =>
+      user(uid) + '/' + playlist(playlistId);
+
+  static String userPlaylists(String uid) => user(uid) + '/' + playlists();
+
+  static String playlistTrack(String playlistId, String trackId) =>
+      playlist(playlistId) + '/' + track(trackId);
+
+  static String playlistTracks(String playlistId) =>
+      playlist(playlistId) + '/' + tracks();
+
+  static String userPlaylistTrack(
+          String uid, String playlistId, String trackId) =>
+      user(uid) + '/' + playlist(playlistId) + '/' + track(trackId);
+
+  static String userPlaylistTracks(String uid, String playlistId) =>
+      user(uid) + '/' + playlist(playlistId) + '/' + tracks();
+
+  static String userSpotifyProfile(String uid, String spotifyProfileId) => user(uid) + '/' + spotifyProfile(spotifyProfileId);
 
 }

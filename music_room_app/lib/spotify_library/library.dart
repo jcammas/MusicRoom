@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
-import 'package:music_room_app/home/models/spotify_profile.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
@@ -10,8 +8,8 @@ import 'package:music_room_app/spotify_library/empty_library.dart';
 import 'package:music_room_app/spotify_library/playlist_page.dart';
 import 'package:music_room_app/spotify_library/widgets/playlist_tile.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
-import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
+import 'list_items_manager.dart';
 import 'list_items_builder.dart';
 
 class LibraryScreen extends StatelessWidget {
@@ -19,72 +17,50 @@ class LibraryScreen extends StatelessWidget {
 
   static const String routeName = '/library';
 
-  Future<void> _delete(BuildContext context, Playlist playlist) async {
-    try {
-      final database = Provider.of<Database>(context, listen: false);
-      await database.deleteUserPlaylist(playlist);
-    } on FirebaseException catch (e) {
-      showExceptionAlertDialog(
-        context,
-        title: 'Operation failed',
-        exception: e,
-      );
-    }
-  }
-
-  Future<void> refreshPlaylists(BuildContext context) async {
-    try {
-      final db = Provider.of<Database>(context, listen: false);
-      final spotify = Provider.of<Spotify>(context, listen: false);
-      SpotifyProfile profile = await spotify.getCurrentUserProfile();
-      db.setSpotifyProfile(profile);
-      final List<Playlist> playlists = await spotify.getCurrentUserPlaylists();
-      Future.wait([
-        db.savePlaylists(playlists),
-        db.setUserPlaylists(playlists),
-      ]);
-    } on PlatformException catch (e) {
-      showExceptionAlertDialog(context,
-          title: 'Refreshing Failed',
-          exception: PlatformException(
-              code: e.code, message: 'Spotify import has been cancelled.'));
-    } on Exception catch (e) {
-      showExceptionAlertDialog(context,
-          title: 'Refreshing Failed', exception: e);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final db = Provider.of<Database>(context, listen: false);
+    final spotify = Provider.of<Spotify>(context, listen: false);
+    LibraryManager manager = LibraryManager(spotify: spotify, db: db);
     return Scaffold(
-        appBar: customAppBar(
-            appText: 'Library',
-            context: context,
-            funcText: 'Refresh',
-            topRight: refreshPlaylists),
-        backgroundColor: const Color(0xFFEFEFF4),
-        drawer: const MyDrawer(),
-        body: AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle.light, child: _buildContents(context)));
+      appBar: customAppBar(
+        appText: 'Library',
+        context: context,
+        funcText: 'Refresh',
+        topRight: manager.refreshItems,
+      ),
+      backgroundColor: const Color(0xFFEFEFF4),
+      drawer: const MyDrawer(),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light,
+          child: _buildContents(context, manager, db)),
+    );
   }
 
-  Widget _buildContents(BuildContext context) {
-    final db = Provider.of<Database>(context, listen: false);
+  Widget _buildContents(
+      BuildContext context, LibraryManager manager, Database db) {
     return StreamBuilder<List<Playlist>>(
       stream: db.userPlaylistsStream(),
       builder: (context, snapshot) {
-        return ListItemsBuilder<Playlist>(
-          snapshot: snapshot,
-          emptyScreen: EmptyLibrary(refreshFunction: refreshPlaylists),
-          itemBuilder: (context, playlist) => Dismissible(
-            key: Key('playlist-${playlist.id}'),
-            background: Container(color: Colors.red),
-            direction: DismissDirection.endToStart,
-            onDismissed: (direction) => _delete(context, playlist),
-            child: PlaylistTile(
-              playlist: playlist,
-              onTap: () => PlaylistPage.show(context, playlist),
-              // onTap: () => PlaylistEntriesPage.show(context, playlist),
+        return ChangeNotifierProvider<LibraryManager>(
+          create: (_) => manager,
+          child: Consumer<LibraryManager>(
+            builder: (_, model, __) => ListItemsBuilder<Playlist>(
+              manager: manager,
+              snapshot: snapshot,
+              emptyScreen: EmptyLibrary(refreshFunction: manager.refreshItems),
+              itemBuilder: (context, playlist) => Dismissible(
+                key: Key('playlist-${playlist.id}'),
+                background: Container(color: Colors.red),
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) =>
+                    manager.deleteItem(context, playlist),
+                child: PlaylistTile(
+                  playlist: playlist,
+                  onTap: () => PlaylistPage.show(context, playlist),
+                  // onTap: () => PlaylistEntriesPage.show(context, playlist),
+                ),
+              ),
             ),
           ),
         );

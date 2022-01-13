@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final bool exist = await db.userExists();
     if (auth.currentUser != null) {
       if (!exist) {
-        db.setUser(UserApp(
+        db.set(UserApp(
           name: auth.currentUser!.displayName ?? 'N/A',
           email: auth.currentUser!.email ?? 'N/A',
           uid: auth.currentUser!.uid,

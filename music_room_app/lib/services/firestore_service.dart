@@ -5,20 +5,14 @@ class FirestoreService {
 
   static final instance = FirestoreService._();
 
-  Future<void> setDocument({
-    required String path,
-    required Map<String, dynamic> data,
-  }) async {
+  Future<void> setDocument(
+      {required String path,
+      required Map<String, dynamic> data,
+      bool mergeOption = false}) async {
     final reference = FirebaseFirestore.instance.doc(path);
-    await reference.set(data);
-  }
-
-  Future<void> setDocumentWithMergeOption({
-    required String path,
-    required Map<String, dynamic> data,
-  }) async {
-    final reference = FirebaseFirestore.instance.doc(path);
-    await reference.set(data, SetOptions(merge: true));
+    mergeOption
+        ? await reference.set(data, SetOptions(merge: true))
+        : await reference.set(data);
   }
 
   Future<void> updateDocument({

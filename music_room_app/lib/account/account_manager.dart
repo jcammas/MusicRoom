@@ -25,7 +25,7 @@ class AccountManager with ChangeNotifier {
       await auth.updateUserName(settingValue);
       if (user != null) {
         user.name = settingValue;
-        await db.updateUser(user);
+        await db.update(user);
       } else {
         throw Exception('This user doesn\'t seem to exist in the database.');
       }
@@ -39,7 +39,7 @@ class AccountManager with ChangeNotifier {
       await auth.updateUserEmail(settingValue);
       if (user != null) {
         user.email = settingValue;
-        await db.updateUser(user);
+        await db.update(user);
       } else {
         throw Exception('This user doesn\'t seem to exist in the database.');
       }
@@ -65,11 +65,9 @@ class AccountManager with ChangeNotifier {
   }
 
 
-  Future<void> deleteUser(UserApp? user) async {
+  Future<void> deleteUser() async {
     try {
-      if (user != null) {
-        await db.deleteUser(user: user);
-      }
+      await db.deleteUser();
       await auth.deleteCurrentUser();
     } catch (e) {
       rethrow;

@@ -1,6 +1,9 @@
 import 'package:music_room_app/home/models/track.dart';
+import 'package:music_room_app/services/api_path.dart';
 
-class Playlist {
+import 'database_model.dart';
+
+class Playlist implements DatabaseModel {
   Playlist(
       {required this.id,
       required this.name,
@@ -21,6 +24,9 @@ class Playlist {
   bool? public;
   List<Map<String, dynamic>>? images;
   Map<String, dynamic>? tracksData;
+
+  @override
+  get docId => DBPath.playlist(id);
 
   factory Playlist.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
@@ -57,6 +63,7 @@ class Playlist {
     }
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'name': name,
