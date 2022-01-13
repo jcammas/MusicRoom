@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
+import 'package:music_room_app/home/models/spotify_profile.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
@@ -35,7 +36,8 @@ class LibraryScreen extends StatelessWidget {
     try {
       final db = Provider.of<Database>(context, listen: false);
       final spotify = Provider.of<Spotify>(context, listen: false);
-      spotify.getCurrentUserProfile().then(db.setSpotifyProfile);
+      SpotifyProfile profile = await spotify.getCurrentUserProfile();
+      db.setSpotifyProfile(profile);
       final List<Playlist> playlists = await spotify.getCurrentUserPlaylists();
       Future.wait([
         db.savePlaylists(playlists),
