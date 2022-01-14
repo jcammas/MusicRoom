@@ -59,7 +59,7 @@ abstract class Database {
 
   Stream<List<Playlist>> userPlaylistsStream({UserApp? user});
 
-  Stream<List<Track>> userPlaylistTracksStream(Playlist playlist,
+  Stream<List<TrackApp>> userPlaylistTracksStream(Playlist playlist,
       {UserApp? user});
 
   set uid(String uid);
@@ -224,12 +224,12 @@ class FirestoreDatabase implements Database {
       );
 
   @override
-  Stream<List<Track>> userPlaylistTracksStream(Playlist playlist,
+  Stream<List<TrackApp>> userPlaylistTracksStream(Playlist playlist,
           {UserApp? user}) =>
       _service.collectionStream(
         path: DBPath.userPlaylistTracks(
             user == null ? _uid : user.uid, playlist.id),
-        builder: (data, documentID) => Track.fromMap(data, documentID),
+        builder: (data, documentID) => TrackApp.fromMap(data, documentID),
         sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
       );
 }

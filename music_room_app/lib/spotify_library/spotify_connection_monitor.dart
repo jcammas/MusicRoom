@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
+import 'package:music_room_app/spotify_library/widgets/temporary_button.dart';
 import 'package:music_room_app/widgets/spotify_constants.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/crossfade_state.dart';
@@ -11,7 +12,6 @@ import 'package:spotify_sdk/models/image_uri.dart';
 import 'package:spotify_sdk/models/player_context.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
-import 'widgets/sized_icon_button.dart';
 
 class SpotifyConnectionMonitor extends StatefulWidget {
   const SpotifyConnectionMonitor({Key? key}) : super(key: key);
@@ -85,22 +85,22 @@ class _SpotifyConnectionMonitorState extends State<SpotifyConnectionMonitor> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              SizedIconButton(
+              TemporaryButton(
                 width: 50,
                 icon: Icons.queue_music,
                 onPressed: queue,
               ),
-              SizedIconButton(
+              TemporaryButton(
                 width: 50,
                 icon: Icons.playlist_play,
                 onPressed: play,
               ),
-              SizedIconButton(
+              TemporaryButton(
                 width: 50,
                 icon: Icons.repeat,
                 onPressed: toggleRepeat,
               ),
-              SizedIconButton(
+              TemporaryButton(
                 width: 50,
                 icon: Icons.shuffle,
                 onPressed: toggleShuffle,
@@ -110,12 +110,12 @@ class _SpotifyConnectionMonitorState extends State<SpotifyConnectionMonitor> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              SizedIconButton(
+              TemporaryButton(
                 width: 50,
                 onPressed: addToLibrary,
                 icon: Icons.favorite,
               ),
-              SizedIconButton(
+              TemporaryButton(
                 width: 50,
                 onPressed: () => checkIfAppIsActive(context),
                 icon: Icons.info,
@@ -248,23 +248,23 @@ class _SpotifyConnectionMonitorState extends State<SpotifyConnectionMonitor> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                SizedIconButton(
+                TemporaryButton(
                   width: 50,
                   icon: Icons.skip_previous,
                   onPressed: skipPrevious,
                 ),
                 playerState.isPaused
-                    ? SizedIconButton(
+                    ? TemporaryButton(
                         width: 50,
                         icon: Icons.play_arrow,
                         onPressed: resume,
                       )
-                    : SizedIconButton(
+                    : TemporaryButton(
                         width: 50,
                         icon: Icons.pause,
                         onPressed: pause,
                       ),
-                SizedIconButton(
+                TemporaryButton(
                   width: 50,
                   icon: Icons.skip_next,
                   onPressed: skipNext,

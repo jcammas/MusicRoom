@@ -14,7 +14,7 @@ abstract class Spotify {
 
   Future<List<Playlist>> getCurrentUserPlaylists();
 
-  Future<List<Track>> getPlaylistTracks(String playlistId);
+  Future<List<TrackApp>> getPlaylistTracks(String playlistId);
 }
 
 class SpotifyService implements Spotify {
@@ -200,7 +200,7 @@ class SpotifyService implements Spotify {
     }
   }
 
-  Future<List<Track>> _getTracksBatch(String playlistId, {int offset = 0}) async {
+  Future<List<TrackApp>> _getTracksBatch(String playlistId, {int offset = 0}) async {
     try {
       final Uri uri = Uri.https(
           'api.spotify.com',
@@ -220,10 +220,10 @@ class SpotifyService implements Spotify {
           .whereType<Map<String, dynamic>>()
           .map((track) => track['track'] != null
               ? track['track']['id'] != null
-                  ? Track.fromMap(track['track'], track['track']['id'])
+                  ? TrackApp.fromMap(track['track'], track['track']['id'])
                   : null
               : null)
-          .whereType<Track>()
+          .whereType<TrackApp>()
           .toList();
     } catch (e) {
       rethrow;
@@ -231,14 +231,14 @@ class SpotifyService implements Spotify {
   }
 
   @override
-  Future<List<Track>> getPlaylistTracks(String playlistId) async {
+  Future<List<TrackApp>> getPlaylistTracks(String playlistId) async {
     try {
       await _refreshTokens();
-      List<Track> trackList = List.empty(growable:true);
+      List<TrackApp> trackList = List.empty(growable:true);
       int offset = 0;
       int lastBatchSize = tracksLimitSpotifyAPI;
       while(lastBatchSize == tracksLimitSpotifyAPI) {
-        List<Track> trackBatch  = await _getTracksBatch(playlistId, offset: offset);
+        List<TrackApp> trackBatch  = await _getTracksBatch(playlistId, offset: offset);
         lastBatchSize = trackBatch.length;
         trackList.addAll(trackBatch);
         offset += lastBatchSize;

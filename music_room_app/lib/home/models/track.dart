@@ -2,8 +2,8 @@ import 'package:music_room_app/services/api_path.dart';
 
 import 'database_model.dart';
 
-class Track implements DatabaseModel {
-  Track({
+class TrackApp implements DatabaseModel {
+  TrackApp({
     required this.name,
     required this.id,
     required this.votes,
@@ -33,7 +33,7 @@ class Track implements DatabaseModel {
   Map<String, dynamic>? externalIds;
   String? type;
   bool? isPlayable;
-  Track? linkedFrom;
+  TrackApp? linkedFrom;
   bool? isLocal;
   Map<String, dynamic>? restrictions;
   int? popularity;
@@ -42,7 +42,7 @@ class Track implements DatabaseModel {
   @override
   get docId => DBPath.track(id);
 
-  factory Track.fromMap(Map<String, dynamic>? data, String id) {
+  factory TrackApp.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
       final String name = data['name'] ?? 'N/A';
       final int votes = data['votes'] ?? 0;
@@ -54,12 +54,12 @@ class Track implements DatabaseModel {
       final Map<String, dynamic>? externalIds = data['external_ids'];
       final String? type = data['type'];
       final bool? isPlayable = data['is_playable'];
-      final Track? linkedFrom = data['linked_from'];
+      final TrackApp? linkedFrom = data['linked_from'];
       final bool? isLocal = data['is_local'];
       final Map<String, dynamic>? restrictions = data['restrictions'];
       final int? popularity = data['popularity'];
       final int? trackNumber = data['track_number'];
-      return Track(
+      return TrackApp(
         id: id,
         name: name,
         votes: votes,
@@ -78,7 +78,7 @@ class Track implements DatabaseModel {
         trackNumber: trackNumber,
       );
     } else {
-      return Track(
+      return TrackApp(
         id: 'N/A',
         name: 'N/A',
         votes: 0

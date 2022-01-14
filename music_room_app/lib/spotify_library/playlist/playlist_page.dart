@@ -71,13 +71,13 @@ class PlaylistPage extends StatelessWidget {
   }
 
   Widget _buildContents(BuildContext context, Playlist playlist) {
-    return StreamBuilder<List<Track>>(
+    return StreamBuilder<List<TrackApp>>(
       stream: db.userPlaylistTracksStream(playlist),
       builder: (context, snapshot) {
         return ChangeNotifierProvider<PlaylistManager>(
           create: (_) => manager,
           child: Consumer<PlaylistManager>(
-            builder: (_, model, __) => ListItemsBuilder<Track>(
+            builder: (_, model, __) => ListItemsBuilder<TrackApp>(
               snapshot: snapshot,
               manager: manager,
               emptyScreen: const EmptyContent(),
@@ -88,7 +88,7 @@ class PlaylistPage extends StatelessWidget {
                 onDismissed: (direction) => manager.deleteItem(context, track),
                 child: TrackTile(
                   track: track,
-                  onTap: () => TrackPage.show(context, playlist, track),
+                  onTap: () => TrackPage.show(context, playlist, track, snapshot.data),
                 ),
               ),
             ),

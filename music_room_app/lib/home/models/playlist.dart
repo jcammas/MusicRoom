@@ -17,7 +17,7 @@ class Playlist implements DatabaseModel {
 
   final String id;
   String name;
-  Map<String, Track> tracksList;
+  Map<String, TrackApp> tracksList;
   Map<String, dynamic>? owner;
   String? description;
   bool? collaborative;
@@ -37,10 +37,10 @@ class Playlist implements DatabaseModel {
       final bool? public = data['public'];
       final List<dynamic> images = data['images'] ?? List.empty();
       final Map<String, dynamic>? tracksData = data['tracks'];
-      Map<String, Track> tracksList = {};
+      Map<String, TrackApp> tracksList = {};
       Map<String, dynamic>? tracksListData = data['tracks_list'];
       if (tracksListData != null) {
-        tracksListData.updateAll((id, track) => Track.fromMap(track, id));
+        tracksListData.updateAll((id, track) => TrackApp.fromMap(track, id));
         tracksList = tracksListData.cast();
       }
       return Playlist(
