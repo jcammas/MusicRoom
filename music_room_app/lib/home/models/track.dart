@@ -3,24 +3,25 @@ import 'package:music_room_app/services/api_path.dart';
 import 'database_model.dart';
 
 class TrackApp implements DatabaseModel {
-  TrackApp({
-    required this.name,
-    required this.id,
-    required this.votes,
-    this.album,
-    this.artists,
-    this.discNumber,
-    this.durationMs,
-    this.explicit,
-    this.externalIds,
-    this.type,
-    this.isPlayable,
-    this.linkedFrom,
-    this.isLocal,
-    this.restrictions,
-    this.popularity,
-    this.trackNumber,
-  });
+  TrackApp(
+      {required this.name,
+      required this.id,
+      required this.votes,
+      this.album,
+      this.artists,
+      this.discNumber,
+      this.durationMs,
+      this.explicit,
+      this.externalIds,
+      this.type,
+      this.isPlayable,
+      this.linkedFrom,
+      this.isLocal,
+      this.restrictions,
+      this.popularity,
+      this.trackNumber,
+      this.indexSpotify,
+      this.indexApp});
 
   final String id;
   String name;
@@ -38,6 +39,8 @@ class TrackApp implements DatabaseModel {
   Map<String, dynamic>? restrictions;
   int? popularity;
   int? trackNumber;
+  int? indexSpotify;
+  int? indexApp;
 
   @override
   get docId => DBPath.track(id);
@@ -59,6 +62,8 @@ class TrackApp implements DatabaseModel {
       final Map<String, dynamic>? restrictions = data['restrictions'];
       final int? popularity = data['popularity'];
       final int? trackNumber = data['track_number'];
+      final int? indexSpotify = data['index_spotify'];
+      final int? indexApp = data['index_app'];
       return TrackApp(
         id: id,
         name: name,
@@ -76,13 +81,11 @@ class TrackApp implements DatabaseModel {
         restrictions: restrictions,
         popularity: popularity,
         trackNumber: trackNumber,
+        indexSpotify: indexSpotify,
+        indexApp: indexApp,
       );
     } else {
-      return TrackApp(
-        id: 'N/A',
-        name: 'N/A',
-        votes: 0
-      );
+      return TrackApp(id: 'N/A', name: 'N/A', votes: 0);
     }
   }
 
@@ -105,6 +108,8 @@ class TrackApp implements DatabaseModel {
       'restrictions': restrictions,
       'popularity': popularity,
       'track_number': trackNumber,
+      'index_spotify': indexSpotify,
+      'index_app': indexApp
     };
   }
 }

@@ -230,6 +230,10 @@ class FirestoreDatabase implements Database {
         path: DBPath.userPlaylistTracks(
             user == null ? _uid : user.uid, playlist.id),
         builder: (data, documentID) => TrackApp.fromMap(data, documentID),
-        sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
+        sort: (lhs, rhs) => lhs.indexApp != null
+            ? rhs.indexApp != null
+                ? lhs.indexApp!.compareTo(rhs.indexApp!)
+                : 0
+            : 0,
       );
 }

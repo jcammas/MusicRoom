@@ -216,7 +216,7 @@ class SpotifyService implements Spotify {
       }
       final Map<String, dynamic> decoded = jsonDecode(response.body);
       List<dynamic> trackData = decoded['items'] ?? List.empty();
-      return trackData
+      List<TrackApp> tracksList = trackData
           .whereType<Map<String, dynamic>>()
           .map((track) => track['track'] != null
               ? track['track']['id'] != null
@@ -225,6 +225,12 @@ class SpotifyService implements Spotify {
               : null)
           .whereType<TrackApp>()
           .toList();
+      for (TrackApp track in tracksList) {
+        track.indexSpotify = offset;
+        track.indexApp = offset;
+        offset += 1;
+      }
+      return tracksList;
     } catch (e) {
       rethrow;
     }

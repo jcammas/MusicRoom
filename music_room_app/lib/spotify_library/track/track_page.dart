@@ -9,6 +9,8 @@ import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/spotify_library/track/track_manager.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:spotify_sdk/models/connection_status.dart';
+import 'package:spotify_sdk/models/player_state.dart';
 
 class TrackPage extends StatefulWidget {
   const TrackPage(
@@ -21,10 +23,11 @@ class TrackPage extends StatefulWidget {
   final Playlist playlist;
   final TrackManager manager;
 
-  static Future<void> show(BuildContext context, Playlist playlist, TrackApp track,
-      List<TrackApp>? trackList) async {
-    TrackManager manager =
-        TrackManager(trackApp: track, playlist: playlist, tracksList: trackList);
+  static Future<void> show(BuildContext context, Playlist playlist,
+      TrackApp track, List<TrackApp>? trackList) async {
+    TrackManager manager = TrackManager(
+        trackApp: track, playlist: playlist, tracksList: trackList);
+    await manager.checkConnection();
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
@@ -55,27 +58,31 @@ class _TrackPageState extends State<TrackPage> {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ));
-    return manager.getConnectionStreamBuilder(
-      Scaffold(
-        body: Container(
-          padding: const EdgeInsets.only(
-            left: 10,
-            right: 10,
-            top: 40,
-          ),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              colors: [
-                Colors.blueGrey,
-                Colors.black87,
-              ],
-              end: Alignment.bottomCenter,
+    return StreamBuilder<ConnectionStatus>(
+      stream: manager.subscribeConnection(),
+      builder: (context, snapshot) {
+        manager.whenConnStatusChange(snapshot);
+        return Scaffold(
+          body: Container(
+            padding: const EdgeInsets.only(
+              left: 10,
+              right: 10,
+              top: 40,
             ),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                colors: [
+                  Colors.blueGrey,
+                  Colors.black87,
+                ],
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: _buildContents(context),
           ),
-          child: _buildContents(context),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -89,7 +96,7 @@ class _TrackPageState extends State<TrackPage> {
             color: Colors.white,
             size: 24,
           ),
-          onPressed: Navigator.of(context).pop,
+          onPressed:Navigator.of(context).pop,
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(),
         ),
@@ -177,7 +184,7 @@ class _TrackPageState extends State<TrackPage> {
 
   Future<void> _connectSpotify() async {
     try {
-      await manager.connectToSpotifyRemote();
+      await manager.connectSpotifySdk();
     } on MissingPluginException catch (e) {
       showExceptionAlertDialog(context, title: 'Not implemented', exception: e);
     } on Exception catch (e) {
@@ -247,10 +254,10 @@ class _TrackPageState extends State<TrackPage> {
               value: (manager.position.inSeconds.toDouble() !=
                       manager.duration.inSeconds.toDouble())
                   ? manager.position.inSeconds.toDouble()
-                  : manager.setChangedSlider(),
+                  : manager.resetSlider() ?? 0.0,
               min: 0,
               max: manager.duration.inSeconds.toDouble(),
-              onChanged: (value) => manager.seekToSecond(value.toInt()),
+              onChanged: (value) => manager.seekTo(value.toInt() * 1000),
             ),
           ),
         ),
@@ -362,42 +369,46 @@ class _TrackPageState extends State<TrackPage> {
   Widget _buildContents(BuildContext context) {
     final double h = MediaQuery.of(context).size.height;
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          _buildTopRow(),
-          SizedBox(
-            height: h * 0.04,
-          ),
-          SizedBox(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: manager.returnImage(),
+      child: StreamBuilder<PlayerState>(
+        stream: manager.subscribePlayerState(),
+        builder: (context, snapshot) {
+          manager.whenPlayerStateChange(snapshot);
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              _buildTopRow(),
+              SizedBox(
+                height: h * 0.04,
               ),
-              height: h * 0.48),
-          SizedBox(
-            height: h * 0.04,
-          ),
-          _buildTitleRow(),
-          manager.isLoading
-              ? const Padding(
-                  padding: EdgeInsets.only(top: 50, bottom: 50),
-                  child: Center(child: CircularProgressIndicator()))
-              : manager.isConnected
-                  ? manager.getPlayerStateStreamBuilder(
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          _buildSliderRow(),
-                          _buildControlRow(),
-                        ],
-                      ),
-                    )
-                  : _buildConnectRow(),
-          _buildBottomRow(),
-        ],
+              SizedBox(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: manager.returnImage(),
+                  ),
+                  height: h * 0.48),
+              SizedBox(
+                height: h * 0.04,
+              ),
+              _buildTitleRow(),
+              manager.isLoading
+                  ? const Padding(
+                      padding: EdgeInsets.only(top: 50, bottom: 45),
+                      child: Center(child: CircularProgressIndicator()))
+                  : manager.isConnected
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            _buildSliderRow(),
+                            _buildControlRow(),
+                          ],
+                        )
+                      : _buildConnectRow(),
+              _buildBottomRow(),
+            ],
+          );
+        },
       ),
     );
   }
