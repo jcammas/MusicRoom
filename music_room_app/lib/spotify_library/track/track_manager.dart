@@ -45,6 +45,8 @@ class TrackManager with ChangeNotifier {
     ),
   );
 
+  String? get trackSdkId => trackSdk == null ? null : trackSdk!.uri.split(':')[2];
+
   Future<String> _getAuthenticationToken() async {
     try {
       String newToken = await SpotifySdk.getAuthenticationToken(
@@ -122,7 +124,7 @@ class TrackManager with ChangeNotifier {
     }
   }
 
-  toggleLike() => updateAdded(isAdded == true ? false : true);
+  toggleAdded() => updateAdded(isAdded == true ? false : true);
 
   togglePlay() async {
     try {
@@ -137,36 +139,7 @@ class TrackManager with ChangeNotifier {
     }
   }
 
-  Widget spotifyImageWidget(ImageUri image) {
-    return FutureBuilder(
-        future: SpotifySdk.getImage(
-          imageUri: image,
-          dimension: ImageDimension.large,
-        ),
-        builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
-          if (snapshot.hasData) {
-            return Image.memory(snapshot.data!);
-          } else if (snapshot.hasError) {
-            setStatus(snapshot.error.toString());
-            return SizedBox(
-              width: ImageDimension.large.value.toDouble(),
-              height: ImageDimension.large.value.toDouble(),
-              child: const Center(child: Text('Error getting image')),
-            );
-          } else {
-            return SizedBox(
-              width: ImageDimension.large.value.toDouble(),
-              height: ImageDimension.large.value.toDouble(),
-              child: const Center(child: Text('Getting image...')),
-            );
-          }
-        });
-  }
-
   Widget? returnImage() {
-    if (trackImage != null) {
-      return spotifyImageWidget(trackImage!);
-    }
     if (trackApp.album != null) {
       if (trackApp.album!['images'] != null) {
         if (trackApp.album!['images'].isNotEmpty) {
@@ -180,11 +153,6 @@ class TrackManager with ChangeNotifier {
   }
 
   String returnArtist() {
-    if (trackSdk != null) {
-      if (trackSdk!.artist.name != null) {
-        return trackSdk!.artist.name!;
-      }
-    }
     if (trackApp.artists != null) {
       if (trackApp.artists!.isNotEmpty) {
         if (trackApp.artists!.first['name'] != null) {
@@ -195,9 +163,7 @@ class TrackManager with ChangeNotifier {
     return 'Unknown';
   }
 
-  String returnName() {
-    return trackSdk == null ? trackApp.name : trackSdk!.name;
-  }
+  String returnName() => trackApp.name;
 
   double setChangedSlider() {
     // set to 0
@@ -273,19 +239,18 @@ class TrackManager with ChangeNotifier {
       bool takeNext = false;
       await SpotifySdk.skipPrevious();
       if (trackSdk != null) {
-        if (trackSdk!.uri != "spotify:track:" + trackApp.id) {
+        if (trackSdkId != trackApp.id) {
           if (tracksList != null) {
-              tracksList!.sort((lhs, rhs) => rhs.name.compareTo(lhs.name));
-              for (TrackApp pTrack in tracksList!) {
-                trackApp = takeNext ? pTrack : trackApp;
-                if (takeNext) {
-                  _updateWith(trackApp: trackApp, isPlayed: true);
-                }
+            tracksList!.sort((lhs, rhs) => rhs.name.compareTo(lhs.name));
+            for (TrackApp pTrack in tracksList!) {
+              trackApp = takeNext ? pTrack : trackApp;
+              if (takeNext) {
+                _updateWith(trackApp: trackApp, isPlayed: true);
+                break;
               }
+              takeNext = pTrack.id == trackApp.id ? true : false;
             }
-            break;
           }
-          takeNext = pTrack.id == trackApp.id ? true : false;
         }
       }
     } on PlatformException catch (e) {

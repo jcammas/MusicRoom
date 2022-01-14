@@ -168,7 +168,7 @@ class _TrackPageState extends State<TrackPage> {
                     color: Colors.grey.shade400,
                     size: 27,
                   ),
-            onPressed: manager.toggleLike,
+            onPressed: manager.toggleAdded,
           ),
         ],
       ),
