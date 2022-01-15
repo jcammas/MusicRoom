@@ -15,33 +15,53 @@ import 'package:music_room_app/spotify_library/track/track_manager.dart';
 import 'package:music_room_app/spotify_library/track/track_slider_row.dart';
 import 'package:music_room_app/spotify_library/track/track_slider_row_manager.dart';
 import 'package:music_room_app/spotify_library/track/track_title_row.dart';
+import 'package:music_room_app/spotify_library/track/track_title_row_manager.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
 
 class TrackPage extends StatefulWidget {
   const TrackPage(
       {Key? key,
-      required this.manager})
+      required this.manager,
+      required this.imageManager,
+      required this.controlRowManager,
+      required this.sliderRowManager,
+      required this.titleRowManager})
       : super(key: key);
 
   final TrackManager manager;
+  final TrackImageManager imageManager;
+  final TrackControlRowManager controlRowManager;
+  final TrackSliderRowManager sliderRowManager;
+  final TrackTitleRowManager titleRowManager;
 
   static Future<void> show(BuildContext context, Playlist playlist,
       TrackApp trackApp, List<TrackApp> tracksList, Spotify spotify) async {
     TrackManager manager = TrackManager(
-        trackApp: trackApp, playlist: playlist, tracksList: tracksList, spotify: spotify);
-    TrackImageManager imageManager = TrackImageManager(trackApp: trackApp, tracksList: tracksList);
-    TrackControlRowManager controlRowManager = TrackControlRowManager(trackApp: trackApp, playlist: playlist, tracksList: tracksList);
-    TrackSliderRowManager sliderRowManager = TrackSliderRowManager(trackApp: trackApp, tracksList: tracksList);
-    
+        trackApp: trackApp,
+        playlist: playlist,
+        tracksList: tracksList,
+        spotify: spotify);
+    TrackImageManager imageManager =
+        TrackImageManager(trackApp: trackApp, tracksList: tracksList);
+    TrackControlRowManager controlRowManager = TrackControlRowManager(
+        trackApp: trackApp, playlist: playlist, tracksList: tracksList);
+    TrackSliderRowManager sliderRowManager =
+        TrackSliderRowManager(trackApp: trackApp, tracksList: tracksList);
+    TrackTitleRowManager titleRowManager =
+        TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList);
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
         builder: (context) => ChangeNotifierProvider<TrackManager>(
           create: (_) => manager,
           child: Consumer<TrackManager>(
-            builder: (_, model, __) =>
-                TrackPage(manager: manager),
+            builder: (_, model, __) => TrackPage(
+                manager: manager,
+                imageManager: imageManager,
+                titleRowManager: titleRowManager,
+                sliderRowManager: sliderRowManager,
+                controlRowManager: controlRowManager),
           ),
         ),
       ),
@@ -68,25 +88,25 @@ class _TrackPageState extends State<TrackPage> {
     ));
     manager.playIfConnected();
     return Scaffold(
-          body: Container(
-            padding: const EdgeInsets.only(
-              left: 10,
-              right: 10,
-              top: 40,
-            ),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                colors: [
-                  Colors.blueGrey,
-                  Colors.black87,
-                ],
-                end: Alignment.bottomCenter,
-              ),
-            ),
-            child: _buildContents(context),
+      body: Container(
+        padding: const EdgeInsets.only(
+          left: 10,
+          right: 10,
+          top: 40,
+        ),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            colors: [
+              Colors.blueGrey,
+              Colors.black87,
+            ],
+            end: Alignment.bottomCenter,
           ),
-        );
+        ),
+        child: _buildContents(context),
+      ),
+    );
   }
 
   Widget _buildTopRow() {
@@ -216,12 +236,18 @@ class _TrackPageState extends State<TrackPage> {
             height: h * 0.04,
           ),
           TrackImage.create(
-              context: context, trackApp: track, tracksList: tracksList),
+              context: context,
+              trackApp: track,
+              tracksList: tracksList,
+              manager: widget.imageManager),
           SizedBox(
             height: h * 0.04,
           ),
           TrackTitleRow.create(
-              context: context, trackApp: track, tracksList: tracksList),
+              context: context,
+              trackApp: track,
+              tracksList: tracksList,
+              manager: widget.titleRowManager),
           manager.isLoading
               ? const Padding(
                   padding: EdgeInsets.only(top: 50, bottom: 56),
@@ -234,12 +260,14 @@ class _TrackPageState extends State<TrackPage> {
                         TrackSliderRow.create(
                             context: context,
                             trackApp: track,
-                            tracksList: tracksList),
+                            tracksList: tracksList,
+                            manager: widget.sliderRowManager),
                         TrackControlRow.create(
                             context: context,
                             playlist: playlist,
                             trackApp: track,
-                            tracksList: tracksList),
+                            tracksList: tracksList,
+                            manager: widget.controlRowManager),
                       ],
                     )
                   : _buildConnectRow(),
