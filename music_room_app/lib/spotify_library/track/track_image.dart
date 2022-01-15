@@ -4,21 +4,21 @@ import 'package:music_room_app/spotify_library/track/track_image_manager.dart';
 import 'package:provider/provider.dart';
 
 class TrackImage extends StatefulWidget {
-  const TrackImage(
-      {Key? key,
-      required this.manager})
-      : super(key: key);
+  const TrackImage({Key? key, required this.manager}) : super(key: key);
 
   final TrackImageManager manager;
 
-    static Widget create({required BuildContext context,
-        required TrackApp trackApp, required List<TrackApp> tracksList}) {
-      return ChangeNotifierProvider<TrackImageManager>(
-        create: (_) => TrackImageManager(trackApp: trackApp, tracksList: tracksList),
-        child: Consumer<TrackImageManager>(
-          builder: (_, manager, __) => TrackImage(manager: manager),
-        ),
-      );
+  static Widget create(
+      {required BuildContext context,
+      required TrackApp trackApp,
+      required List<TrackApp> tracksList,
+      required TrackImageManager manager}) {
+    return ChangeNotifierProvider<TrackImageManager>(
+      create: (_) => manager,
+      child: Consumer<TrackImageManager>(
+        builder: (_, manager, __) => TrackImage(manager: manager),
+      ),
+    );
   }
 
   @override
@@ -26,7 +26,6 @@ class TrackImage extends StatefulWidget {
 }
 
 class _TrackImageState extends State<TrackImage> {
-
   TrackImageManager get manager => widget.manager;
 
   @override

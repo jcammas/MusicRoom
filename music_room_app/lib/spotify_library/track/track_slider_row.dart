@@ -11,10 +11,11 @@ class TrackSliderRow extends StatefulWidget {
   static Widget create(
       {required BuildContext context,
       required TrackApp trackApp,
-      required List<TrackApp> tracksList}) {
+      required List<TrackApp> tracksList,
+      required TrackSliderRowManager manager}) {
     return ChangeNotifierProvider<TrackSliderRowManager>(
       create: (_) =>
-          TrackSliderRowManager(tracksList: tracksList, trackApp: trackApp),
+          manager,
       child: Consumer<TrackSliderRowManager>(
         builder: (_, manager, __) => TrackSliderRow(manager: manager),
       ),

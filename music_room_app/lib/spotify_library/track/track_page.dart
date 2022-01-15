@@ -8,9 +8,12 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/spotify.dart';
 import 'package:music_room_app/spotify_library/track/track_control_row.dart';
+import 'package:music_room_app/spotify_library/track/track_control_row_manager.dart';
 import 'package:music_room_app/spotify_library/track/track_image.dart';
+import 'package:music_room_app/spotify_library/track/track_image_manager.dart';
 import 'package:music_room_app/spotify_library/track/track_manager.dart';
 import 'package:music_room_app/spotify_library/track/track_slider_row.dart';
+import 'package:music_room_app/spotify_library/track/track_slider_row_manager.dart';
 import 'package:music_room_app/spotify_library/track/track_title_row.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
@@ -18,18 +21,19 @@ import 'package:provider/provider.dart';
 class TrackPage extends StatefulWidget {
   const TrackPage(
       {Key? key,
-      required this.track,
-      required this.playlist,
       required this.manager})
       : super(key: key);
-  final TrackApp track;
-  final Playlist playlist;
+
   final TrackManager manager;
 
   static Future<void> show(BuildContext context, Playlist playlist,
-      TrackApp track, List<TrackApp> trackList, Spotify spotify) async {
+      TrackApp trackApp, List<TrackApp> tracksList, Spotify spotify) async {
     TrackManager manager = TrackManager(
-        trackApp: track, playlist: playlist, tracksList: trackList, spotify: spotify);
+        trackApp: trackApp, playlist: playlist, tracksList: tracksList, spotify: spotify);
+    TrackImageManager imageManager = TrackImageManager(trackApp: trackApp, tracksList: tracksList);
+    TrackControlRowManager controlRowManager = TrackControlRowManager(trackApp: trackApp, playlist: playlist, tracksList: tracksList);
+    TrackSliderRowManager sliderRowManager = TrackSliderRowManager(trackApp: trackApp, tracksList: tracksList);
+    
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
@@ -37,7 +41,7 @@ class TrackPage extends StatefulWidget {
           create: (_) => manager,
           child: Consumer<TrackManager>(
             builder: (_, model, __) =>
-                TrackPage(track: track, playlist: playlist, manager: manager),
+                TrackPage(manager: manager),
           ),
         ),
       ),

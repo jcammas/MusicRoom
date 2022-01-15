@@ -14,10 +14,10 @@ class TrackControlRow extends StatefulWidget {
       {required BuildContext context,
       required TrackApp trackApp,
       required Playlist playlist,
-      required List<TrackApp> tracksList}) {
+      required List<TrackApp> tracksList,
+      required TrackControlRowManager manager}) {
     return ChangeNotifierProvider<TrackControlRowManager>(
-      create: (_) => TrackControlRowManager(
-          tracksList: tracksList, playlist: playlist, trackApp: trackApp),
+      create: (_) => manager,
       child: Consumer<TrackControlRowManager>(
         builder: (_, manager, __) => TrackControlRow(manager: manager),
       ),

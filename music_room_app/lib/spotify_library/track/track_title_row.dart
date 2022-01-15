@@ -12,10 +12,10 @@ class TrackTitleRow extends StatefulWidget {
   static Widget create(
       {required BuildContext context,
       required TrackApp trackApp,
-      required List<TrackApp> tracksList}) {
+      required List<TrackApp> tracksList,
+      required TrackTitleRowManager manager}) {
     return ChangeNotifierProvider<TrackTitleRowManager>(
-      create: (_) =>
-          TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList),
+      create: (_) => manager,
       child: Consumer<TrackTitleRowManager>(
         builder: (_, manager, __) => TrackTitleRow(manager: manager),
       ),
