@@ -6,11 +6,13 @@ import 'package:logger/logger.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/spotify_library/widgets/temporary_button.dart';
 import 'package:music_room_app/services/spotify_constants.dart';
+import 'package:spotify_sdk/models/capabilities.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/crossfade_state.dart';
 import 'package:spotify_sdk/models/image_uri.dart';
 import 'package:spotify_sdk/models/player_context.dart';
 import 'package:spotify_sdk/models/player_state.dart';
+import 'package:spotify_sdk/models/user_status.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 class SpotifyConnectionMonitor extends StatefulWidget {
@@ -353,7 +355,7 @@ class _SpotifyConnectionMonitorState extends State<SpotifyConnectionMonitor> {
       stream: SpotifySdk.subscribePlayerContext(),
       initialData: PlayerContext('', '', '', ''),
       builder: (BuildContext context, AsyncSnapshot<PlayerContext> snapshot) {
-        var playerContext = snapshot.data;
+        PlayerContext? playerContext = snapshot.data;
         if (playerContext == null) {
           return const Center(
             child: Text('Not connected'),

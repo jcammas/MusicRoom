@@ -143,7 +143,7 @@ class _TrackPageState extends State<TrackPage> {
   Widget _buildConnectRow() {
     const double size = 5;
     return Container(
-      margin: const EdgeInsets.only(top: 15, bottom: 20),
+      margin: const EdgeInsets.only(top: 8, bottom: 25),
       padding: const EdgeInsets.all(10.0),
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(25)),
@@ -161,7 +161,7 @@ class _TrackPageState extends State<TrackPage> {
             ),
           ),
           IconButton(
-            padding: const EdgeInsets.only(top: 10, bottom: 10, left: 2),
+            padding: const EdgeInsets.only(top: 10, left: 2),
             icon: CircleAvatar(
               radius: 6 * size,
               backgroundColor: Colors.black,
@@ -219,7 +219,7 @@ class _TrackPageState extends State<TrackPage> {
               context: context, trackApp: track, tracksList: tracksList),
           manager.isLoading
               ? const Padding(
-                  padding: EdgeInsets.only(top: 50, bottom: 45),
+                  padding: EdgeInsets.only(top: 50, bottom: 56),
                   child: Center(child: CircularProgressIndicator()))
               : manager.isConnected
                   ? Column(
