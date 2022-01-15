@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
+import 'package:music_room_app/services/spotify.dart';
 import 'package:music_room_app/widgets/spotify_constants.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/player_state.dart';
@@ -15,7 +16,7 @@ import 'package:logger/logger.dart';
 
 class TrackManager with ChangeNotifier {
   TrackManager(
-      {required this.playlist, required this.trackApp, required this.tracksList}) {
+      {required this.playlist, required this.trackApp, required this.tracksList, required this.spotify}) {
     checkConnection();
   }
 
@@ -28,6 +29,7 @@ class TrackManager with ChangeNotifier {
   bool isLoading = false;
   ConnectionStatus? previousConnStatus;
   PlayerState? playerState;
+  Spotify spotify;
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   final Logger _logger = Logger(
     printer: PrettyPrinter(
@@ -134,9 +136,6 @@ class TrackManager with ChangeNotifier {
       rethrow;
     }
   }
-
-  String returnName() => trackApp.name;
-
 
   Stream<ConnectionStatus> subscribeConnection() =>
       SpotifySdk.subscribeConnectionStatus();

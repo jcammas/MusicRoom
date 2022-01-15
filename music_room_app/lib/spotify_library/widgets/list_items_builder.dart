@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/spotify_library/list_items_manager.dart';
+import 'package:music_room_app/spotify_library/widgets/list_items_manager.dart';
 import 'empty_content.dart';
 
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);

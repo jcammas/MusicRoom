@@ -9,8 +9,8 @@ import 'package:music_room_app/spotify_library/playlist/playlist_page.dart';
 import 'package:music_room_app/spotify_library/library/playlist_tile.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
-import '../list_items_manager.dart';
-import '../list_items_builder.dart';
+import '../widgets/list_items_manager.dart';
+import '../widgets/list_items_builder.dart';
 
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({Key? key}) : super(key: key);

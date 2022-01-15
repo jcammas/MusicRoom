@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
+import 'package:music_room_app/services/spotify.dart';
 import 'package:music_room_app/spotify_library/track/track_control_row.dart';
 import 'package:music_room_app/spotify_library/track/track_image.dart';
 import 'package:music_room_app/spotify_library/track/track_manager.dart';
@@ -27,9 +28,9 @@ class TrackPage extends StatefulWidget {
   final TrackManager manager;
 
   static Future<void> show(BuildContext context, Playlist playlist,
-      TrackApp track, List<TrackApp> trackList) async {
+      TrackApp track, List<TrackApp> trackList, Spotify spotify) async {
     TrackManager manager = TrackManager(
-        trackApp: track, playlist: playlist, tracksList: trackList);
+        trackApp: track, playlist: playlist, tracksList: trackList, spotify: spotify);
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
