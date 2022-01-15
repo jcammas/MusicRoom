@@ -17,7 +17,7 @@ class LoginForm extends StatefulWidget {
     return ChangeNotifierProvider<LoginManager>(
       create: (_) => LoginManager(auth: auth),
       child: Consumer<LoginManager>(
-        builder: (_, model, __) => LoginForm(manager: model),
+        builder: (_, manager, __) => LoginForm(manager: manager),
       ),
     );
   }

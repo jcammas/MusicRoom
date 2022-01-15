@@ -6,11 +6,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
+import 'package:music_room_app/spotify_library/track/track_control_row.dart';
+import 'package:music_room_app/spotify_library/track/track_image.dart';
 import 'package:music_room_app/spotify_library/track/track_manager.dart';
+import 'package:music_room_app/spotify_library/track/track_slider_row.dart';
+import 'package:music_room_app/spotify_library/track/track_title_row.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
-import 'package:spotify_sdk/models/player_state.dart';
 
 class TrackPage extends StatefulWidget {
   const TrackPage(
@@ -24,10 +27,9 @@ class TrackPage extends StatefulWidget {
   final TrackManager manager;
 
   static Future<void> show(BuildContext context, Playlist playlist,
-      TrackApp track, List<TrackApp>? trackList) async {
+      TrackApp track, List<TrackApp> trackList) async {
     TrackManager manager = TrackManager(
         trackApp: track, playlist: playlist, tracksList: trackList);
-    await manager.checkConnection();
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
@@ -52,6 +54,8 @@ class _TrackPageState extends State<TrackPage> {
   Playlist get playlist => widget.manager.playlist;
 
   TrackApp get track => widget.manager.trackApp;
+
+  List<TrackApp> get tracksList => widget.manager.tracksList;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +100,7 @@ class _TrackPageState extends State<TrackPage> {
             color: Colors.white,
             size: 24,
           ),
-          onPressed:Navigator.of(context).pop,
+          onPressed: Navigator.of(context).pop,
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(),
         ),
@@ -128,57 +132,6 @@ class _TrackPageState extends State<TrackPage> {
           size: 24,
         )
       ],
-    );
-  }
-
-  Widget _buildTitleRow() {
-    return Container(
-      padding: const EdgeInsets.only(left: 25, right: 25),
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                track.name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontFamily: "ProximaNova",
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  wordSpacing: 0.2,
-                ),
-              ),
-              Text(
-                manager.returnArtist(),
-                style: TextStyle(
-                  color: Colors.grey.shade400,
-                  fontFamily: "ProximaNovaThin",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  letterSpacing: 0.1,
-                ),
-              ),
-            ],
-          ),
-          IconButton(
-            icon: (manager.isAdded == true)
-                ? const Icon(
-                    LineIcons.plus,
-                    color: Colors.green,
-                    size: 27,
-                  )
-                : Icon(
-                    LineIcons.plus,
-                    color: Colors.grey.shade400,
-                    size: 27,
-                  ),
-            onPressed: manager.toggleAdded,
-          ),
-        ],
-      ),
     );
   }
 
@@ -232,120 +185,6 @@ class _TrackPageState extends State<TrackPage> {
     );
   }
 
-  Widget _buildSliderRow() {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: <Widget>[
-        Container(
-          padding: const EdgeInsets.only(left: 5, right: 5),
-          width: double.infinity,
-          child: SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              activeTrackColor: Colors.white,
-              inactiveTrackColor: Colors.grey.shade600,
-              activeTickMarkColor: Colors.white,
-              thumbColor: Colors.white,
-              trackHeight: 3,
-              thumbShape: const RoundSliderThumbShape(
-                enabledThumbRadius: 4,
-              ),
-            ),
-            child: Slider(
-              value: (manager.position.inSeconds.toDouble() !=
-                      manager.duration.inSeconds.toDouble())
-                  ? manager.position.inSeconds.toDouble()
-                  : manager.resetSlider() ?? 0.0,
-              min: 0,
-              max: manager.duration.inSeconds.toDouble(),
-              onChanged: (value) => manager.seekTo(value.toInt() * 1000),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 25, right: 25),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "${manager.position.inMinutes.toInt()}:${(manager.position.inSeconds % 60).toString().padLeft(2, "0")}",
-                style: TextStyle(
-                  color: Colors.grey.shade400,
-                  fontFamily: "ProximaNovaThin",
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "${manager.duration.inMinutes.toInt()}:${(manager.duration.inSeconds % 60).toString().padLeft(2, "0")}",
-                style: TextStyle(
-                  color: Colors.grey.shade400,
-                  fontFamily: "ProximaNovaThin",
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildControlRow() {
-    return Container(
-      padding: const EdgeInsets.only(left: 22, right: 22),
-      width: double.infinity,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Icon(
-            LineIcons.random,
-            color: Colors.grey.shade400,
-          ),
-          GestureDetector(
-            onTap: manager.skipPrevious,
-            child: const Icon(
-              Icons.skip_previous,
-              color: Colors.white,
-              size: 40,
-            ),
-          ),
-          SizedBox(
-            height: 90,
-            width: 90,
-            child: Center(
-              child: IconButton(
-                iconSize: 70,
-                alignment: Alignment.center,
-                icon: manager.isPlayed
-                    ? const Icon(
-                        Icons.pause_circle_filled,
-                        color: Colors.white,
-                      )
-                    : const Icon(
-                        Icons.play_circle_filled,
-                        color: Colors.white,
-                      ),
-                onPressed: manager.togglePlay,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: manager.skipNext,
-            child: const Icon(
-              Icons.skip_next,
-              color: Colors.white,
-              size: 40,
-            ),
-          ),
-          Icon(
-            Icons.repeat,
-            color: Colors.grey.shade400,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildBottomRow() {
     return Container(
       padding: const EdgeInsets.only(left: 22, right: 22),
@@ -369,46 +208,44 @@ class _TrackPageState extends State<TrackPage> {
   Widget _buildContents(BuildContext context) {
     final double h = MediaQuery.of(context).size.height;
     return Center(
-      child: StreamBuilder<PlayerState>(
-        stream: manager.subscribePlayerState(),
-        builder: (context, snapshot) {
-          manager.whenPlayerStateChange(snapshot);
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              _buildTopRow(),
-              SizedBox(
-                height: h * 0.04,
-              ),
-              SizedBox(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: manager.returnImage(),
-                  ),
-                  height: h * 0.48),
-              SizedBox(
-                height: h * 0.04,
-              ),
-              _buildTitleRow(),
-              manager.isLoading
-                  ? const Padding(
-                      padding: EdgeInsets.only(top: 50, bottom: 45),
-                      child: Center(child: CircularProgressIndicator()))
-                  : manager.isConnected
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            _buildSliderRow(),
-                            _buildControlRow(),
-                          ],
-                        )
-                      : _buildConnectRow(),
-              _buildBottomRow(),
-            ],
-          );
-        },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          _buildTopRow(),
+          SizedBox(
+            height: h * 0.04,
+          ),
+          TrackImage.create(
+              context: context, trackApp: track, tracksList: tracksList),
+          SizedBox(
+            height: h * 0.04,
+          ),
+          TrackTitleRow.create(
+              context: context, trackApp: track, tracksList: tracksList),
+          manager.isLoading
+              ? const Padding(
+                  padding: EdgeInsets.only(top: 50, bottom: 45),
+                  child: Center(child: CircularProgressIndicator()))
+              : manager.isConnected
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        TrackSliderRow.create(
+                            context: context,
+                            trackApp: track,
+                            tracksList: tracksList),
+                        TrackControlRow.create(
+                            context: context,
+                            playlist: playlist,
+                            trackApp: track,
+                            tracksList: tracksList),
+                      ],
+                    )
+                  : _buildConnectRow(),
+          _buildBottomRow(),
+        ],
       ),
     );
   }

@@ -88,7 +88,7 @@ class PlaylistPage extends StatelessWidget {
                 onDismissed: (direction) => manager.deleteItem(context, track),
                 child: TrackTile(
                   track: track,
-                  onTap: () => TrackPage.show(context, playlist, track, snapshot.data),
+                  onTap: () => TrackPage.show(context, playlist, track, snapshot.data!),
                 ),
               ),
             ),
