@@ -7,9 +7,12 @@ import 'package:http/http.dart' as http;
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/spotify_profile.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/widgets/spotify_constants.dart';
+import 'package:music_room_app/services/spotify_constants.dart';
+import 'package:music_room_app/widgets/logger.dart';
 
 abstract class Spotify {
+  Future<String?> getAccessToken();
+
   Future<SpotifyProfile> getCurrentUserProfile();
 
   Future<List<Playlist>> getCurrentUserPlaylists();
@@ -23,6 +26,12 @@ class SpotifyService implements Spotify {
   String? refreshToken;
   String? accessToken;
   DateTime? expirationTime;
+  final _logger = LoggerApp.logger;
+
+  void setStatus(String code, {String? message}) {
+    var text = message ?? '';
+    _logger.i('$code$text');
+  }
 
   Future<void> _refreshWithSecuredStorage() async {
     try {
@@ -128,6 +137,16 @@ class SpotifyService implements Spotify {
       if (accessToken == null || expirationTime == null) {
         throw Exception('Could not get token to Spotify refreshed.');
       }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<String?> getAccessToken() async {
+    try {
+      await _refreshTokens();
+      return accessToken;
     } catch (e) {
       rethrow;
     }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/track.dart';
+import 'package:music_room_app/widgets/logger.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
@@ -21,7 +22,8 @@ class TrackSliderRowManager with ChangeNotifier {
   PlayerState? playerState;
   Track? trackSdk;
   Timer? timer;
-  final _logger = LibraryStatic.logger;
+  final _logger = LoggerApp.logger;
+
 
   String? get trackSdkId =>
       trackSdk == null ? null : trackSdk!.uri.split(':')[2];

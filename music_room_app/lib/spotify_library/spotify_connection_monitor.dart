@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/spotify_library/widgets/temporary_button.dart';
-import 'package:music_room_app/widgets/spotify_constants.dart';
+import 'package:music_room_app/services/spotify_constants.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/crossfade_state.dart';
 import 'package:spotify_sdk/models/image_uri.dart';

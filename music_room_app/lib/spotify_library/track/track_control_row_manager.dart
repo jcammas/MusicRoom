@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/spotify_library/track/library_static.dart';
+import 'package:music_room_app/widgets/logger.dart';
 import 'package:spotify_sdk/models/player_state.dart';
+import 'package:spotify_sdk/models/track.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 class TrackControlRowManager with ChangeNotifier {
@@ -21,7 +23,11 @@ class TrackControlRowManager with ChangeNotifier {
   StreamSubscription<PlayerState>? playerStateSubscription;
   bool isPlayed = false;
   PlayerState? playerState;
-  final _logger = LibraryStatic.logger;
+  Track? trackSdk;
+  final _logger = LoggerApp.logger;
+
+  String? get trackSdkId =>
+      trackSdk == null ? null : trackSdk!.uri.split(':')[2];
 
   void initManager() {
     try {
@@ -119,9 +125,18 @@ class TrackControlRowManager with ChangeNotifier {
 
   void whenPlayerStateChange(dynamic snapshot) {
     playerState = snapshot.data;
+    trackSdk = snapshot.data?.track;
     if (playerState != null) {
       isPlayed = !playerState!.isPaused;
       notifyListeners();
+    }
+    try {
+      String? newId = trackSdkId;
+      if (newId != null) {
+        trackApp = tracksList.firstWhere((track) => track.id == newId);
+      }
+    } on Error {
+      LibraryStatic.playTrack(trackApp, playlist);
     }
   }
 

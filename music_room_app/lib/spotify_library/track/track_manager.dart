@@ -1,93 +1,50 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/spotify.dart';
-import 'package:music_room_app/widgets/spotify_constants.dart';
+import 'package:music_room_app/services/spotify_constants.dart';
+import 'package:music_room_app/widgets/logger.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
-import 'package:spotify_sdk/models/player_state.dart';
-import 'package:spotify_sdk/models/track.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
-import 'package:logger/logger.dart';
+import 'library_static.dart';
 
 class TrackManager with ChangeNotifier {
   TrackManager(
-      {required this.playlist, required this.trackApp, required this.tracksList, required this.spotify}) {
-    checkConnection();
+      {required this.playlist,
+      required this.trackApp,
+      required this.tracksList,
+      required this.spotify}) {
+    initManager();
   }
 
   final Playlist playlist;
   final List<TrackApp> tracksList;
   TrackApp trackApp;
-  Track? trackSdk;
   String? token;
   bool isConnected = false;
   bool isLoading = false;
-  ConnectionStatus? previousConnStatus;
-  PlayerState? playerState;
+  ConnectionStatus? connStatus;
+  StreamSubscription<ConnectionStatus>? connStatusSubscription;
   Spotify spotify;
-  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
-  final Logger _logger = Logger(
-    printer: PrettyPrinter(
-      methodCount: 2,
-      // number of method calls to be displayed
-      errorMethodCount: 8,
-      // number of method calls if stacktrace is provided
-      lineLength: 120,
-      colors: true,
-      printEmojis: true,
-      printTime: true,
-    ),
-  );
+  final _logger = LoggerApp.logger;
 
-  String? get trackSdkId =>
-      trackSdk == null ? null : trackSdk!.uri.split(':')[2];
-
-  Future<String> _getAuthenticationToken() async {
-    try {
-      String newToken = await SpotifySdk.getAuthenticationToken(
-          clientId: spotifyClientId,
-          redirectUrl: spotifyRedirectUri,
-          scope: 'app-remote-control, '
-              'user-modify-playback-state, '
-              'playlist-read-private, '
-              'playlist-modify-public,user-read-currently-playing');
-      setStatus('Got a token: $newToken');
-      await secureStorage.write(key: 'SpotifySDKToken', value: newToken);
-      return newToken;
-    } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
-      rethrow;
-    } on MissingPluginException {
-      setStatus('not implemented on this platform');
-      rethrow;
-    }
+  void setStatus(String code, {String? message}) {
+    var text = message ?? '';
+    _logger.i('$code$text');
   }
 
-  Future<bool> _connectWithToken() async {
+  void initManager() {
+    checkConnection();
     try {
-      token = token ?? await secureStorage.read(key: 'SpotifySDKToken');
-      token = token ?? await secureStorage.read(key: 'accessToken');
-      token = token ?? await _getAuthenticationToken();
-      bool result = await _tryConnectToSpotify(token: token);
-      if (result == false) {
-        await _getAuthenticationToken();
-        return await _tryConnectToSpotify();
-      }
-      return result;
+      connStatusSubscription =
+          SpotifySdk.subscribeConnectionStatus().listen(whenConnStatusChange);
     } on PlatformException {
-      try {
-          await _getAuthenticationToken();
-          return await _tryConnectToSpotify();
-      } catch (e) {
-        rethrow;
-      }
-    } catch (e) {
-      rethrow;
+      connStatusSubscription = null;
+    }  on MissingPluginException {
+      connStatusSubscription = null;
     }
   }
 
@@ -101,10 +58,11 @@ class TrackManager with ChangeNotifier {
     try {
       if (await _tryConnectToSpotify()) {
         isConnected = true;
-        await playTrack();
+        await LibraryStatic.playTrack(trackApp, playlist);
       }
-      } on PlatformException catch (e) {
+    } on PlatformException {
       isConnected = false;
+      setStatus('not connected');
     } on MissingPluginException {
       isConnected = false;
       setStatus('not implemented');
@@ -114,90 +72,54 @@ class TrackManager with ChangeNotifier {
   Future<void> connectSpotifySdk() async {
     try {
       updateLoading(true);
-      bool result = await _connectWithToken();
+      token = await spotify.getAccessToken();
+      bool result = await _tryConnectToSpotify(token: token);
       setStatus(result
           ? 'connect to spotify successful'
           : 'connect to spotify failed');
       if (result) {
-        isLoading = false;
-        isConnected = true;
-        await playTrack();
+        updateWith(isLoading: false, isConnected: true);
+        await LibraryStatic.playTrack(trackApp, playlist);
       } else {
-        updateLoading(false);
+        updateWith(isLoading: false, isConnected: false);
         throw Exception('Could not connect to your app Spotify');
       }
     } on PlatformException catch (e) {
-      updateLoading(false);
+      updateWith(isLoading: false, isConnected: false);
       setStatus(e.code, message: e.message);
       rethrow;
     } on MissingPluginException {
-      updateLoading(false);
+      updateWith(isLoading: false, isConnected: false);
       setStatus('not implemented');
       rethrow;
     }
   }
 
-  Stream<ConnectionStatus> subscribeConnection() =>
-      SpotifySdk.subscribeConnectionStatus();
-
-  void whenConnStatusChange(AsyncSnapshot snapshot) {
-    isLoading = false;
+  void whenConnStatusChange(dynamic snapshot) {
     var data = snapshot.data;
     if (data != null) {
-      isConnected = data.connected;
+      updateConnected(data.connected);
+    } else {
+      updateConnected(false);
     }
   }
 
-  void updateTrackFromSdk(String? newId) {
-    try {
-      if (newId != null) {
-        trackApp = tracksList.firstWhere((track) => track.id == newId);
-      }
-    } on Error {
-      isLoading = true;
-      isConnected = true;
-      playTrack();
-    }
-  }
+  void updateConnected(bool isConnected) =>
+      updateWith(isConnected: isConnected);
 
-  Stream<PlayerState> subscribePlayerState() =>
-      SpotifySdk.subscribePlayerState();
+  void updateLoading(bool isLoading) => updateWith(isLoading: isLoading);
 
-  Future<void> playTrack() async {
-    trackApp.indexSpotify == null
-        ? await SpotifySdk.play(spotifyUri: 'spotify:track:' + trackApp.id)
-        : await SpotifySdk.skipToIndex(
-            spotifyUri: 'spotify:playlist:' + playlist.id,
-            trackIndex: trackApp.indexSpotify!);
-  }
-
-  void setStatus(String code, {String? message}) {
-    var text = message ?? '';
-    _logger.i('$code$text');
-  }
-
-//
-// void updatePlayed(bool isPlayed) => _updateWith(isPlayed: isPlayed);
-//
-// void updateConnected(bool isConnected) =>
-//     _updateWith(isConnected: isConnected);
-//
-  void updateLoading(bool isLoading) => _updateWith(isLoading: isLoading);
-
-//
-// void updatePosition(Duration position) => _updateWith(position: position);
-//
-// void updateDuration(Duration duration) => _updateWith(duration: duration);
-//
-// void updateTrack(TrackApp trackApp) => _updateWith(trackApp: trackApp);
-
-  void _updateWith(
-      {bool? isConnected,
-      bool? isLoading,
-      TrackApp? trackApp}) {
+  void updateWith({bool? isConnected, bool? isLoading, TrackApp? trackApp}) {
     this.isConnected = isConnected ?? this.isConnected;
     this.isLoading = isLoading ?? this.isLoading;
-    this.trackApp = trackApp ?? this.trackApp;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    if (connStatusSubscription != null) {
+      connStatusSubscription!.cancel();
+    }
+    super.dispose();
   }
 }

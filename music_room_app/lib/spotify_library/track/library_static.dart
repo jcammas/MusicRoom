@@ -1,19 +1,14 @@
-import 'package:logger/logger.dart';
+import 'package:music_room_app/home/models/playlist.dart';
+import 'package:music_room_app/home/models/track.dart';
+import 'package:spotify_sdk/spotify_sdk.dart';
 
 class LibraryStatic {
 
-  static final Logger logger = Logger(
-    printer: PrettyPrinter(
-      methodCount: 2,
-      // number of method calls to be displayed
-      errorMethodCount: 8,
-      // number of method calls if stacktrace is provided
-      lineLength: 120,
-      colors: true,
-      printEmojis: true,
-      printTime: true,
-    ),
-  );
-
-
+  static Future<void> playTrack(TrackApp trackApp, Playlist playlist) async {
+    trackApp.indexSpotify == null
+        ? await SpotifySdk.play(spotifyUri: 'spotify:track:' + trackApp.id)
+        : await SpotifySdk.skipToIndex(
+        spotifyUri: 'spotify:playlist:' + playlist.id,
+        trackIndex: trackApp.indexSpotify!);
+  }
 }

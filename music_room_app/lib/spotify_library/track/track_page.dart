@@ -14,7 +14,6 @@ import 'package:music_room_app/spotify_library/track/track_slider_row.dart';
 import 'package:music_room_app/spotify_library/track/track_title_row.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:spotify_sdk/models/connection_status.dart';
 
 class TrackPage extends StatefulWidget {
   const TrackPage(
@@ -63,11 +62,7 @@ class _TrackPageState extends State<TrackPage> {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ));
-    return StreamBuilder<ConnectionStatus>(
-      stream: manager.subscribeConnection(),
-      builder: (context, snapshot) {
-        manager.whenConnStatusChange(snapshot);
-        return Scaffold(
+    return Scaffold(
           body: Container(
             padding: const EdgeInsets.only(
               left: 10,
@@ -87,8 +82,6 @@ class _TrackPageState extends State<TrackPage> {
             child: _buildContents(context),
           ),
         );
-      },
-    );
   }
 
   Widget _buildTopRow() {
