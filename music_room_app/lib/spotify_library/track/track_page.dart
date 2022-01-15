@@ -62,6 +62,7 @@ class _TrackPageState extends State<TrackPage> {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ));
+    manager.playIfConnected();
     return Scaffold(
           body: Container(
             padding: const EdgeInsets.only(

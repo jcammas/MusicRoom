@@ -123,13 +123,11 @@ class TrackControlRowManager with ChangeNotifier {
     }
   }
 
-  void whenPlayerStateChange(dynamic snapshot) {
-    playerState = snapshot.data;
-    trackSdk = snapshot.data?.track;
-    if (playerState != null) {
-      isPlayed = !playerState!.isPaused;
-      notifyListeners();
-    }
+  void whenPlayerStateChange(PlayerState newState) {
+    playerState = newState;
+    trackSdk = newState.track;
+    isPlayed = !playerState!.isPaused;
+    notifyListeners();
     try {
       String? newId = trackSdkId;
       if (newId != null) {

@@ -43,7 +43,7 @@ class TrackManager with ChangeNotifier {
           SpotifySdk.subscribeConnectionStatus().listen(whenConnStatusChange);
     } on PlatformException {
       connStatusSubscription = null;
-    }  on MissingPluginException {
+    } on MissingPluginException {
       connStatusSubscription = null;
     }
   }
@@ -58,7 +58,6 @@ class TrackManager with ChangeNotifier {
     try {
       if (await _tryConnectToSpotify()) {
         isConnected = true;
-        await LibraryStatic.playTrack(trackApp, playlist);
       }
     } on PlatformException {
       isConnected = false;
@@ -69,10 +68,33 @@ class TrackManager with ChangeNotifier {
     }
   }
 
-  Future<void> connectSpotifySdk() async {
+  void playIfConnected() {
+    if (isConnected) {
+      LibraryStatic.playTrack(trackApp, playlist);
+    }
+  }
+
+  Future<void> _getTokenWithSdk() async {
     try {
-      updateLoading(true);
-      token = await spotify.getAccessToken();
+      token = await SpotifySdk.getAuthenticationToken(
+          clientId: spotifyClientId,
+          redirectUrl: spotifyRedirectUri,
+          scope: 'app-remote-control, '
+              'user-modify-playback-state, '
+              'playlist-read-private, '
+              'playlist-modify-public,user-read-currently-playing');
+      setStatus('Got a token: $token');
+    } on PlatformException catch (e) {
+      setStatus(e.code, message: e.message);
+      rethrow;
+    } on MissingPluginException {
+      setStatus('not implemented on this platform');
+      rethrow;
+    }
+  }
+
+  Future<void> _connectSpotifySdk() async {
+    try {
       bool result = await _tryConnectToSpotify(token: token);
       setStatus(result
           ? 'connect to spotify successful'
@@ -81,28 +103,46 @@ class TrackManager with ChangeNotifier {
         updateWith(isLoading: false, isConnected: true);
         await LibraryStatic.playTrack(trackApp, playlist);
       } else {
-        updateWith(isLoading: false, isConnected: false);
         throw Exception('Could not connect to your app Spotify');
       }
-    } on PlatformException catch (e) {
-      updateWith(isLoading: false, isConnected: false);
-      setStatus(e.code, message: e.message);
-      rethrow;
-    } on MissingPluginException {
-      updateWith(isLoading: false, isConnected: false);
-      setStatus('not implemented');
+    } catch (e) {
       rethrow;
     }
   }
 
-  void whenConnStatusChange(dynamic snapshot) {
-    var data = snapshot.data;
-    if (data != null) {
-      updateConnected(data.connected);
-    } else {
-      updateConnected(false);
+  Future<void> connectSpotifySdk() async {
+    try {
+      updateLoading(true);
+      token = await spotify.getAccessToken();
+      await _connectSpotifySdk();
+    } on PlatformException catch (e) {
+      if (e.code == 'NotLoggedInException') {
+        try {
+          await _getTokenWithSdk();
+          await _connectSpotifySdk();
+        } on PlatformException catch (e) {
+          updateWith(isLoading: false, isConnected: false);
+          setStatus(e.code, message: e.message);
+          rethrow;
+        } catch (e) {
+          updateWith(isLoading: false, isConnected: false);
+          rethrow;
+        }
+      } else {
+        rethrow;
+      }
+    } on MissingPluginException {
+      updateWith(isLoading: false, isConnected: false);
+      setStatus('not implemented');
+      rethrow;
+    } catch (e) {
+      updateWith(isLoading: false, isConnected: false);
+      rethrow;
     }
   }
+
+  void whenConnStatusChange(ConnectionStatus newStatus) =>
+      updateConnected(newStatus.connected);
 
   void updateConnected(bool isConnected) =>
       updateWith(isConnected: isConnected);

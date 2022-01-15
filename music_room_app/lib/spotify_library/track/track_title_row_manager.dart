@@ -58,8 +58,8 @@ class TrackTitleRowManager with ChangeNotifier {
     }
   }
 
-  void whenPlayerStateChange(dynamic snapshot) {
-    trackSdk = snapshot.data?.track;
+  void whenPlayerStateChange(PlayerState newState) {
+    trackSdk = newState.track;
     if (trackSdk != null) {
       if (trackApp.id != trackSdkId) {
         updateTrackFromSdk(trackSdkId);

@@ -84,9 +84,9 @@ class TrackSliderRowManager with ChangeNotifier {
     }
   }
 
-  void whenPlayerStateChange(dynamic snapshot) {
-    playerState = snapshot.data;
-    trackSdk = snapshot.data?.track;
+  void whenPlayerStateChange(PlayerState newState) {
+    playerState = newState;
+    trackSdk = newState.track;
     bool notify = false;
     if (trackSdk != null) {
       if (trackApp.id != trackSdkId!) {
@@ -94,7 +94,6 @@ class TrackSliderRowManager with ChangeNotifier {
         notify = true;
       }
     }
-    if (playerState != null) {
       if (isPaused != playerState!.isPaused) {
         timer != null ? timer!.cancel() : null;
         position = Duration(milliseconds: playerState!.playbackPosition);
@@ -102,7 +101,6 @@ class TrackSliderRowManager with ChangeNotifier {
         isPaused = playerState!.isPaused;
         notify = true;
       }
-    }
     notify ? notifyListeners() : null;
   }
 

@@ -28,6 +28,8 @@ class TrackImageManager with ChangeNotifier {
       playerStateSubscription = null;
     }  on MissingPluginException {
       playerStateSubscription = null;
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -52,8 +54,8 @@ class TrackImageManager with ChangeNotifier {
     }
   }
 
-  void whenPlayerStateChange(dynamic snapshot) {
-    trackSdk = snapshot.data?.track;
+  void whenPlayerStateChange(PlayerState newState) {
+    trackSdk = newState.track;
     if (trackSdk != null) {
       if (trackApp.id != trackSdkId) {
         updateTrackFromSdk(trackSdkId);
