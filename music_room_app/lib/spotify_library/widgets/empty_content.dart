@@ -4,7 +4,7 @@ class EmptyContent extends StatelessWidget {
   const EmptyContent({
     Key? key,
     this.title = 'Nothing here',
-    this.message = 'You don\'t have any playlist',
+    this.message = 'Just press "Refresh" !',
   }) : super(key: key);
   final String title;
   final String message;
@@ -17,11 +17,12 @@ class EmptyContent extends StatelessWidget {
         children: <Widget>[
           Text(
             title,
-            style: const TextStyle(fontSize: 32.0, color: Colors.black54),
+            style: const TextStyle(fontSize: 30.0, color: Colors.black54),
           ),
+          const SizedBox(height: 10),
           Text(
             message,
-            style: const TextStyle(fontSize: 16.0, color: Colors.black54),
+            style: const TextStyle(fontSize: 18.0, color: Colors.black54),
           ),
         ],
       ),

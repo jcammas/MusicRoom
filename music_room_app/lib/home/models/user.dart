@@ -1,9 +1,11 @@
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/room.dart';
 import 'package:music_room_app/home/models/spotify_profile.dart';
+import 'package:music_room_app/services/api_path.dart';
+import 'database_model.dart';
 import 'device.dart';
 
-class UserApp {
+class UserApp implements DatabaseModel {
   UserApp({
     required this.name,
     required this.email,
@@ -24,6 +26,9 @@ class UserApp {
   String? defaultRoomPrivacySettings;
   String? defaultRoomVoteSystem;
   String? privacyLevel;
+
+  @override
+  get docId => DBPath.user(uid);
 
   factory UserApp.fromMap(Map<String, dynamic>? data, String uid) {
     if (data != null) {
@@ -50,13 +55,12 @@ class UserApp {
     }
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
       'name': name,
       'email': email,
-      'playlists': playlists,
-      'spotify_profile': spotifyProfile
     };
   }
 }

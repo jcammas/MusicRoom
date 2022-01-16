@@ -1,32 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:music_room_app/spotify_library/widgets/list_items_manager.dart';
 import 'empty_content.dart';
 
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 
 class ListItemsBuilder<T> extends StatelessWidget {
-  const ListItemsBuilder({
-    Key? key,
-    required this.snapshot,
-    required this.itemBuilder,
-  }) : super(key: key);
+  const ListItemsBuilder(
+      {Key? key,
+      required this.snapshot,
+      required this.itemBuilder,
+      required this.emptyScreen,
+      required this.manager})
+      : super(key: key);
   final AsyncSnapshot<List<T>> snapshot;
-  final ItemWidgetBuilder<T> itemBuilder;
+  final ItemWidgetBuilder itemBuilder;
+  final ListItemsManager manager;
+  final StatelessWidget emptyScreen;
 
   @override
   Widget build(BuildContext context) {
-    if (snapshot.hasData) {
+    if (snapshot.hasData && manager.isLoading == false) {
       final List<T>? items = snapshot.data;
       if (items != null) {
         if (items.isNotEmpty) {
           return _buildList(items);
         } else {
-          return const EmptyContent();
+          return emptyScreen;
         }
       } else if (snapshot.hasError) {
         return const EmptyContent(
-          title: 'Something went wrong',
-          message: 'Can\'t load items right now',
-        );
+            title: 'Something went wrong',
+            message: 'Can\'t load items right now');
       }
     }
     return const Center(child: CircularProgressIndicator());

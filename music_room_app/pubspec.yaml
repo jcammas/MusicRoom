@@ -45,10 +45,19 @@ dependencies:
   http: ^0.13.4
   flutter_appauth: ^2.2.0
   flutter_secure_storage: ^5.0.2
+  google_fonts: ^2.2.0
+  line_icons: ^2.0.1
+  flutter_launcher_icons: ^0.9.2
+  marquee: ^2.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "images/music_room_logo.jpeg"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -73,8 +82,10 @@ flutter:
     - images/google-logo.png
     - images/avatar_julien.jpg
     - images/avatar_random.png
+    - images/spotify_icon.png
     - assets/image/music.jpg
-#    - images/avatar.jpg
+    - images/spotify-question-marks.jpeg
+    - images/music_room_logo.jpeg
 
 # An image asset can refer to one or more resolution-specific "variants", see
 # https://flutter.dev/assets-and-images/#resolution-aware.

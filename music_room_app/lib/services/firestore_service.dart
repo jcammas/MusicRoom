@@ -5,20 +5,14 @@ class FirestoreService {
 
   static final instance = FirestoreService._();
 
-  Future<void> setDocument({
-    required String path,
-    required Map<String, dynamic> data,
-  }) async {
+  Future<void> setDocument(
+      {required String path,
+      required Map<String, dynamic> data,
+      bool mergeOption = false}) async {
     final reference = FirebaseFirestore.instance.doc(path);
-    await reference.set(data);
-  }
-
-  Future<void> setDocumentWithMergeOption({
-    required String path,
-    required Map<String, dynamic> data,
-  }) async {
-    final reference = FirebaseFirestore.instance.doc(path);
-    await reference.set(data, SetOptions(merge: true));
+    mergeOption
+        ? await reference.set(data, SetOptions(merge: true))
+        : await reference.set(data);
   }
 
   Future<void> updateDocument({
@@ -29,17 +23,22 @@ class FirestoreService {
     await reference.update(data);
   }
 
-  bool _docExists(DocumentSnapshot doc) {
-    if (doc.exists) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   Future<bool> documentExists({required String path}) async {
     final docRef = FirebaseFirestore.instance.doc(path);
-    return docRef.get().then(_docExists);
+    final result = await docRef.get();
+    return result.exists;
+  }
+
+  Future<bool> collectionIsNotEmpty<T>({
+    required String path,
+    Query Function(Query query)? queryBuilder,
+  }) async {
+    Query query = FirebaseFirestore.instance.collection(path);
+    if (queryBuilder != null) {
+      query = queryBuilder(query);
+    }
+    final snapshot = await query.get();
+    return snapshot.docs.isNotEmpty;
   }
 
   Future<void> deleteDocument({required String path}) async {
