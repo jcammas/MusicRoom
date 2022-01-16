@@ -3,7 +3,6 @@ import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
-
 import '../library_static.dart';
 
 class TrackTitleRowManager with ChangeNotifier implements TrackManager {

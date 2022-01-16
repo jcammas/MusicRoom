@@ -62,7 +62,7 @@ class TrackMainManager with ChangeNotifier {
     controlRowManager = TrackControlRowManager(
         trackApp: trackApp, playlist: playlist, tracksList: tracksList);
     sliderRowManager =
-        TrackSliderRowManager(trackApp: trackApp, tracksList: tracksList);
+        TrackSliderRowManager();
     managers = [
       imageManager,
       titleRowManager,

@@ -18,16 +18,31 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   final List<TrackApp> tracksList;
   TrackApp trackApp;
   Playlist playlist;
-  bool isPlayed = false;
+  bool isPaused = true;
+  bool isShuffling = false;
+  bool playback = false;
   Track? trackSdk;
+  Timer? timer;
+  Duration position = const Duration(milliseconds: 0);
 
   String? get trackSdkId =>
       trackSdk == null ? null : trackSdk!.uri.split(':')[2];
+
+  initTimer() {
+    if (timer != null) {
+      timer!.cancel();
+    }
+    timer = Timer.periodic(const Duration(seconds: 1), updatePositionOneSecond);
+  }
+
+  void updatePositionOneSecond(Timer timer) {
+    position += const Duration(seconds: 1);
+    notifyListeners();
+  }
   
   togglePlay() async {
     try {
-      isPlayed = isPlayed ? false : true;
-      isPlayed ? await SpotifySdk.resume() : await SpotifySdk.pause();
+      isPaused ? await SpotifySdk.resume() : await SpotifySdk.pause();
     } on PlatformException catch (e) {
       TrackStatic.setStatus(e.code, message: e.message);
       rethrow;
@@ -56,10 +71,13 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
 
   Future<void> skipNext() async {
     try {
-      // await SpotifySdk.skipNext();
-      await SpotifySdk.skipToIndex(
-          spotifyUri: 'spotify:playlist:' + playlist.id,
-          trackIndex: _findNextSpotifyIndex());
+      if (isShuffling) {
+        await SpotifySdk.skipNext();
+      } else {
+        await SpotifySdk.skipToIndex(
+            spotifyUri: 'spotify:playlist:' + playlist.id,
+            trackIndex: _findNextSpotifyIndex());
+      }
     } on PlatformException catch (e) {
       TrackStatic.setStatus(e.code, message: e.message);
       rethrow;
@@ -89,10 +107,17 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
 
   Future<void> skipPrevious() async {
     try {
-      // await SpotifySdk.skipPrevious();
-      await SpotifySdk.skipToIndex(
-          spotifyUri: 'spotify:playlist:' + playlist.id,
-          trackIndex: _findPreviousSpotifyIndex());
+      if (isShuffling) {
+        await SpotifySdk.skipPrevious();
+      } else {
+        if (position < const Duration(seconds:4)) {
+          await SpotifySdk.skipToIndex(
+              spotifyUri: 'spotify:playlist:' + playlist.id,
+              trackIndex: _findPreviousSpotifyIndex());
+        } else {
+          TrackStatic.playTrack(trackApp, playlist);
+        }
+      }
     } on PlatformException catch (e) {
       TrackStatic.setStatus(e.code, message: e.message);
       rethrow;
@@ -102,11 +127,36 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
     }
   }
 
+  Future<void> toggleShuffle() async {
+    try {
+      await SpotifySdk.toggleShuffle();
+    } on PlatformException catch (e) {
+      TrackStatic.setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      TrackStatic.setStatus('not implemented');
+    }
+  }
+
   @override
   void whenPlayerStateChange(PlayerState newState) {
+    bool notify = false;
     trackSdk = newState.track;
-    isPlayed = !newState.isPaused;
-    notifyListeners();
+    position = Duration(milliseconds: newState.playbackPosition);
+    if (isPaused != newState.isPaused) {
+      timer != null ? timer!.cancel() : null;
+      newState.isPaused == false ? initTimer() : null;
+      isPaused = newState.isPaused;
+      notify = true;
+    }
+    if (isShuffling != newState.playbackOptions.isShuffling) {
+      isShuffling = newState.playbackOptions.isShuffling;
+      notify = true;
+    }
+    // if (playback != newState.playbackOptions.repeatMode) {
+    //   isShuffling = newState.playbackOptions.isShuffling;
+    //   notify = true;
+    // }
+    notify ? notifyListeners() : null;
     try {
       String? newId = trackSdkId;
       if (newId != null) {
@@ -115,5 +165,13 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
     } on Error {
       TrackStatic.playTrack(trackApp, playlist);
     }
+  }
+
+  @override
+  void dispose() {
+    if (timer != null) {
+      timer!.cancel();
+    }
+    super.dispose();
   }
 }

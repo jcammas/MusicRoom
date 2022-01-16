@@ -65,17 +65,11 @@ class _TrackTitleRowState extends State<TrackTitleRow> {
             ],
           ),
           IconButton(
-            icon: (manager.isAdded == true)
-                ? const Icon(
-                    LineIcons.plus,
-                    color: Colors.green,
-                    size: 27,
-                  )
-                : Icon(
-                    LineIcons.plus,
-                    color: Colors.grey.shade400,
-                    size: 27,
-                  ),
+            icon: Icon(
+              LineIcons.plus,
+              color: manager.isAdded ? Colors.green : Colors.grey.shade400,
+              size: 27,
+            ),
             onPressed: manager.toggleAdded,
           ),
         ],

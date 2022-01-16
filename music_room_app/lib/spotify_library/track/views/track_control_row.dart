@@ -40,9 +40,12 @@ class _TrackControlRowState extends State<TrackControlRow> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Icon(
-            LineIcons.random,
-            color: Colors.grey.shade400,
+          GestureDetector(
+            onTap: manager.toggleShuffle,
+            child: Icon(
+              LineIcons.random,
+              color: manager.isShuffling ? Colors.green : Colors.grey.shade400,
+            ),
           ),
           GestureDetector(
             onTap: manager.skipPrevious,
@@ -59,15 +62,12 @@ class _TrackControlRowState extends State<TrackControlRow> {
               child: IconButton(
                 iconSize: 70,
                 alignment: Alignment.center,
-                icon: manager.isPlayed
-                    ? const Icon(
-                        Icons.pause_circle_filled,
-                        color: Colors.white,
-                      )
-                    : const Icon(
-                        Icons.play_circle_filled,
-                        color: Colors.white,
-                      ),
+                icon: Icon(
+                  manager.isPaused
+                      ? Icons.play_circle_filled
+                      : Icons.pause_circle_filled,
+                  color: Colors.white,
+                ),
                 onPressed: manager.togglePlay,
               ),
             ),
