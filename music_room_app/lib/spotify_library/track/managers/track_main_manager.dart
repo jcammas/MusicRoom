@@ -18,13 +18,15 @@ import 'package:music_room_app/spotify_library/track/library_static.dart';
 
 class TrackMainManager with ChangeNotifier {
   TrackMainManager(
-      {required this.playlist,
+      {required this.context,
+        required this.playlist,
       required this.trackApp,
       required this.tracksList,
       required this.spotify}) {
     initManager();
   }
 
+  final BuildContext context;
   final Playlist playlist;
   final List<TrackApp> tracksList;
   TrackApp trackApp;
@@ -171,8 +173,11 @@ class TrackMainManager with ChangeNotifier {
   }
 
   void whenConnStatusChange(ConnectionStatus newStatus) {
+    if (isConnected && newStatus.connected == false) {
+      Navigator.of(context).pop();
+    }
     updateConnected(newStatus.connected);
-    playerStateSubscription ??=
+    playerStateSubscription =
         SpotifySdk.subscribePlayerState().listen(whenPlayerStateChange);
   }
 
@@ -187,8 +192,19 @@ class TrackMainManager with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> disconnect() async {
+    try {
+      await SpotifySdk.disconnect();
+    } on PlatformException catch (e) {
+      TrackStatic.setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      TrackStatic.setStatus('not implemented');
+    }
+  }
+
   @override
   void dispose() {
+    disconnect();
     if (connStatusSubscription != null) {
       connStatusSubscription!.cancel();
     }

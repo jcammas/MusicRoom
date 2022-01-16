@@ -5,6 +5,7 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/spotify_library/track/library_static.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
+import 'package:spotify_sdk/models/player_options.dart' as player_options;
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
@@ -24,6 +25,7 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   Track? trackSdk;
   Timer? timer;
   Duration position = const Duration(milliseconds: 0);
+  player_options.RepeatMode repeatMode = player_options.RepeatMode.off;
 
   String? get trackSdkId =>
       trackSdk == null ? null : trackSdk!.uri.split(':')[2];
@@ -38,18 +40,6 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   void updatePositionOneSecond(Timer timer) {
     position += const Duration(seconds: 1);
     notifyListeners();
-  }
-  
-  togglePlay() async {
-    try {
-      isPaused ? await SpotifySdk.resume() : await SpotifySdk.pause();
-    } on PlatformException catch (e) {
-      TrackStatic.setStatus(e.code, message: e.message);
-      rethrow;
-    } on MissingPluginException {
-      TrackStatic.setStatus('not implemented');
-      rethrow;
-    }
   }
 
   int _findNextSpotifyIndex() {
@@ -71,7 +61,7 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
 
   Future<void> skipNext() async {
     try {
-      if (isShuffling) {
+      if (isShuffling || repeatMode != player_options.RepeatMode.off) {
         await SpotifySdk.skipNext();
       } else {
         await SpotifySdk.skipToIndex(
@@ -107,10 +97,10 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
 
   Future<void> skipPrevious() async {
     try {
-      if (isShuffling) {
+      if (isShuffling || repeatMode != player_options.RepeatMode.off) {
         await SpotifySdk.skipPrevious();
       } else {
-        if (position < const Duration(seconds:4)) {
+        if (position < const Duration(seconds: 4)) {
           await SpotifySdk.skipToIndex(
               spotifyUri: 'spotify:playlist:' + playlist.id,
               trackIndex: _findPreviousSpotifyIndex());
@@ -137,6 +127,28 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
     }
   }
 
+  Future<void> toggleRepeat() async {
+    try {
+      await SpotifySdk.toggleRepeat();
+    } on PlatformException catch (e) {
+      TrackStatic.setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      TrackStatic.setStatus('not implemented');
+    }
+  }
+
+  togglePlay() async {
+    try {
+      isPaused ? await SpotifySdk.resume() : await SpotifySdk.pause();
+    } on PlatformException catch (e) {
+      TrackStatic.setStatus(e.code, message: e.message);
+      rethrow;
+    } on MissingPluginException {
+      TrackStatic.setStatus('not implemented');
+      rethrow;
+    }
+  }
+
   @override
   void whenPlayerStateChange(PlayerState newState) {
     bool notify = false;
@@ -152,10 +164,10 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
       isShuffling = newState.playbackOptions.isShuffling;
       notify = true;
     }
-    // if (playback != newState.playbackOptions.repeatMode) {
-    //   isShuffling = newState.playbackOptions.isShuffling;
-    //   notify = true;
-    // }
+    if (repeatMode != newState.playbackOptions.repeatMode) {
+      repeatMode = newState.playbackOptions.repeatMode;
+      notify = true;
+    }
     notify ? notifyListeners() : null;
     try {
       String? newId = trackSdkId;

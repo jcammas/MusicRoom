@@ -16,16 +16,14 @@ import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
 
 class TrackPage extends StatefulWidget {
-  const TrackPage(
-      {Key? key,
-      required this.manager})
-      : super(key: key);
+  const TrackPage({Key? key, required this.manager}) : super(key: key);
 
   final TrackMainManager manager;
 
   static Future<void> show(BuildContext context, Playlist playlist,
       TrackApp trackApp, List<TrackApp> tracksList, Spotify spotify) async {
     TrackMainManager manager = TrackMainManager(
+        context: context,
         trackApp: trackApp,
         playlist: playlist,
         tracksList: tracksList,
@@ -36,8 +34,7 @@ class TrackPage extends StatefulWidget {
         builder: (context) => ChangeNotifierProvider<TrackMainManager>(
           create: (_) => manager,
           child: Consumer<TrackMainManager>(
-            builder: (_, model, __) => TrackPage(
-                manager: manager),
+            builder: (_, model, __) => TrackPage(manager: manager),
           ),
         ),
       ),
@@ -144,7 +141,7 @@ class _TrackPageState extends State<TrackPage> {
   Widget _buildConnectRow() {
     const double size = 5;
     return Container(
-      margin: const EdgeInsets.only(top: 8, bottom: 25),
+      margin: const EdgeInsets.only(top: 13, bottom: 20),
       padding: const EdgeInsets.all(10.0),
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(25)),
@@ -238,6 +235,9 @@ class _TrackPageState extends State<TrackPage> {
                             trackApp: track,
                             tracksList: tracksList,
                             manager: manager.sliderRowManager),
+                        SizedBox(
+                          height: h * 0.01,
+                        ),
                         TrackControlRow.create(
                             context: context,
                             playlist: playlist,
@@ -247,6 +247,9 @@ class _TrackPageState extends State<TrackPage> {
                       ],
                     )
                   : _buildConnectRow(),
+          SizedBox(
+            height: h * 0.02,
+          ),
           _buildBottomRow(),
         ],
       ),
