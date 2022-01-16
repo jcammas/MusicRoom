@@ -13,41 +13,26 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   TrackControlRowManager(
       {required this.trackApp,
       required this.playlist,
-      required this.tracksList}) {
-    initManager();
-  }
+      required this.tracksList});
 
   final List<TrackApp> tracksList;
   TrackApp trackApp;
   Playlist playlist;
-  StreamSubscription<PlayerState>? playerStateSubscription;
   bool isPlayed = false;
-  PlayerState? playerState;
   Track? trackSdk;
 
   String? get trackSdkId =>
       trackSdk == null ? null : trackSdk!.uri.split(':')[2];
-
-  void initManager() {
-    try {
-      playerStateSubscription =
-          SpotifySdk.subscribePlayerState().listen(whenPlayerStateChange);
-    } on PlatformException {
-      playerStateSubscription = null;
-    } on MissingPluginException {
-      playerStateSubscription = null;
-    }
-  }
   
   togglePlay() async {
     try {
       isPlayed = isPlayed ? false : true;
       isPlayed ? await SpotifySdk.resume() : await SpotifySdk.pause();
     } on PlatformException catch (e) {
-      LibraryStatic.setStatus(e.code, message: e.message);
+      TrackStatic.setStatus(e.code, message: e.message);
       rethrow;
     } on MissingPluginException {
-      LibraryStatic.setStatus('not implemented');
+      TrackStatic.setStatus('not implemented');
       rethrow;
     }
   }
@@ -76,10 +61,10 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
           spotifyUri: 'spotify:playlist:' + playlist.id,
           trackIndex: _findNextSpotifyIndex());
     } on PlatformException catch (e) {
-      LibraryStatic.setStatus(e.code, message: e.message);
+      TrackStatic.setStatus(e.code, message: e.message);
       rethrow;
     } on MissingPluginException {
-      LibraryStatic.setStatus('not implemented');
+      TrackStatic.setStatus('not implemented');
       rethrow;
     }
   }
@@ -109,19 +94,18 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
           spotifyUri: 'spotify:playlist:' + playlist.id,
           trackIndex: _findPreviousSpotifyIndex());
     } on PlatformException catch (e) {
-      LibraryStatic.setStatus(e.code, message: e.message);
+      TrackStatic.setStatus(e.code, message: e.message);
       rethrow;
     } on MissingPluginException {
-      LibraryStatic.setStatus('not implemented');
+      TrackStatic.setStatus('not implemented');
       rethrow;
     }
   }
 
   @override
   void whenPlayerStateChange(PlayerState newState) {
-    playerState = newState;
     trackSdk = newState.track;
-    isPlayed = !playerState!.isPaused;
+    isPlayed = !newState.isPaused;
     notifyListeners();
     try {
       String? newId = trackSdkId;
@@ -129,15 +113,7 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
         trackApp = tracksList.firstWhere((track) => track.id == newId);
       }
     } on Error {
-      LibraryStatic.playTrack(trackApp, playlist);
+      TrackStatic.playTrack(trackApp, playlist);
     }
-  }
-
-  @override
-  void dispose() {
-    if (playerStateSubscription != null) {
-      playerStateSubscription!.cancel();
-    }
-    super.dispose();
   }
 }

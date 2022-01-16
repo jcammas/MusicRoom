@@ -84,16 +84,16 @@ class TrackMainManager with ChangeNotifier {
       }
     } on PlatformException {
       isConnected = false;
-      LibraryStatic.setStatus('not connected');
+      TrackStatic.setStatus('not connected');
     } on MissingPluginException {
       isConnected = false;
-      LibraryStatic.setStatus('not implemented');
+      TrackStatic.setStatus('not implemented');
     }
   }
 
   void playIfConnected() {
     if (isConnected) {
-      LibraryStatic.playTrack(trackApp, playlist);
+      TrackStatic.playTrack(trackApp, playlist);
     }
   }
 
@@ -106,12 +106,12 @@ class TrackMainManager with ChangeNotifier {
               'user-modify-playback-state, '
               'playlist-read-private, '
               'playlist-modify-public,user-read-currently-playing');
-      LibraryStatic.setStatus('Got a token: $token');
+      TrackStatic.setStatus('Got a token: $token');
     } on PlatformException catch (e) {
-      LibraryStatic.setStatus(e.code, message: e.message);
+      TrackStatic.setStatus(e.code, message: e.message);
       rethrow;
     } on MissingPluginException {
-      LibraryStatic.setStatus('not implemented on this platform');
+      TrackStatic.setStatus('not implemented on this platform');
       rethrow;
     }
   }
@@ -119,12 +119,12 @@ class TrackMainManager with ChangeNotifier {
   Future<void> _connectSpotifySdk() async {
     try {
       bool result = await _tryConnectToSpotify(token: token);
-      LibraryStatic.setStatus(result
+      TrackStatic.setStatus(result
           ? 'connect to spotify successful'
           : 'connect to spotify failed');
       if (result) {
         updateWith(isLoading: false, isConnected: true);
-        await LibraryStatic.playTrack(trackApp, playlist);
+        await TrackStatic.playTrack(trackApp, playlist);
       } else {
         throw Exception('Could not connect to your app Spotify');
       }
@@ -145,7 +145,7 @@ class TrackMainManager with ChangeNotifier {
           await _connectSpotifySdk();
         } on PlatformException catch (e) {
           updateWith(isLoading: false, isConnected: false);
-          LibraryStatic.setStatus(e.code, message: e.message);
+          TrackStatic.setStatus(e.code, message: e.message);
           rethrow;
         } catch (e) {
           updateWith(isLoading: false, isConnected: false);
@@ -156,7 +156,7 @@ class TrackMainManager with ChangeNotifier {
       }
     } on MissingPluginException {
       updateWith(isLoading: false, isConnected: false);
-      LibraryStatic.setStatus('not implemented');
+      TrackStatic.setStatus('not implemented');
       rethrow;
     } catch (e) {
       updateWith(isLoading: false, isConnected: false);
