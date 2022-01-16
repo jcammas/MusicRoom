@@ -118,11 +118,9 @@ class _TrackPageState extends State<TrackPage> {
             ),
           ],
         ),
-        const Icon(
-          Icons.arrow_drop_down_outlined,
-          color: Colors.white,
-          size: 24,
-        )
+        const SizedBox(
+          width: 24,
+        ),
       ],
     );
   }
@@ -177,45 +175,22 @@ class _TrackPageState extends State<TrackPage> {
     );
   }
 
-  Widget _buildBottomRow() {
-    return Container(
-      padding: const EdgeInsets.only(left: 22, right: 22),
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Icon(
-            LineIcons.desktop,
-            color: Colors.grey.shade400,
-          ),
-          Icon(
-            LineIcons.alternateList,
-            color: Colors.grey.shade400,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildContents(BuildContext context) {
     final double h = MediaQuery.of(context).size.height;
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           _buildTopRow(),
           SizedBox(
-            height: h * 0.04,
+            height: h * 0.03,
           ),
           TrackImage.create(
               context: context,
               trackApp: track,
               tracksList: tracksList,
               manager: manager.imageManager),
-          SizedBox(
-            height: h * 0.04,
-          ),
           TrackTitleRow.create(
               context: context,
               trackApp: track,
@@ -223,7 +198,7 @@ class _TrackPageState extends State<TrackPage> {
               manager: manager.titleRowManager),
           manager.isLoading
               ? const Padding(
-                  padding: EdgeInsets.only(top: 50, bottom: 56),
+                  padding: EdgeInsets.only(top: 52, bottom: 54),
                   child: Center(child: CircularProgressIndicator()))
               : manager.isConnected
                   ? Column(
@@ -248,9 +223,8 @@ class _TrackPageState extends State<TrackPage> {
                     )
                   : _buildConnectRow(),
           SizedBox(
-            height: h * 0.02,
+            height: h * 0.03,
           ),
-          _buildBottomRow(),
         ],
       ),
     );
