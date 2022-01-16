@@ -22,8 +22,8 @@ class TrackMainManager with ChangeNotifier {
         required this.playlist,
       required this.trackApp,
       required this.tracksList,
-      required this.spotify}) {
-    initManager();
+      required this.spotify}){
+    _initManagers();
   }
 
   final BuildContext context;
@@ -43,12 +43,12 @@ class TrackMainManager with ChangeNotifier {
   late TrackSliderRowManager sliderRowManager;
   late TrackTitleRowManager titleRowManager;
 
-  void initManager() {
-    checkConnection();
-    _initManagers();
+  Future<void> initManager() async {
     try {
       connStatusSubscription =
           SpotifySdk.subscribeConnectionStatus().listen(whenConnStatusChange);
+      await checkConnection();
+      playIfConnected();
     } on PlatformException {
       connStatusSubscription = null;
     } on MissingPluginException {
@@ -93,9 +93,14 @@ class TrackMainManager with ChangeNotifier {
     }
   }
 
-  void playIfConnected() {
+  Future<void> playIfConnected() async {
     if (isConnected) {
       TrackStatic.playTrack(trackApp, playlist);
+    // } else {
+    //   await Future.delayed(const Duration(seconds: 1));
+    //   if (isConnected) {
+    //     TrackStatic.playTrack(trackApp, playlist);
+    //   }
     }
   }
 

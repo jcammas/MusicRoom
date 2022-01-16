@@ -23,6 +23,7 @@ class TrackPage extends StatelessWidget {
         playlist: playlist,
         tracksList: tracksList,
         spotify: spotify);
+    await manager.initManager();
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
@@ -37,7 +38,6 @@ class TrackPage extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ));
-    manager.playIfConnected();
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.only(
