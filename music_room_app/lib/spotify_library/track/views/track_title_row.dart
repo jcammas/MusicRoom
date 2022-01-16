@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/spotify_library/track/track_title_row_manager.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_title_row_manager.dart';
 import 'package:provider/provider.dart';
 
 class TrackTitleRow extends StatefulWidget {

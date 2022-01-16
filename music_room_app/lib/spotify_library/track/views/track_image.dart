@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/spotify_library/track/track_image_manager.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_image_manager.dart';
 import 'package:provider/provider.dart';
 
 class TrackImage extends StatefulWidget {

@@ -6,13 +6,18 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/spotify.dart';
 import 'package:music_room_app/services/spotify_constants.dart';
-import 'package:music_room_app/widgets/logger.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_control_row_manager.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_image_manager.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_slider_row_manager.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_title_row_manager.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
+import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
-import 'library_static.dart';
+import 'package:music_room_app/spotify_library/track/library_static.dart';
 
-class TrackManager with ChangeNotifier {
-  TrackManager(
+class TrackMainManager with ChangeNotifier {
+  TrackMainManager(
       {required this.playlist,
       required this.trackApp,
       required this.tracksList,
@@ -28,16 +33,17 @@ class TrackManager with ChangeNotifier {
   bool isLoading = false;
   ConnectionStatus? connStatus;
   StreamSubscription<ConnectionStatus>? connStatusSubscription;
+  StreamSubscription<PlayerState>? playerStateSubscription;
   Spotify spotify;
-  final _logger = LoggerApp.logger;
-
-  void setStatus(String code, {String? message}) {
-    var text = message ?? '';
-    _logger.i('$code$text');
-  }
+  late List<TrackManager> managers;
+  late TrackImageManager imageManager;
+  late TrackControlRowManager controlRowManager;
+  late TrackSliderRowManager sliderRowManager;
+  late TrackTitleRowManager titleRowManager;
 
   void initManager() {
     checkConnection();
+    _initManagers();
     try {
       connStatusSubscription =
           SpotifySdk.subscribeConnectionStatus().listen(whenConnStatusChange);
@@ -46,6 +52,23 @@ class TrackManager with ChangeNotifier {
     } on MissingPluginException {
       connStatusSubscription = null;
     }
+  }
+
+  void _initManagers() {
+    imageManager =
+        TrackImageManager(trackApp: trackApp, tracksList: tracksList);
+    titleRowManager =
+        TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList);
+    controlRowManager = TrackControlRowManager(
+        trackApp: trackApp, playlist: playlist, tracksList: tracksList);
+    sliderRowManager =
+        TrackSliderRowManager(trackApp: trackApp, tracksList: tracksList);
+    managers = [
+      imageManager,
+      titleRowManager,
+      controlRowManager,
+      sliderRowManager
+    ];
   }
 
   _tryConnectToSpotify({String? token}) async =>
@@ -61,10 +84,10 @@ class TrackManager with ChangeNotifier {
       }
     } on PlatformException {
       isConnected = false;
-      setStatus('not connected');
+      LibraryStatic.setStatus('not connected');
     } on MissingPluginException {
       isConnected = false;
-      setStatus('not implemented');
+      LibraryStatic.setStatus('not implemented');
     }
   }
 
@@ -83,12 +106,12 @@ class TrackManager with ChangeNotifier {
               'user-modify-playback-state, '
               'playlist-read-private, '
               'playlist-modify-public,user-read-currently-playing');
-      setStatus('Got a token: $token');
+      LibraryStatic.setStatus('Got a token: $token');
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      LibraryStatic.setStatus(e.code, message: e.message);
       rethrow;
     } on MissingPluginException {
-      setStatus('not implemented on this platform');
+      LibraryStatic.setStatus('not implemented on this platform');
       rethrow;
     }
   }
@@ -96,7 +119,7 @@ class TrackManager with ChangeNotifier {
   Future<void> _connectSpotifySdk() async {
     try {
       bool result = await _tryConnectToSpotify(token: token);
-      setStatus(result
+      LibraryStatic.setStatus(result
           ? 'connect to spotify successful'
           : 'connect to spotify failed');
       if (result) {
@@ -122,7 +145,7 @@ class TrackManager with ChangeNotifier {
           await _connectSpotifySdk();
         } on PlatformException catch (e) {
           updateWith(isLoading: false, isConnected: false);
-          setStatus(e.code, message: e.message);
+          LibraryStatic.setStatus(e.code, message: e.message);
           rethrow;
         } catch (e) {
           updateWith(isLoading: false, isConnected: false);
@@ -133,7 +156,7 @@ class TrackManager with ChangeNotifier {
       }
     } on MissingPluginException {
       updateWith(isLoading: false, isConnected: false);
-      setStatus('not implemented');
+      LibraryStatic.setStatus('not implemented');
       rethrow;
     } catch (e) {
       updateWith(isLoading: false, isConnected: false);
@@ -141,8 +164,17 @@ class TrackManager with ChangeNotifier {
     }
   }
 
-  void whenConnStatusChange(ConnectionStatus newStatus) =>
-      updateConnected(newStatus.connected);
+  void whenPlayerStateChange(PlayerState newState) {
+    for (TrackManager manager in managers) {
+      manager.whenPlayerStateChange(newState);
+    }
+  }
+
+  void whenConnStatusChange(ConnectionStatus newStatus) {
+    updateConnected(newStatus.connected);
+    playerStateSubscription ??=
+        SpotifySdk.subscribePlayerState().listen(whenPlayerStateChange);
+  }
 
   void updateConnected(bool isConnected) =>
       updateWith(isConnected: isConnected);
@@ -159,6 +191,9 @@ class TrackManager with ChangeNotifier {
   void dispose() {
     if (connStatusSubscription != null) {
       connStatusSubscription!.cancel();
+    }
+    if (playerStateSubscription != null) {
+      playerStateSubscription!.cancel();
     }
     super.dispose();
   }

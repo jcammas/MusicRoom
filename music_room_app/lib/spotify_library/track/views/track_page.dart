@@ -7,61 +7,37 @@ import 'package:line_icons/line_icons.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/spotify.dart';
-import 'package:music_room_app/spotify_library/track/track_control_row.dart';
-import 'package:music_room_app/spotify_library/track/track_control_row_manager.dart';
-import 'package:music_room_app/spotify_library/track/track_image.dart';
-import 'package:music_room_app/spotify_library/track/track_image_manager.dart';
-import 'package:music_room_app/spotify_library/track/track_manager.dart';
-import 'package:music_room_app/spotify_library/track/track_slider_row.dart';
-import 'package:music_room_app/spotify_library/track/track_slider_row_manager.dart';
-import 'package:music_room_app/spotify_library/track/track_title_row.dart';
-import 'package:music_room_app/spotify_library/track/track_title_row_manager.dart';
+import 'package:music_room_app/spotify_library/track/views/track_control_row.dart';
+import 'package:music_room_app/spotify_library/track/views/track_image.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_main_manager.dart';
+import 'package:music_room_app/spotify_library/track/views/track_slider_row.dart';
+import 'package:music_room_app/spotify_library/track/views/track_title_row.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
 
 class TrackPage extends StatefulWidget {
   const TrackPage(
       {Key? key,
-      required this.manager,
-      required this.imageManager,
-      required this.controlRowManager,
-      required this.sliderRowManager,
-      required this.titleRowManager})
+      required this.manager})
       : super(key: key);
 
-  final TrackManager manager;
-  final TrackImageManager imageManager;
-  final TrackControlRowManager controlRowManager;
-  final TrackSliderRowManager sliderRowManager;
-  final TrackTitleRowManager titleRowManager;
+  final TrackMainManager manager;
 
   static Future<void> show(BuildContext context, Playlist playlist,
       TrackApp trackApp, List<TrackApp> tracksList, Spotify spotify) async {
-    TrackManager manager = TrackManager(
+    TrackMainManager manager = TrackMainManager(
         trackApp: trackApp,
         playlist: playlist,
         tracksList: tracksList,
         spotify: spotify);
-    TrackImageManager imageManager =
-        TrackImageManager(trackApp: trackApp, tracksList: tracksList);
-    TrackControlRowManager controlRowManager = TrackControlRowManager(
-        trackApp: trackApp, playlist: playlist, tracksList: tracksList);
-    TrackSliderRowManager sliderRowManager =
-        TrackSliderRowManager(trackApp: trackApp, tracksList: tracksList);
-    TrackTitleRowManager titleRowManager =
-        TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList);
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
-        builder: (context) => ChangeNotifierProvider<TrackManager>(
+        builder: (context) => ChangeNotifierProvider<TrackMainManager>(
           create: (_) => manager,
-          child: Consumer<TrackManager>(
+          child: Consumer<TrackMainManager>(
             builder: (_, model, __) => TrackPage(
-                manager: manager,
-                imageManager: imageManager,
-                titleRowManager: titleRowManager,
-                sliderRowManager: sliderRowManager,
-                controlRowManager: controlRowManager),
+                manager: manager),
           ),
         ),
       ),
@@ -73,7 +49,7 @@ class TrackPage extends StatefulWidget {
 }
 
 class _TrackPageState extends State<TrackPage> {
-  TrackManager get manager => widget.manager;
+  TrackMainManager get manager => widget.manager;
 
   Playlist get playlist => widget.manager.playlist;
 
@@ -239,7 +215,7 @@ class _TrackPageState extends State<TrackPage> {
               context: context,
               trackApp: track,
               tracksList: tracksList,
-              manager: widget.imageManager),
+              manager: manager.imageManager),
           SizedBox(
             height: h * 0.04,
           ),
@@ -247,7 +223,7 @@ class _TrackPageState extends State<TrackPage> {
               context: context,
               trackApp: track,
               tracksList: tracksList,
-              manager: widget.titleRowManager),
+              manager: manager.titleRowManager),
           manager.isLoading
               ? const Padding(
                   padding: EdgeInsets.only(top: 50, bottom: 56),
@@ -261,13 +237,13 @@ class _TrackPageState extends State<TrackPage> {
                             context: context,
                             trackApp: track,
                             tracksList: tracksList,
-                            manager: widget.sliderRowManager),
+                            manager: manager.sliderRowManager),
                         TrackControlRow.create(
                             context: context,
                             playlist: playlist,
                             trackApp: track,
                             tracksList: tracksList,
-                            manager: widget.controlRowManager),
+                            manager: manager.controlRowManager),
                       ],
                     )
                   : _buildConnectRow(),

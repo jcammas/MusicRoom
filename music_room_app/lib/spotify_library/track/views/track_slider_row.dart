@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/spotify_library/track/track_slider_row_manager.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_slider_row_manager.dart';
 import 'package:provider/provider.dart';
 
 class TrackSliderRow extends StatefulWidget {
@@ -49,10 +49,7 @@ class _TrackSliderRowState extends State<TrackSliderRow> {
               ),
             ),
             child: Slider(
-              value: (manager.position.inSeconds.toDouble() !=
-                      manager.duration.inSeconds.toDouble())
-                  ? manager.position.inSeconds.toDouble()
-                  : manager.resetSlider() ?? 0.0,
+              value: manager.position.inSeconds.toDouble(),
               min: 0,
               max: manager.duration.inSeconds.toDouble(),
               onChanged: (value) => manager.seekTo(value.toInt() * 1000),

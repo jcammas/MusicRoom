@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/widgets/logger.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
-import 'library_static.dart';
+import '../library_static.dart';
 
-class TrackSliderRowManager with ChangeNotifier {
+class TrackSliderRowManager with ChangeNotifier implements TrackManager {
   TrackSliderRowManager({required this.trackApp, required this.tracksList}) {
     initManager();
   }
@@ -22,8 +22,6 @@ class TrackSliderRowManager with ChangeNotifier {
   PlayerState? playerState;
   Track? trackSdk;
   Timer? timer;
-  final _logger = LoggerApp.logger;
-
 
   String? get trackSdkId =>
       trackSdk == null ? null : trackSdk!.uri.split(':')[2];
@@ -39,11 +37,6 @@ class TrackSliderRowManager with ChangeNotifier {
     }
   }
 
-  void setStatus(String code, {String? message}) {
-    var text = message ?? '';
-    _logger.i('$code$text');
-  }
-
 //when ?
   initTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), updatePositionOneSecond);
@@ -54,53 +47,66 @@ class TrackSliderRowManager with ChangeNotifier {
     notifyListeners();
   }
 
-  double? resetSlider() {
-    try {
-      seekTo(0);
-      return 0.0;
-    } catch (e) {
-      rethrow;
-    }
-  }
+  // double? resetSlider() {
+  //   try {
+  //     seekTo(0);
+  //     return 0.0;
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 
   Future<void> seekTo(int milliseconds) async {
     try {
       await SpotifySdk.seekTo(positionedMilliseconds: milliseconds);
+      position = Duration(milliseconds: milliseconds);
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      LibraryStatic.setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus('not implemented');
+      LibraryStatic.setStatus('not implemented');
     }
   }
 
   Future<void> seekToRelative(int milliseconds) async {
     try {
+      position += Duration(milliseconds: milliseconds);
       await SpotifySdk.seekToRelativePosition(
           relativeMilliseconds: milliseconds);
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      LibraryStatic.setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus('not implemented');
+      LibraryStatic.setStatus('not implemented');
     }
   }
 
+  void updateTrackFromSdk(String? newId) {
+    if (newId != null) {
+      trackApp = tracksList.firstWhere((track) => track.id == newId,
+          orElse: () => trackApp);
+    }
+  }
+
+  @override
   void whenPlayerStateChange(PlayerState newState) {
     playerState = newState;
     trackSdk = newState.track;
     bool notify = false;
     if (trackSdk != null) {
-      if (trackApp.id != trackSdkId!) {
+      String newId = trackSdkId!;
+      if (trackApp.id != newId) {
         duration = Duration(milliseconds: trackSdk!.duration);
+        position = const Duration(milliseconds : 0);
+        updateTrackFromSdk(newId);
         notify = true;
       }
     }
-      if (isPaused != playerState!.isPaused) {
-        timer != null ? timer!.cancel() : null;
-        position = Duration(milliseconds: playerState!.playbackPosition);
-        playerState!.isPaused == false ? initTimer() : null;
-        isPaused = playerState!.isPaused;
-        notify = true;
-      }
+    if (isPaused != playerState!.isPaused) {
+      timer != null ? timer!.cancel() : null;
+      position = Duration(milliseconds: playerState!.playbackPosition);
+      playerState!.isPaused == false ? initTimer() : null;
+      isPaused = playerState!.isPaused;
+      notify = true;
+    }
     notify ? notifyListeners() : null;
   }
 

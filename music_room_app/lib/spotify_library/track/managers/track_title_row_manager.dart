@@ -1,14 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/track.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
-class TrackImageManager with ChangeNotifier {
-  TrackImageManager({required this.trackApp, required this.tracksList}) {
+class TrackTitleRowManager with ChangeNotifier implements TrackManager {
+  TrackTitleRowManager({required this.trackApp, required this.tracksList}) {
     initManager();
   }
 
@@ -16,6 +16,7 @@ class TrackImageManager with ChangeNotifier {
   TrackApp trackApp;
   Track? trackSdk;
   StreamSubscription<PlayerState>? playerStateSubscription;
+  bool isAdded = false;
 
   String? get trackSdkId =>
       trackSdk == null ? null : trackSdk!.uri.split(':')[2];
@@ -26,24 +27,27 @@ class TrackImageManager with ChangeNotifier {
           SpotifySdk.subscribePlayerState().listen(whenPlayerStateChange);
     } on PlatformException {
       playerStateSubscription = null;
-    }  on MissingPluginException {
+    } on MissingPluginException {
       playerStateSubscription = null;
-    } catch (e) {
-      rethrow;
     }
   }
 
-  Widget? returnImage() {
-    if (trackApp.album != null) {
-      if (trackApp.album!['images'] != null) {
-        if (trackApp.album!['images'].isNotEmpty) {
-          if (trackApp.album!['images'].first['url'] != null) {
-            return Image.network(trackApp.album!['images'].first['url']);
-          }
+  toggleAdded() => updateAdded(isAdded == true ? false : true);
+
+  void updateAdded(bool isAdded) {
+    this.isAdded = isAdded;
+    notifyListeners();
+  }
+
+  String returnArtist() {
+    if (trackApp.artists != null) {
+      if (trackApp.artists!.isNotEmpty) {
+        if (trackApp.artists!.first['name'] != null) {
+          return trackApp.artists!.first['name'];
         }
       }
     }
-    return Image.asset('images/spotify-question-marks.jpeg');
+    return 'Unknown';
   }
 
   void updateTrackFromSdk(String? newId) {
@@ -54,6 +58,7 @@ class TrackImageManager with ChangeNotifier {
     }
   }
 
+  @override
   void whenPlayerStateChange(PlayerState newState) {
     trackSdk = newState.track;
     if (trackSdk != null) {

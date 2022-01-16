@@ -4,12 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/spotify_library/track/library_static.dart';
-import 'package:music_room_app/widgets/logger.dart';
+import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
-class TrackControlRowManager with ChangeNotifier {
+class TrackControlRowManager with ChangeNotifier implements TrackManager {
   TrackControlRowManager(
       {required this.trackApp,
       required this.playlist,
@@ -24,7 +24,6 @@ class TrackControlRowManager with ChangeNotifier {
   bool isPlayed = false;
   PlayerState? playerState;
   Track? trackSdk;
-  final _logger = LoggerApp.logger;
 
   String? get trackSdkId =>
       trackSdk == null ? null : trackSdk!.uri.split(':')[2];
@@ -39,21 +38,16 @@ class TrackControlRowManager with ChangeNotifier {
       playerStateSubscription = null;
     }
   }
-
-  void setStatus(String code, {String? message}) {
-    var text = message ?? '';
-    _logger.i('$code$text');
-  }
-
+  
   togglePlay() async {
     try {
       isPlayed = isPlayed ? false : true;
       isPlayed ? await SpotifySdk.resume() : await SpotifySdk.pause();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      LibraryStatic.setStatus(e.code, message: e.message);
       rethrow;
     } on MissingPluginException {
-      setStatus('not implemented');
+      LibraryStatic.setStatus('not implemented');
       rethrow;
     }
   }
@@ -82,10 +76,10 @@ class TrackControlRowManager with ChangeNotifier {
           spotifyUri: 'spotify:playlist:' + playlist.id,
           trackIndex: _findNextSpotifyIndex());
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      LibraryStatic.setStatus(e.code, message: e.message);
       rethrow;
     } on MissingPluginException {
-      setStatus('not implemented');
+      LibraryStatic.setStatus('not implemented');
       rethrow;
     }
   }
@@ -115,14 +109,15 @@ class TrackControlRowManager with ChangeNotifier {
           spotifyUri: 'spotify:playlist:' + playlist.id,
           trackIndex: _findPreviousSpotifyIndex());
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      LibraryStatic.setStatus(e.code, message: e.message);
       rethrow;
     } on MissingPluginException {
-      setStatus('not implemented');
+      LibraryStatic.setStatus('not implemented');
       rethrow;
     }
   }
 
+  @override
   void whenPlayerStateChange(PlayerState newState) {
     playerState = newState;
     trackSdk = newState.track;
