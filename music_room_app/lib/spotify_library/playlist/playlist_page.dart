@@ -7,12 +7,12 @@ import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
 import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
+import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_manager.dart';
 import 'package:music_room_app/spotify_library/playlist/track_tile.dart';
 import 'package:music_room_app/spotify_library/track/views/track_page.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
-import '../widgets/list_items_builder.dart';
 
 class PlaylistPage extends StatelessWidget {
   const PlaylistPage(
