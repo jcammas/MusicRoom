@@ -130,7 +130,6 @@ class TrackMainManager with ChangeNotifier {
           ? 'connect to spotify successful'
           : 'connect to spotify failed');
       if (result) {
-        updateWith(isLoading: false, isConnected: true);
         await TrackStatic.playTrack(trackApp, playlist);
       } else {
         throw Exception('Could not connect to your app Spotify');
@@ -145,11 +144,13 @@ class TrackMainManager with ChangeNotifier {
       updateLoading(true);
       token = await spotify.getAccessToken();
       await _connectSpotifySdk();
+      updateWith(isLoading: false, isConnected: true);
     } on PlatformException catch (e) {
       if (e.code == 'NotLoggedInException') {
         try {
           await _getTokenWithSdk();
           await _connectSpotifySdk();
+          updateWith(isLoading: false, isConnected: true);
         } on PlatformException catch (e) {
           updateWith(isLoading: false, isConnected: false);
           TrackStatic.setStatus(e.code, message: e.message);
@@ -159,6 +160,7 @@ class TrackMainManager with ChangeNotifier {
           rethrow;
         }
       } else {
+        updateWith(isLoading: false, isConnected: false);
         rethrow;
       }
     } on MissingPluginException {
