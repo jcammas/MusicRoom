@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/messenger/widgets/profile_header_widget.dart';
-
 import 'models/user.dart';
 import 'widgets/messages_widget.dart';
 import 'widgets/new_message_widget.dart';

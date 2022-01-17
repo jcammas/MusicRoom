@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:music_room_app/messenger/api/firebase_api.dart';
 
 class NewMessageWidget extends StatefulWidget {

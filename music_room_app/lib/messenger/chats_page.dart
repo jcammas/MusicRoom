@@ -1,9 +1,5 @@
 import 'package:music_room_app/messenger/api/firebase_api.dart';
-
 import 'package:flutter/material.dart';
-import 'package:music_room_app/services/database.dart';
-import 'package:provider/provider.dart';
-
 import 'models/user.dart';
 import 'widgets/chat_body_widget.dart';
 import 'widgets/chat_header_widget.dart';

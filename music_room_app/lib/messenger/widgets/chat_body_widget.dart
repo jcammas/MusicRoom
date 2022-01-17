@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
 import 'package:music_room_app/messenger/models/user.dart';
-
 import '../chat_page.dart';
 
 class ChatBodyWidget extends StatelessWidget {

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/messenger/stuff/recents_chats.dart';
 import 'package:music_room_app/messenger/stuff/search.dart';
-
 import 'package:music_room_app/widgets/custom_appbar.dart';
 
 class MessengerScreen extends StatefulWidget {

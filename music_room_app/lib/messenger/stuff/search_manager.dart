@@ -10,7 +10,7 @@ class SearchManager with ChangeNotifier {
   List<UserApp> users = [];
 
   Future<void> getUsers() async {
-    users = await db.usersList();
+    users = await db.getAllUsers();
     isLoading = false;
     notifyListeners();
   }
