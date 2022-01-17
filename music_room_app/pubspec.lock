@@ -212,24 +212,17 @@ packages:
   flutter_blue:
     dependency: "direct main"
     description:
-     name: flutter_blue
-     url: "https://pub.dartlang.org"
+      name: flutter_blue
+      url: "https://pub.dartlang.org"
     source: hosted
     version: "0.8.0"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
-     name: flutter_launcher_icons
-     url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.9.2"
-  flutter_lints:
-    dependency: "direct dev"
-    description:
-      name: flutter_lints
+      name: flutter_launcher_icons
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.4"
+    version: "0.9.2"
   flutter_login_facebook:
     dependency: "direct main"
     description:
@@ -366,13 +359,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.4.0"
-  lints:
-    dependency: transitive
-    description:
-      name: lints
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   line_icons:
     dependency: "direct main"
     description:
@@ -622,7 +608,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.3.4"
+    version: "2.3.6"
   xdg_directories:
     dependency: transitive
     description:

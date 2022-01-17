@@ -51,6 +51,9 @@ class _TrackFormState extends State<TrackForm> {
               trackApp: track,
               tracksList: tracksList,
               manager: manager.imageManager),
+          SizedBox(
+            height: screenHeight * 0.02,
+          ),
           TrackTitleRow.create(
               context: context,
               trackApp: track,
