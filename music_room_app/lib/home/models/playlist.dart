@@ -1,6 +1,9 @@
 import 'package:music_room_app/home/models/track.dart';
+import 'package:music_room_app/services/api_path.dart';
 
-class Playlist {
+import 'database_model.dart';
+
+class Playlist implements DatabaseModel {
   Playlist(
       {required this.id,
       required this.name,
@@ -14,13 +17,16 @@ class Playlist {
 
   final String id;
   String name;
-  Map<String, Track> tracksList;
+  Map<String, TrackApp> tracksList;
   Map<String, dynamic>? owner;
   String? description;
   bool? collaborative;
   bool? public;
   List<Map<String, dynamic>>? images;
   Map<String, dynamic>? tracksData;
+
+  @override
+  get docId => DBPath.playlist(id);
 
   factory Playlist.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
@@ -31,10 +37,10 @@ class Playlist {
       final bool? public = data['public'];
       final List<dynamic> images = data['images'] ?? List.empty();
       final Map<String, dynamic>? tracksData = data['tracks'];
-      Map<String, Track> tracksList = {};
+      Map<String, TrackApp> tracksList = {};
       Map<String, dynamic>? tracksListData = data['tracks_list'];
       if (tracksListData != null) {
-        tracksListData.updateAll((id, track) => Track.fromMap(track, id));
+        tracksListData.updateAll((id, track) => TrackApp.fromMap(track, id));
         tracksList = tracksListData.cast();
       }
       return Playlist(
@@ -57,6 +63,7 @@ class Playlist {
     }
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'name': name,

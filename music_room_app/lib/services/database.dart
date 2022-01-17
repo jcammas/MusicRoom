@@ -1,67 +1,66 @@
+import 'package:music_room_app/home/models/database_model.dart';
 import 'package:music_room_app/home/models/playlist.dart';
-import 'package:music_room_app/home/models/spotify_profile.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'api_path.dart';
 import 'firestore_service.dart';
 
 abstract class Database {
-  Future<void> setUser(UserApp user);
+  Future<void> delete(DatabaseModel model);
 
-  Future<void> deleteUser({UserApp user});
+  Future<void> deleteUser();
 
-  Stream<List<UserApp>> usersStream();
+  Future<void> deleteInUser(DatabaseModel model);
 
-  Stream<UserApp> userStream({UserApp? user});
+  Future<void> deleteInObject(DatabaseModel parent, DatabaseModel child);
 
-  Future<List<UserApp>> getAllUsers();
+  Future<void> deleteInObjectInUser(DatabaseModel parent, DatabaseModel child);
+
+  Future<void> set(DatabaseModel model, {bool mergeOption = false});
+
+  Future<void> setInUser(DatabaseModel model, {bool mergeOption = false});
+
+  Future<void> setInObject(DatabaseModel parent, DatabaseModel child,
+      {bool mergeOption = false});
+
+  Future<void> setInObjectInUser(DatabaseModel parent, DatabaseModel child,
+      {bool mergeOption = false});
+
+  Future<void> setList(List<DatabaseModel> models, {bool mergeOption = false});
+
+  Future<void> setListInUser(List<DatabaseModel> models,
+      {bool mergeOption = false});
+
+  Future<void> setListInObject(
+      DatabaseModel parent, List<DatabaseModel> children,
+      {bool mergeOption = false});
+
+  Future<void> setListInObjectInUser(
+      DatabaseModel parent, List<DatabaseModel> children,
+      {bool mergeOption = false});
+
+  Future<void> update(DatabaseModel model);
 
   Future<UserApp> getUser();
 
+  Future<List<UserApp>> getAllUsers();
+
   Future<bool> userExists({UserApp? user});
 
-  Future<void> updateUser(UserApp user);
+  Future<bool> userHasPlaylists({UserApp? user});
 
-  Future<void> savePlaylist(Playlist playlist);
+  Future<bool> userPlaylistHasTracks(Playlist playlist, {UserApp? user});
 
-  Future<void> savePlaylists(List<Playlist> playlists);
+  Stream<UserApp> userStream({UserApp? user});
 
-  Future<List<Playlist>> getAllPlaylists();
-
-  Future<Playlist> getPlaylist(Playlist playlist);
-
-  Future<void> deleteUserPlaylist(Playlist playlist, {UserApp? user});
-
-  Future<void> setUserPlaylist(Playlist playlist, {UserApp? user});
-
-  Future<void> setUserPlaylists(List<Playlist> playlists, {UserApp? user});
-
-  Future<void> setSpotifyProfile(SpotifyProfile profile);
+  Stream<List<UserApp>> usersStream();
 
   Stream<Playlist> userPlaylistStream(Playlist playlist, {UserApp? user});
 
   Stream<List<Playlist>> userPlaylistsStream({UserApp? user});
 
-  Future<List<Playlist>> getUserPlaylists({UserApp? user});
-
-  Future<void> saveTrack(Track track);
-
-  Future<void> saveTracks(List<Track> tracks);
-
-  Future<void> setPlaylistTrack(Track track, Playlist playlist);
-
-  Future<void> setPlaylistTracks(List<Track> tracks, Playlist playlist);
-
-  Future<void> setUserPlaylistTrack(Track track, Playlist playlist,
+  Stream<List<TrackApp>> userPlaylistTracksStream(Playlist playlist,
       {UserApp? user});
-
-  Future<void> setUserPlaylistTracks(List<Track> tracks, Playlist playlist,
-      {UserApp? user});
-
-  Future<void> deleteUserPlaylistTrack(Playlist playlist, Track track,
-      {UserApp? user});
-
-  Stream<List<Track>> userPlaylistTracksStream(Playlist playlist, {UserApp? user});
 
   set uid(String uid);
 }
@@ -77,188 +76,164 @@ class FirestoreDatabase implements Database {
   set uid(String uid) => _uid = uid;
 
   @override
-  Future<void> setUser(UserApp user) async => await _service.setDocument(
-        path: APIPath.user(_uid),
-        data: user.toMap(),
-      );
+  Future<void> delete(DatabaseModel model) async =>
+      await _service.deleteDocument(path: model.docId);
 
   @override
-  Future<void> updateUser(UserApp user) async => await _service.updateDocument(
-        path: APIPath.user(_uid),
-        data: user.toMap(),
-      );
+  Future<void> deleteUser() async =>
+      await _service.deleteDocument(path: DBPath.user(_uid));
 
   @override
-  Future<void> setSpotifyProfile(SpotifyProfile profile) async =>
-      await _service.setDocumentWithMergeOption(
-        path: APIPath.spotifyProfile(_uid, profile.id),
-        data: profile.toMap(),
-      );
+  Future<void> deleteInUser(DatabaseModel model) async => await _service
+      .deleteDocument(path: DBPath.user(_uid) + '/' + model.docId);
 
   @override
-  Future<bool> userExists({UserApp? user}) async => await _service
-      .documentExists(path: APIPath.user(user == null ? _uid : user.uid));
+  Future<void> deleteInObject(
+          DatabaseModel parent, DatabaseModel child) async =>
+      await _service.deleteDocument(path: parent.docId + '/' + child.docId);
 
   @override
-  Future<void> deleteUser({UserApp? user}) async {
-    await _service.deleteDocument(
-        path: APIPath.user(user == null ? _uid : user.uid));
+  Future<void> deleteInObjectInUser(
+          DatabaseModel parent, DatabaseModel child) async =>
+      await _service.deleteDocument(
+          path: DBPath.user(_uid) + '/' + parent.docId + '/' + child.docId);
+
+  @override
+  Future<void> set(DatabaseModel model, {bool mergeOption = false}) async =>
+      await _service.setDocument(
+          path: model.docId, data: model.toMap(), mergeOption: mergeOption);
+
+  @override
+  Future<void> setInUser(DatabaseModel model,
+          {bool mergeOption = false}) async =>
+      await _service.setDocument(
+          path: DBPath.user(_uid) + '/' + model.docId,
+          data: model.toMap(),
+          mergeOption: mergeOption);
+
+  @override
+  Future<void> setInObject(DatabaseModel parent, DatabaseModel child,
+          {bool mergeOption = false}) async =>
+      await _service.setDocument(
+          path: parent.docId + '/' + child.docId,
+          data: child.toMap(),
+          mergeOption: mergeOption);
+
+  @override
+  Future<void> setInObjectInUser(DatabaseModel parent, DatabaseModel child,
+          {bool mergeOption = false}) async =>
+      await _service.setDocument(
+          path: DBPath.user(_uid) + '/' + parent.docId + '/' + child.docId,
+          data: child.toMap(),
+          mergeOption: mergeOption);
+
+  @override
+  Future<void> setList(List<DatabaseModel> models,
+      {bool mergeOption = false}) async {
+    for (var model in models) {
+      await set(model, mergeOption: mergeOption);
+    }
   }
 
   @override
-  Stream<UserApp> userStream({UserApp? user}) => _service.documentStream(
-        path: APIPath.user(user == null ? _uid : user.uid),
-        builder: (data, documentId) => UserApp.fromMap(data, documentId),
+  Future<void> setListInUser(List<DatabaseModel> models,
+      {bool mergeOption = false}) async {
+    for (var model in models) {
+      await setInUser(model, mergeOption: mergeOption);
+    }
+  }
+
+  @override
+  Future<void> setListInObject(
+      DatabaseModel parent, List<DatabaseModel> children,
+      {bool mergeOption = false}) async {
+    for (var child in children) {
+      await setInObject(parent, child, mergeOption: mergeOption);
+    }
+  }
+
+  @override
+  Future<void> setListInObjectInUser(
+      DatabaseModel parent, List<DatabaseModel> children,
+      {bool mergeOption = false}) async {
+    for (var child in children) {
+      await setInObjectInUser(parent, child, mergeOption: mergeOption);
+    }
+  }
+
+  @override
+  Future<void> update(DatabaseModel model) async =>
+      await _service.updateDocument(
+        path: model.docId,
+        data: model.toMap(),
       );
 
   @override
-  Stream<List<UserApp>> usersStream() => _service.collectionStream(
-        path: APIPath.users(),
+  Future<UserApp> getUser({UserApp? user}) async => await _service.getDocument(
+        path: DBPath.user(user == null ? _uid : user.uid),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
 
   @override
   Future<List<UserApp>> getAllUsers() async => await _service.getCollection(
-        path: APIPath.users(),
+        path: DBPath.users(),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
 
   @override
-  Future<UserApp> getUser({UserApp? user}) async => await _service.getDocument(
-        path: APIPath.user(user == null ? _uid : user.uid),
+  Future<bool> userExists({UserApp? user}) async => await _service
+      .documentExists(path: DBPath.user(user == null ? _uid : user.uid));
+
+  @override
+  Future<bool> userHasPlaylists({UserApp? user}) async =>
+      await _service.collectionIsNotEmpty(
+          path: DBPath.userPlaylists(user == null ? _uid : user.uid));
+
+  @override
+  Future<bool> userPlaylistHasTracks(Playlist playlist,
+          {UserApp? user}) async =>
+      await _service.collectionIsNotEmpty(
+          path: DBPath.userPlaylistTracks(
+              user == null ? _uid : user.uid, playlist.id));
+
+  @override
+  Stream<UserApp> userStream({UserApp? user}) => _service.documentStream(
+        path: DBPath.user(user == null ? _uid : user.uid),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
 
   @override
-  Future<void> savePlaylist(Playlist playlist) async => await _service
-      .setDocument(path: APIPath.playlist(playlist.id), data: playlist.toMap());
-
-  @override
-  Future<void> savePlaylists(List<Playlist> playlists) async {
-    for (var playlist in playlists) {
-      await savePlaylist(playlist);
-    }
-  }
-
-  @override
-  Future<List<Playlist>> getAllPlaylists() async =>
-      await _service.getCollection(
-        path: APIPath.playlists(),
-        builder: (data, documentId) => Playlist.fromMap(data, documentId),
+  Stream<List<UserApp>> usersStream() => _service.collectionStream(
+        path: DBPath.users(),
+        builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
-
-  @override
-  Future<Playlist> getPlaylist(Playlist playlist) async =>
-      await _service.getDocument(
-        path: APIPath.playlist(playlist.id),
-        builder: (data, documentId) => Playlist.fromMap(data, documentId),
-      );
-
-  @override
-  Future<void> deleteUserPlaylist(Playlist playlist, {UserApp? user}) async {
-    await _service.deleteDocument(
-        path:
-            APIPath.userPlaylist(user == null ? _uid : user.uid, playlist.id));
-  }
-
-  @override
-  Future<void> setUserPlaylist(Playlist playlist, {UserApp? user}) async {
-    await _service.setDocument(
-      path: APIPath.userPlaylist(user == null ? _uid : user.uid, playlist.id),
-      data: playlist.toMap(),
-    );
-  }
-
-  @override
-  Future<void> setUserPlaylists(List<Playlist> playlists,
-      {UserApp? user}) async {
-    for (var playlist in playlists) {
-      await setUserPlaylist(playlist, user: user);
-    }
-  }
 
   @override
   Stream<Playlist> userPlaylistStream(Playlist playlist, {UserApp? user}) =>
       _service.documentStream(
-        path: APIPath.userPlaylist(user == null ? _uid : user.uid, playlist.id),
+        path: DBPath.userPlaylist(user == null ? _uid : user.uid, playlist.id),
         builder: (data, documentId) => Playlist.fromMap(data, documentId),
       );
 
   @override
   Stream<List<Playlist>> userPlaylistsStream({UserApp? user}) =>
       _service.collectionStream(
-        path: APIPath.userPlaylists(user == null ? _uid : user.uid),
+        path: DBPath.userPlaylists(user == null ? _uid : user.uid),
         builder: (data, documentID) => Playlist.fromMap(data, documentID),
         sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
       );
 
   @override
-  Future<List<Playlist>> getUserPlaylists({UserApp? user}) async =>
-      await _service.getCollection<Playlist>(
-        path: APIPath.userPlaylists(user == null ? _uid : user.uid),
-        builder: (data, documentID) => Playlist.fromMap(data, documentID),
-        sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
+  Stream<List<TrackApp>> userPlaylistTracksStream(Playlist playlist,
+          {UserApp? user}) =>
+      _service.collectionStream(
+        path: DBPath.userPlaylistTracks(
+            user == null ? _uid : user.uid, playlist.id),
+        builder: (data, documentID) => TrackApp.fromMap(data, documentID),
+        sort: (lhs, rhs) => lhs.indexApp != null
+            ? rhs.indexApp != null
+                ? lhs.indexApp!.compareTo(rhs.indexApp!)
+                : 0
+            : 0,
       );
-
-  @override
-  Future<void> saveTrack(Track track) async =>
-      await _service.setDocumentWithMergeOption(
-          path: APIPath.track(track.id), data: track.toMap());
-
-  @override
-  Future<void> saveTracks(List<Track> tracks) async {
-    for (var track in tracks) {
-      await saveTrack(track);
-    }
-  }
-
-  @override
-  Future<void> setPlaylistTrack(Track track, Playlist playlist) async {
-    await _service.setDocument(
-      path: APIPath.playlistTrack(playlist.id, track.id),
-      data: track.toMap(),
-    );
-  }
-
-  @override
-  Future<void> setPlaylistTracks(List<Track> tracks, Playlist playlist) async {
-    for (var track in tracks) {
-      await setPlaylistTrack(track, playlist);
-    }
-  }
-
-  @override
-  Future<void> setUserPlaylistTrack(Track track, Playlist playlist,
-      {UserApp? user}) async {
-    await _service.setDocument(
-      path: APIPath.userPlaylistTrack(
-          user == null ? _uid : user.uid, playlist.id, track.id),
-      data: track.toMap(),
-    );
-  }
-
-  @override
-  Future<void> setUserPlaylistTracks(List<Track> tracks, Playlist playlist,
-      {UserApp? user}) async {
-    for (var track in tracks) {
-      await setUserPlaylistTrack(track, playlist, user: user);
-    }
-  }
-
-  @override
-  Future<void> deleteUserPlaylistTrack(Playlist playlist, Track track,
-      {UserApp? user}) async {
-    await _service.deleteDocument(
-        path: APIPath.userPlaylistTrack(
-            user == null ? _uid : user.uid, playlist.id, track.id));
-  }
-
-  @override
-  Stream<List<Track>> userPlaylistTracksStream(Playlist playlist, {UserApp? user}) =>
-    _service.collectionStream(
-      path: APIPath.userPlaylistTracks(user == null ? _uid : user.uid, playlist.id),
-      builder: (data, documentID) => Track.fromMap(data, documentID),
-      sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
-    );
-
 }

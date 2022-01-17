@@ -1,4 +1,7 @@
-class Device {
+import 'package:music_room_app/home/models/database_model.dart';
+import 'package:music_room_app/services/api_path.dart';
+
+class Device implements DatabaseModel {
   Device(
       {required this.name,
       required this.id,
@@ -9,6 +12,9 @@ class Device {
   String name;
   String permission;
   String controllingUser;
+
+  @override
+  get docId => DBPath.device(id);
 
   factory Device.fromMap(Map<String?, dynamic> data) {
     final String name = data['name'];
@@ -23,6 +29,7 @@ class Device {
     );
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'name': name,

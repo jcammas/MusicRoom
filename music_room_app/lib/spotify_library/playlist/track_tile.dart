@@ -5,11 +5,11 @@ import 'package:music_room_app/home/models/track.dart';
 class TrackTile extends StatelessWidget {
   const TrackTile({Key? key, required this.track, required this.onTap})
       : super(key: key);
-  final Track track;
+  final TrackApp track;
   final VoidCallback onTap;
   static const double imageSize = 55.0;
 
-  Widget _returnImage(Track track) {
+  Widget _returnImage(TrackApp track) {
     if (track.album != null) {
       if (track.album!['images'] != null) {
         if (track.album!['images'].isNotEmpty) {

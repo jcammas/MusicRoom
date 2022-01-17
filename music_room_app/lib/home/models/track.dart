@@ -1,22 +1,27 @@
-class Track {
-  Track({
-    required this.name,
-    required this.id,
-    required this.votes,
-    this.album,
-    this.artists,
-    this.discNumber,
-    this.durationMs,
-    this.explicit,
-    this.externalIds,
-    this.type,
-    this.isPlayable,
-    this.linkedFrom,
-    this.isLocal,
-    this.restrictions,
-    this.popularity,
-    this.trackNumber,
-  });
+import 'package:music_room_app/services/api_path.dart';
+
+import 'database_model.dart';
+
+class TrackApp implements DatabaseModel {
+  TrackApp(
+      {required this.name,
+      required this.id,
+      required this.votes,
+      this.album,
+      this.artists,
+      this.discNumber,
+      this.durationMs,
+      this.explicit,
+      this.externalIds,
+      this.type,
+      this.isPlayable,
+      this.linkedFrom,
+      this.isLocal,
+      this.restrictions,
+      this.popularity,
+      this.trackNumber,
+      this.indexSpotify,
+      this.indexApp});
 
   final String id;
   String name;
@@ -29,13 +34,18 @@ class Track {
   Map<String, dynamic>? externalIds;
   String? type;
   bool? isPlayable;
-  Track? linkedFrom;
+  TrackApp? linkedFrom;
   bool? isLocal;
   Map<String, dynamic>? restrictions;
   int? popularity;
   int? trackNumber;
+  int? indexSpotify;
+  int? indexApp;
 
-  factory Track.fromMap(Map<String, dynamic>? data, String id) {
+  @override
+  get docId => DBPath.track(id);
+
+  factory TrackApp.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
       final String name = data['name'] ?? 'N/A';
       final int votes = data['votes'] ?? 0;
@@ -47,12 +57,14 @@ class Track {
       final Map<String, dynamic>? externalIds = data['external_ids'];
       final String? type = data['type'];
       final bool? isPlayable = data['is_playable'];
-      final Track? linkedFrom = data['linked_from'];
+      final TrackApp? linkedFrom = data['linked_from'];
       final bool? isLocal = data['is_local'];
       final Map<String, dynamic>? restrictions = data['restrictions'];
       final int? popularity = data['popularity'];
       final int? trackNumber = data['track_number'];
-      return Track(
+      final int? indexSpotify = data['index_spotify'];
+      final int? indexApp = data['index_app'];
+      return TrackApp(
         id: id,
         name: name,
         votes: votes,
@@ -69,16 +81,15 @@ class Track {
         restrictions: restrictions,
         popularity: popularity,
         trackNumber: trackNumber,
+        indexSpotify: indexSpotify,
+        indexApp: indexApp,
       );
     } else {
-      return Track(
-        id: 'N/A',
-        name: 'N/A',
-        votes: 0
-      );
+      return TrackApp(id: 'N/A', name: 'N/A', votes: 0);
     }
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -97,6 +108,8 @@ class Track {
       'restrictions': restrictions,
       'popularity': popularity,
       'track_number': trackNumber,
+      'index_spotify': indexSpotify,
+      'index_app': indexApp
     };
   }
 }

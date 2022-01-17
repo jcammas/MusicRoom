@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,55 +6,40 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
-import 'package:music_room_app/spotify_library/widgets/track_tile.dart';
+import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
+import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
+import 'package:music_room_app/spotify_library/widgets/list_items_manager.dart';
+import 'package:music_room_app/spotify_library/playlist/track_tile.dart';
+import 'package:music_room_app/spotify_library/track/views/track_page.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
-import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:provider/provider.dart';
-import 'empty_content.dart';
-import 'list_items_builder.dart';
 
 class PlaylistPage extends StatelessWidget {
   const PlaylistPage(
       {Key? key,
       required this.db,
       required this.spotify,
-      required this.playlist})
+      required this.playlist,
+      required this.manager})
       : super(key: key);
   final Database db;
   final Spotify spotify;
   final Playlist playlist;
+  final PlaylistManager manager;
 
   static Future<void> show(BuildContext context, Playlist playlist) async {
-    final database = Provider.of<Database>(context, listen: false);
+    final db = Provider.of<Database>(context, listen: false);
     final spotify = Provider.of<Spotify>(context, listen: false);
+    PlaylistManager manager =
+        PlaylistManager(spotify: spotify, db: db, playlist: playlist, isLoading: true);
+    manager.fillIfEmpty(context);
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
-        builder: (context) =>
-            PlaylistPage(db: database, spotify: spotify, playlist: playlist),
+        builder: (context) => PlaylistPage(
+            db: db, spotify: spotify, playlist: playlist, manager: manager),
       ),
     );
-  }
-
-  Future<void> refreshPlaylistTracks(BuildContext context) async {
-    List<Track> trackList = await spotify.getPlaylistTracks(playlist.id);
-    Future.wait([
-      db.setUserPlaylistTracks(trackList, playlist),
-      db.saveTracks(trackList),
-      db.setPlaylistTracks(trackList, playlist),
-    ]);
-  }
-
-  Future<void> _deleteTrack(BuildContext context, Track track) async {
-    try {
-      await db.deleteUserPlaylistTrack(playlist, track);
-    } on FirebaseException catch (e) {
-      showExceptionAlertDialog(
-        context,
-        title: 'Operation failed',
-        exception: e,
-      );
-    }
   }
 
   @override
@@ -70,7 +54,7 @@ class PlaylistPage extends StatelessWidget {
                   appText: pName,
                   context: context,
                   funcText: 'Refresh',
-                  topRight: refreshPlaylistTracks),
+                  topRight: manager.refreshItems),
               backgroundColor: const Color(0xFFEFEFF4),
               body: AnnotatedRegion<SystemUiOverlayStyle>(
                   value: SystemUiOverlayStyle.light,
@@ -82,28 +66,31 @@ class PlaylistPage extends StatelessWidget {
     if (playlist != null) {
       return _buildContents(context, playlist);
     } else {
-      return const EmptyContent(
-        title: 'Something went wrong',
-        message: 'Can\'t load items right now',
-      );
+      return const Center(child: CircularProgressIndicator());
     }
   }
 
   Widget _buildContents(BuildContext context, Playlist playlist) {
-    return StreamBuilder<List<Track>>(
+    return StreamBuilder<List<TrackApp>>(
       stream: db.userPlaylistTracksStream(playlist),
       builder: (context, snapshot) {
-        return ListItemsBuilder<Track>(
-          snapshot: snapshot,
-          itemBuilder: (context, track) => Dismissible(
-            key: Key('playlist-${track.id}'),
-            background: Container(color: Colors.red),
-            direction: DismissDirection.endToStart,
-            onDismissed: (direction) => _deleteTrack(context, track),
-            child: TrackTile(
-              track: track,
-              onTap: () => {},
-              // onTap: () => PlaylistEntriesPage.show(context, playlist),
+        return ChangeNotifierProvider<PlaylistManager>(
+          create: (_) => manager,
+          child: Consumer<PlaylistManager>(
+            builder: (_, model, __) => ListItemsBuilder<TrackApp>(
+              snapshot: snapshot,
+              manager: manager,
+              emptyScreen: const EmptyContent(),
+              itemBuilder: (context, track) => Dismissible(
+                key: Key('playlist-${track.id}'),
+                background: Container(color: Colors.red),
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) => manager.deleteItem(context, track),
+                child: TrackTile(
+                  track: track,
+                  onTap: () => TrackPage.show(context, playlist, track, snapshot.data!, spotify),
+                ),
+              ),
             ),
           ),
         );
