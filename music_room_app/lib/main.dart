@@ -6,8 +6,7 @@ import 'package:music_room_app/messenger/chats_page.dart';
 import 'package:music_room_app/messenger/stuff/messenger.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
-import 'package:music_room_app/spotify_library/library.dart';
-import 'package:music_room_app/spotify_library/spotify_connection_monitor.dart';
+import 'package:music_room_app/spotify_library/library/library.dart';
 import 'package:provider/provider.dart';
 import 'landing.dart';
 import 'services/auth.dart';
@@ -27,14 +26,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        Provider<AuthBase>(create: (context) => Auth()),
-        Provider<Database>(create: (context) => FirestoreDatabase()),
-        Provider<FirestoreDatabase>(
-          create: (context) => FirestoreDatabase(),
-        ),
-        Provider<SpotifyService>(create: (context) => Spotify())
-      ],
+        providers: [
+          Provider<AuthBase>(create: (context) => Auth()),
+          Provider<Database>(create: (context) => FirestoreDatabase()),
+          Provider<Spotify>(create: (context) => SpotifyService())
+        ],
       child: MaterialApp(
         title: 'Music Room',
         debugShowCheckedModeBanner: false,
@@ -46,8 +42,6 @@ class MyApp extends StatelessWidget {
           '/': (_) => const LandingScreen(),
           AccountScreen.routeName: (_) => const AccountScreen(),
           LibraryScreen.routeName: (_) => const LibraryScreen(),
-          SpotifyConnectionMonitor.routeName: (_) =>
-              const SpotifyConnectionMonitor(),
           MessengerScreen.routeName: (_) => MessengerScreen(),
           ChatsPage.routeName: (_) => const ChatsPage(),
           ChatScreen.routeName: (_) => const ChatScreen(),

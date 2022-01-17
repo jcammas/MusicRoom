@@ -23,7 +23,11 @@ Future<void> _confirmSignOut(BuildContext context) async {
 }
 
 AppBar customAppBar(
-    {Key? key, required String appText, required BuildContext context}) {
+    {Key? key,
+    required String appText,
+    required BuildContext context,
+    Future<void> Function(BuildContext context)? topRight,
+    String? funcText}) {
   return AppBar(
     title: Text(appText,
         style: const TextStyle(
@@ -34,14 +38,15 @@ AppBar customAppBar(
     backgroundColor: const Color(0XFF072BB8),
     actions: <Widget>[
       TextButton(
-        child: const Text(
-          'Logout',
-          style: TextStyle(
+        child: Text(
+          funcText ?? 'Logout',
+          style: const TextStyle(
             fontSize: 18.0,
             color: Colors.white,
           ),
         ),
-        onPressed: () => _confirmSignOut(context),
+        onPressed: () =>
+            topRight != null ? topRight(context) : _confirmSignOut(context),
       ),
     ],
   );

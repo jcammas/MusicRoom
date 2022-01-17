@@ -44,6 +44,10 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.example.musicRoomApp</string>
+		</dict>
+		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.870791210894-6h75d96ru2nls8hc2n0h70e8g5qcvg5n</string>
@@ -60,6 +64,7 @@
 	<string>Music Room</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>spotify</string>
 		<string>fbapi</string>
 		<string>fbapi20130214</string>
 		<string>fbapi20130410</string>

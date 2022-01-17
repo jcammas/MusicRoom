@@ -4,8 +4,7 @@ import 'package:music_room_app/home/widgets/drawer_tile.dart';
 import 'package:music_room_app/landing.dart';
 import 'package:music_room_app/messenger/chats_page.dart';
 import 'package:music_room_app/messenger/stuff/messenger.dart';
-import 'package:music_room_app/spotify_library/library.dart';
-import 'package:music_room_app/spotify_library/spotify_connection_monitor.dart';
+import 'package:music_room_app/spotify_library/library/library.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({Key? key}) : super(key: key);
@@ -33,11 +32,6 @@ class MyDrawer extends StatelessWidget {
               text: 'Library',
               // route: LibraryScreen.routeName),
               route: LibraryScreen.routeName),
-          const DrawerTile(
-              icon: Icons.settings_input_antenna,
-              text: 'Spotify Connection Monitor (temporary)',
-              // route: LibraryScreen.routeName),
-              route: SpotifyConnectionMonitor.routeName),
           const DrawerTile(
               icon: Icons.accessibility_new_outlined,
               text: 'Friends',
