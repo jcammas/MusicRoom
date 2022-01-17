@@ -95,11 +95,6 @@ class TrackMainManager with ChangeNotifier {
   Future<void> playIfConnected() async {
     if (isConnected) {
       TrackStatic.playTrack(trackApp, playlist);
-      // } else {
-      //   await Future.delayed(const Duration(seconds: 1));
-      //   if (isConnected) {
-      //     TrackStatic.playTrack(trackApp, playlist);
-      //   }
     }
   }
 
@@ -108,10 +103,7 @@ class TrackMainManager with ChangeNotifier {
       token = await SpotifySdk.getAuthenticationToken(
           clientId: spotifyClientId,
           redirectUrl: spotifyRedirectUri,
-          scope: 'app-remote-control, '
-              'user-modify-playback-state, '
-              'playlist-read-private, '
-              'playlist-modify-public,user-read-currently-playing');
+          scope: spotifyScopes.toString());
       TrackStatic.setStatus('Got a token: $token');
     } on PlatformException catch (e) {
       TrackStatic.setStatus(e.code, message: e.message);
