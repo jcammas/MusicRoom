@@ -19,10 +19,10 @@ import 'package:music_room_app/spotify_library/track/library_static.dart';
 class TrackMainManager with ChangeNotifier {
   TrackMainManager(
       {required this.context,
-        required this.playlist,
+      required this.playlist,
       required this.trackApp,
       required this.tracksList,
-      required this.spotify}){
+      required this.spotify}) {
     _initManagers();
   }
 
@@ -63,8 +63,7 @@ class TrackMainManager with ChangeNotifier {
         TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList);
     controlRowManager = TrackControlRowManager(
         trackApp: trackApp, playlist: playlist, tracksList: tracksList);
-    sliderRowManager =
-        TrackSliderRowManager();
+    sliderRowManager = TrackSliderRowManager();
     managers = [
       imageManager,
       titleRowManager,
@@ -96,11 +95,11 @@ class TrackMainManager with ChangeNotifier {
   Future<void> playIfConnected() async {
     if (isConnected) {
       TrackStatic.playTrack(trackApp, playlist);
-    // } else {
-    //   await Future.delayed(const Duration(seconds: 1));
-    //   if (isConnected) {
-    //     TrackStatic.playTrack(trackApp, playlist);
-    //   }
+      // } else {
+      //   await Future.delayed(const Duration(seconds: 1));
+      //   if (isConnected) {
+      //     TrackStatic.playTrack(trackApp, playlist);
+      //   }
     }
   }
 
@@ -145,21 +144,16 @@ class TrackMainManager with ChangeNotifier {
       token = await spotify.getAccessToken();
       await _connectSpotifySdk();
       updateWith(isLoading: false, isConnected: true);
-    } on PlatformException catch (e) {
-      if (e.code == 'NotLoggedInException') {
-        try {
-          await _getTokenWithSdk();
-          await _connectSpotifySdk();
-          updateWith(isLoading: false, isConnected: true);
-        } on PlatformException catch (e) {
-          updateWith(isLoading: false, isConnected: false);
-          TrackStatic.setStatus(e.code, message: e.message);
-          rethrow;
-        } catch (e) {
-          updateWith(isLoading: false, isConnected: false);
-          rethrow;
-        }
-      } else {
+    } on PlatformException {
+      try {
+        await _getTokenWithSdk();
+        await _connectSpotifySdk();
+        updateWith(isLoading: false, isConnected: true);
+      } on PlatformException catch (e) {
+        updateWith(isLoading: false, isConnected: false);
+        TrackStatic.setStatus(e.code, message: e.message);
+        rethrow;
+      } catch (e) {
         updateWith(isLoading: false, isConnected: false);
         rethrow;
       }
