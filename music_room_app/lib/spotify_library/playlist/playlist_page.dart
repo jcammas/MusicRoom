@@ -30,8 +30,8 @@ class PlaylistPage extends StatelessWidget {
   static Future<void> show(BuildContext context, Playlist playlist) async {
     final db = Provider.of<Database>(context, listen: false);
     final spotify = Provider.of<Spotify>(context, listen: false);
-    PlaylistManager manager =
-        PlaylistManager(spotify: spotify, db: db, playlist: playlist, isLoading: true);
+    PlaylistManager manager = PlaylistManager(
+        spotify: spotify, db: db, playlist: playlist, isLoading: true);
     manager.fillIfEmpty(context);
     await Navigator.of(context).push(
       CupertinoPageRoute(
@@ -55,7 +55,7 @@ class PlaylistPage extends StatelessWidget {
                   context: context,
                   funcText: 'Refresh',
                   topRight: manager.refreshItems),
-              backgroundColor: const Color(0xFFEFEFF4),
+              backgroundColor: Theme.of(context).backgroundColor,
               body: AnnotatedRegion<SystemUiOverlayStyle>(
                   value: SystemUiOverlayStyle.light,
                   child: _buildPage(context, playlist)));
@@ -88,7 +88,8 @@ class PlaylistPage extends StatelessWidget {
                 onDismissed: (direction) => manager.deleteItem(context, track),
                 child: TrackTile(
                   track: track,
-                  onTap: () => TrackPage.show(context, playlist, track, snapshot.data!, spotify),
+                  onTap: () => TrackPage.show(
+                      context, playlist, track, snapshot.data!, spotify),
                 ),
               ),
             ),

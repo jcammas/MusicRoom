@@ -13,7 +13,7 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(appText: 'My Account', context: context),
-      backgroundColor: const Color(0xFFEFEFF4),
+      backgroundColor: Theme.of(context).backgroundColor,
       drawer: const MyDrawer(),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
