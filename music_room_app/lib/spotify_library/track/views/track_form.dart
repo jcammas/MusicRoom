@@ -19,11 +19,11 @@ class TrackForm extends StatefulWidget {
 
   static Widget create(TrackMainManager manager) {
     return ChangeNotifierProvider<TrackMainManager>(
-          create: (_) => manager,
-          child: Consumer<TrackMainManager>(
-            builder: (_, model, __) => TrackForm(manager: manager),
-          ),
-        );
+      create: (_) => manager,
+      child: Consumer<TrackMainManager>(
+        builder: (_, model, __) => TrackForm(manager: manager),
+      ),
+    );
   }
 
   @override
@@ -43,52 +43,46 @@ class _TrackFormState extends State<TrackForm> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          TrackImage.create(
-              context: context,
-              trackApp: track,
-              tracksList: tracksList,
-              manager: manager.imageManager),
-          SizedBox(
-            height: screenHeight * 0.02,
-          ),
-          TrackTitleRow.create(
-              context: context,
-              trackApp: track,
-              tracksList: tracksList,
-              manager: manager.titleRowManager),
-          manager.isLoading
-              ? const Padding(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        TrackImage.create(
+            context: context,
+            trackApp: track,
+            tracksList: tracksList,
+            manager: manager.imageManager),
+        SizedBox(
+          height: screenHeight * 0.02,
+        ),
+        TrackTitleRow.create(
+            context: context,
+            trackApp: track,
+            tracksList: tracksList,
+            manager: manager.titleRowManager),
+        if (manager.isLoading)
+          const Padding(
               padding: EdgeInsets.only(top: 52, bottom: 54),
               child: Center(child: CircularProgressIndicator()))
-              : manager.isConnected
-              ? Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              TrackSliderRow.create(
-                  context: context,
-                  trackApp: track,
-                  tracksList: tracksList,
-                  manager: manager.sliderRowManager),
-              SizedBox(
-                height: screenHeight * 0.01,
-              ),
-              TrackControlRow.create(
-                  context: context,
-                  playlist: playlist,
-                  trackApp: track,
-                  tracksList: tracksList,
-                  manager: manager.controlRowManager),
-            ],
-          )
-              : _buildConnectRow(),
-        ],
-      );
+        else if (manager.isConnected) ...<Widget>[
+          TrackSliderRow.create(
+              context: context,
+              trackApp: track,
+              tracksList: tracksList,
+              manager: manager.sliderRowManager),
+          SizedBox(
+            height: screenHeight * 0.01,
+          ),
+          TrackControlRow.create(
+              context: context,
+              playlist: playlist,
+              trackApp: track,
+              tracksList: tracksList,
+              manager: manager.controlRowManager),
+        ] else
+          _buildConnectRow(),
+      ],
+    );
   }
-
 
   Future<void> _connectSpotify() async {
     try {
