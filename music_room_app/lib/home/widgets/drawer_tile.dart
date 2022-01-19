@@ -10,20 +10,8 @@ class DrawerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        size: 36,
-        color: const Color(0XFF072BB8),
-      ),
-      title: Text(
-        text,
-        style: const TextStyle(
-          color: Color(0XFF434343),
-          fontSize: 20,
-        ),
-      ),
-      onTap: () {
+    return TextButton.icon(
+      onPressed: () {
         if (route != null) {
           String? currentRoute = ModalRoute.of(context)?.settings.name;
           if (currentRoute == '/') {
@@ -38,6 +26,35 @@ class DrawerTile extends StatelessWidget {
           }
         }
       },
+      icon: Icon(icon),
+      label: Text(text),
     );
+    //   return ListTile(
+    //     leading: Icon(
+    //       icon,
+    //       size: Theme.of(context).buttonTheme.height,
+    //       color: Theme.of(context).primaryColor,
+    //     ),
+    //     title: Text(
+    //       text,
+    //       style: Theme.of(context).textTheme.headline5,
+    //     ),
+    //     onTap: () {
+    //       if (route != null) {
+    //         String? currentRoute = ModalRoute.of(context)?.settings.name;
+    //         if (currentRoute == '/') {
+    //           if (route != '/') {
+    //             Navigator.of(context).pushNamed(route!);
+    //           }
+    //         } else {
+    //           if (route == '/') {
+    //             Navigator.of(context).pop();
+    //           }
+    //           Navigator.of(context).pushReplacementNamed(route!);
+    //         }
+    //       }
+    //     },
+    //   );
+    // }
   }
 }

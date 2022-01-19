@@ -53,7 +53,7 @@ class _MessengerScreenState extends State<MessengerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(appText: 'Messenger', context: context),
-      backgroundColor: const Color(0xFFEFEFF4),
+      backgroundColor: Theme.of(context).backgroundColor,
       drawer: const MyDrawer(),
       body: Column(
         children: <Widget>[

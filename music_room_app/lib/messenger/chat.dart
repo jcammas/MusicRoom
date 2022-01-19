@@ -122,7 +122,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
         appBar: customAppBar(appText: user.name, context: context),
-        backgroundColor: const Color(0xFFEFEFF4),
+        backgroundColor: Theme.of(context).backgroundColor,
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Column(

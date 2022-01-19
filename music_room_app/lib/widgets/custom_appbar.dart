@@ -22,44 +22,47 @@ Future<void> _confirmSignOut(BuildContext context) async {
   }
 }
 
-AppBar customAppBar(
+PreferredSize customAppBar(
     {Key? key,
     required String appText,
     required BuildContext context,
     Future<void> Function(BuildContext context)? topRight,
     String? funcText}) {
-  return AppBar(
-    title: Text(appText,
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-        )),
-    elevation: 2.0,
-    backgroundColor: const Color(0XFF072BB8),
-    actions: <Widget>[
-      TextButton(
-        child: Text(
-          funcText ?? 'Logout',
-          style: const TextStyle(
-            fontSize: 18.0,
-            color: Colors.white,
-          ),
-        ),
-        onPressed: () =>
-            topRight != null ? topRight(context) : _confirmSignOut(context),
-      ),
-    ],
-  );
+  return PreferredSize(
+      child: Container(
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+                color: Theme.of(context).shadowColor,
+                offset: Offset(0, 5.0),
+                blurRadius: 6.0,
+                spreadRadius: 1.0),
+          ]),
+          child: AppBar(
+            title: Text(appText, style: Theme.of(context).textTheme.headline1),
+            elevation: 2.0,
+            backgroundColor: Theme.of(context).primaryColor,
+            actions: <Widget>[
+              TextButton(
+                child: Text(funcText ?? 'Logout',
+                    style: Theme.of(context).textTheme.headline6),
+                onPressed: () => topRight != null
+                    ? topRight(context)
+                    : _confirmSignOut(context),
+              ),
+            ],
+          )),
+      preferredSize: Size.fromHeight(50));
 }
 
-AppBar customSignInAppBar({Key? key, required String appText}) {
+AppBar customSignInAppBar({
+  Key? key,
+  required String appText,
+  required BuildContext context,
+  Future<void> Function(BuildContext context)? topRight,
+}) {
   return AppBar(
-    title: Text(appText,
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-        )),
+    title: Text(appText, style: Theme.of(context).textTheme.headline1),
     elevation: 2.0,
-    backgroundColor: const Color(0XFF072BB8),
+    backgroundColor: Theme.of(context).primaryColor,
   );
 }

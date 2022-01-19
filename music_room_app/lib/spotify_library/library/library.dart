@@ -29,7 +29,7 @@ class LibraryScreen extends StatelessWidget {
         funcText: 'Refresh',
         topRight: manager.refreshItems,
       ),
-      backgroundColor: const Color(0xFFEFEFF4),
+      backgroundColor: Theme.of(context).backgroundColor,
       drawer: const MyDrawer(),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light,

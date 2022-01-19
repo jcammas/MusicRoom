@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/account/account.dart';
+import 'package:music_room_app/friends/friends.dart';
 import 'package:music_room_app/home/widgets/drawer_tile.dart';
 import 'package:music_room_app/landing.dart';
 import 'package:music_room_app/messenger/messenger.dart';
@@ -17,7 +18,8 @@ class MyDrawer extends StatelessWidget {
             child: SizedBox(
               child: Image.asset("assets/image/music.jpg"),
             ),
-            decoration: BoxDecoration(color: Colors.lightBlue[50]),
+            decoration:
+                BoxDecoration(color: Theme.of(context).secondaryHeaderColor),
           ),
           if (ModalRoute.of(context)!.settings.name != LandingScreen.routeName)
             const DrawerTile(
@@ -34,7 +36,7 @@ class MyDrawer extends StatelessWidget {
           const DrawerTile(
               icon: Icons.accessibility_new_outlined,
               text: 'Friends',
-              route: null),
+              route: FriendsScreen.routeName),
           const DrawerTile(
               icon: Icons.account_circle_outlined,
               text: 'My account',

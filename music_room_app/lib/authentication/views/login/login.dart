@@ -9,8 +9,8 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customSignInAppBar(appText: 'Music Room'),
-      backgroundColor: Colors.grey[50],
+      appBar: customSignInAppBar(appText: 'Music Room', context: context),
+      backgroundColor: Theme.of(context).backgroundColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: SingleChildScrollView(

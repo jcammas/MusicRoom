@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _setUpUser(context, auth);
     return Scaffold(
       appBar: customAppBar(appText: 'Music Room', context: context),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Theme.of(context).backgroundColor,
       drawer: const MyDrawer(),
       body: const Center(),
     );
