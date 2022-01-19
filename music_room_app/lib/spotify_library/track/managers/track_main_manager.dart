@@ -130,6 +130,23 @@ class TrackMainManager with ChangeNotifier {
     }
   }
 
+  Future<void> _secondAttemptWithNewToken() async {
+    try {
+      await _getTokenWithSdk();
+    } on PlatformException catch (e) {
+      TrackStatic.setStatus(e.code, message: e.message);
+    } finally {
+      try {
+        await _connectSpotifySdk();
+      } on PlatformException catch (e) {
+        TrackStatic.setStatus(e.code, message: e.message);
+        rethrow;
+      } catch (e) {
+        rethrow;
+      }
+    }
+  }
+
   Future<void> connectSpotifySdk() async {
     try {
       updateLoading(true);
@@ -138,13 +155,8 @@ class TrackMainManager with ChangeNotifier {
       updateWith(isLoading: false, isConnected: true);
     } on PlatformException {
       try {
-        await _getTokenWithSdk();
-        await _connectSpotifySdk();
+        await _secondAttemptWithNewToken();
         updateWith(isLoading: false, isConnected: true);
-      } on PlatformException catch (e) {
-        updateWith(isLoading: false, isConnected: false);
-        TrackStatic.setStatus(e.code, message: e.message);
-        rethrow;
       } catch (e) {
         updateWith(isLoading: false, isConnected: false);
         rethrow;
