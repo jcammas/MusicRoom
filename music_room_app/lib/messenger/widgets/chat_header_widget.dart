@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/messenger/models/user.dart';
 import '../chat_page.dart';
 
 class ChatHeaderWidget extends StatelessWidget {
-  final List<User> users;
+  final List<UserApp> users;
 
   const ChatHeaderWidget({
     required this.users,
@@ -50,7 +51,7 @@ class ChatHeaderWidget extends StatelessWidget {
                       child: GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ChatPage(user: users[index]),
+                            builder: (context) => ChatPage(user: user),
                           ));
                         },
                         child: const CircleAvatar(

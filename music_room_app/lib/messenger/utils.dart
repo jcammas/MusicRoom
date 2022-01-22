@@ -17,12 +17,14 @@ class Utils {
           );
 
   static DateTime? toDateTime(Timestamp value) {
+    // ignore: unnecessary_null_comparison
     if (value == null) return null;
 
     return value.toDate();
   }
 
   static dynamic fromDateTimeToJson(DateTime date) {
+    // ignore: unnecessary_null_comparison
     if (date == null) return null;
 
     return date.toUtc();

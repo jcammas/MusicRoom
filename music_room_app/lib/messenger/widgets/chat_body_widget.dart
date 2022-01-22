@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/messenger/models/user.dart';
 import '../chat_page.dart';
 
 class ChatBodyWidget extends StatelessWidget {
-  final List<User> users;
+  final List<UserApp> users;
 
   const ChatBodyWidget({
     required this.users,
