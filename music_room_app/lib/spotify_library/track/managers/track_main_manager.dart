@@ -19,10 +19,10 @@ import 'package:music_room_app/spotify_library/track/library_static.dart';
 class TrackMainManager with ChangeNotifier {
   TrackMainManager(
       {required this.context,
-        required this.playlist,
+      required this.playlist,
       required this.trackApp,
       required this.tracksList,
-      required this.spotify}){
+      required this.spotify}) {
     _initManagers();
   }
 
@@ -63,8 +63,7 @@ class TrackMainManager with ChangeNotifier {
         TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList);
     controlRowManager = TrackControlRowManager(
         trackApp: trackApp, playlist: playlist, tracksList: tracksList);
-    sliderRowManager =
-        TrackSliderRowManager();
+    sliderRowManager = TrackSliderRowManager();
     managers = [
       imageManager,
       titleRowManager,
@@ -96,11 +95,6 @@ class TrackMainManager with ChangeNotifier {
   Future<void> playIfConnected() async {
     if (isConnected) {
       TrackStatic.playTrack(trackApp, playlist);
-    // } else {
-    //   await Future.delayed(const Duration(seconds: 1));
-    //   if (isConnected) {
-    //     TrackStatic.playTrack(trackApp, playlist);
-    //   }
     }
   }
 
@@ -109,10 +103,7 @@ class TrackMainManager with ChangeNotifier {
       token = await SpotifySdk.getAuthenticationToken(
           clientId: spotifyClientId,
           redirectUrl: spotifyRedirectUri,
-          scope: 'app-remote-control, '
-              'user-modify-playback-state, '
-              'playlist-read-private, '
-              'playlist-modify-public,user-read-currently-playing');
+          scope: spotifyScopes.toString());
       TrackStatic.setStatus('Got a token: $token');
     } on PlatformException catch (e) {
       TrackStatic.setStatus(e.code, message: e.message);
@@ -130,7 +121,6 @@ class TrackMainManager with ChangeNotifier {
           ? 'connect to spotify successful'
           : 'connect to spotify failed');
       if (result) {
-        updateWith(isLoading: false, isConnected: true);
         await TrackStatic.playTrack(trackApp, playlist);
       } else {
         throw Exception('Could not connect to your app Spotify');
@@ -140,25 +130,35 @@ class TrackMainManager with ChangeNotifier {
     }
   }
 
+  Future<void> _secondAttemptWithNewToken() async {
+    try {
+      await _getTokenWithSdk();
+    } on PlatformException catch (e) {
+      TrackStatic.setStatus(e.code, message: e.message);
+    } finally {
+      try {
+        await _connectSpotifySdk();
+      } on PlatformException catch (e) {
+        TrackStatic.setStatus(e.code, message: e.message);
+        rethrow;
+      } catch (e) {
+        rethrow;
+      }
+    }
+  }
+
   Future<void> connectSpotifySdk() async {
     try {
       updateLoading(true);
       token = await spotify.getAccessToken();
       await _connectSpotifySdk();
-    } on PlatformException catch (e) {
-      if (e.code == 'NotLoggedInException') {
-        try {
-          await _getTokenWithSdk();
-          await _connectSpotifySdk();
-        } on PlatformException catch (e) {
-          updateWith(isLoading: false, isConnected: false);
-          TrackStatic.setStatus(e.code, message: e.message);
-          rethrow;
-        } catch (e) {
-          updateWith(isLoading: false, isConnected: false);
-          rethrow;
-        }
-      } else {
+      updateWith(isLoading: false, isConnected: true);
+    } on PlatformException {
+      try {
+        await _secondAttemptWithNewToken();
+        updateWith(isLoading: false, isConnected: true);
+      } catch (e) {
+        updateWith(isLoading: false, isConnected: false);
         rethrow;
       }
     } on MissingPluginException {
