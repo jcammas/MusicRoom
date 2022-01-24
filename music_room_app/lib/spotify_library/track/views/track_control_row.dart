@@ -89,7 +89,9 @@ class _TrackControlRowState extends State<TrackControlRow> {
                   : manager.repeatMode == RepeatMode.track
                       ? Icons.repeat_one_on_outlined
                       : Icons.repeat_on_outlined,
-              color:manager.repeatMode == RepeatMode.off ? Colors.grey.shade400 : Colors.green,
+              color: manager.repeatMode == RepeatMode.off
+                  ? Colors.grey.shade400
+                  : Colors.green,
             ),
           ),
         ],
