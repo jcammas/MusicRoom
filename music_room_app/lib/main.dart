@@ -31,17 +31,42 @@ const _lightDark = const Color(0x8A000000);
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  Color getColor(Set<MaterialState> states) {
-    const Set<MaterialState> interactiveStates = <MaterialState>{
-      MaterialState.pressed,
-      MaterialState.hovered,
-      MaterialState.focused,
-    };
-    if (states.any(interactiveStates.contains)) {
-      return _primaryColor;
-    }
-    return _lightDark;
-  }
+  // Color getColorForegroundColor(Set<MaterialState> states) {
+  //   const Set<MaterialState> interactiveStates = <MaterialState>{
+  //     MaterialState.pressed,
+  //     MaterialState.hovered,
+  //     MaterialState.focused,
+  //   };
+  //   if (states.any(interactiveStates.contains)) {
+  //     return _primaryColor;
+  //   }
+  //   return _lightDark;
+  // }
+
+  // TextStyle getTextStyle(Set<MaterialState> states) {
+  //   const Set<MaterialState> interactiveStates = <MaterialState>{
+  //     MaterialState.pressed,
+  //     MaterialState.hovered,
+  //     MaterialState.focused,
+  //   };
+  //   if (states.any(interactiveStates.contains)) {
+  //     return TextStyle(
+  //       fontSize: 16.0,
+  //       fontWeight: FontWeight.w500,
+  //     );
+  //   }
+  //   return TextStyle(
+  //     fontSize: 16.0,
+  //     fontWeight: FontWeight.w500,
+  //   );
+  // }
+
+  //   textButtonTheme: TextButtonThemeData(
+  //   style: ButtonStyle(
+  //       foregroundColor: MaterialStateProperty.resolveWith(getColor),
+  //       padding: MaterialStateProperty.all(EdgeInsets.all(8.0)),
+  //       alignment: Alignment.centerLeft),
+  // ),
 
   // This widget is the root of your application.
   @override
@@ -69,11 +94,22 @@ class MyApp extends StatelessWidget {
           //Shadow colors
           shadowColor: _lightGrey,
 
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                  shape: CircleBorder(),
+                  primary: _primaryColor,
+                  padding: EdgeInsets.all(10))),
+
           textButtonTheme: TextButtonThemeData(
-            style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.resolveWith(getColor),
-                padding: MaterialStateProperty.all(EdgeInsets.all(8.0)),
-                alignment: Alignment.centerLeft),
+            style: TextButton.styleFrom(
+                textStyle: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w600,
+                ),
+                primary: _lightDark,
+                padding: EdgeInsets.all(2.0),
+                alignment: Alignment.centerLeft,
+                maximumSize: Size(600, 100)),
           ),
 
           // Define the default font family (Left some examples to try which one suits us best).
