@@ -7,13 +7,13 @@ class MessageField {
 class Message {
   final String idUser;
 
-  final String username;
+  final String? username;
   final String message;
   final DateTime? createdAt;
 
   const Message({
     required this.idUser,
-    required this.username,
+    this.username,
     required this.message,
     required this.createdAt,
   });

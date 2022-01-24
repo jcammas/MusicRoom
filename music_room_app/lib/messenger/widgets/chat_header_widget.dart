@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/user.dart';
-import 'package:music_room_app/messenger/models/user.dart';
 import '../chat_page.dart';
 
 class ChatHeaderWidget extends StatelessWidget {
@@ -18,17 +17,6 @@ class ChatHeaderWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.75,
-              child: const Text(
-                'ChatsApp',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
             const SizedBox(height: 12),
             SizedBox(
               height: 60,

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:music_room_app/home/models/user.dart';
 
 import 'package:music_room_app/messenger/models/message.dart';
 import 'package:music_room_app/messenger/models/user.dart';
@@ -13,7 +14,7 @@ class FirebaseApi {
 
     final newMessage = Message(
       idUser: myId,
-      username: myUsername,
+      // username: myUsername,
       message: message,
       createdAt: DateTime.now(),
     );

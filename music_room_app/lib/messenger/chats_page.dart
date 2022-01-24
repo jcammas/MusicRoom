@@ -1,7 +1,9 @@
 import 'package:music_room_app/home/models/user.dart';
+import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/messenger/api/firebase_api.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/services/database.dart';
+import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'models/user.dart';
 import 'widgets/chat_body_widget.dart';
@@ -17,7 +19,9 @@ class ChatsPage extends StatelessWidget {
     final db = Provider.of<Database>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.blue[900],
+      appBar: customAppBar(appText: "Messenger", context: context),
+      drawer: MyDrawer(),
       body: SafeArea(
         child: FutureBuilder<List<UserApp>>(
           future: db.getAllUsers(),
