@@ -26,7 +26,10 @@ class DrawerTile extends StatelessWidget {
           }
         }
       },
-      icon: Icon(icon),
+      icon: Icon(
+        icon,
+        color: Theme.of(context).primaryColor,
+      ),
       label: Text(text),
     );
     //   return ListTile(

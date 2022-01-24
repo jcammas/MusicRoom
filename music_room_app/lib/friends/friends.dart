@@ -51,20 +51,47 @@ class SearchSection extends StatelessWidget {
               children: [
                 Expanded(
                     child: Container(
+                  padding: EdgeInsets.only(left: 5),
                   height: 50,
-                  width: 50,
-                  color: Colors.blue,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Theme.of(context).shadowColor,
+                            offset: Offset(0, 3.0),
+                            blurRadius: 4.0),
+                      ]),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'John Doe',
+                      contentPadding: EdgeInsets.all(10),
+                      border: InputBorder.none,
+                    ),
+                  ),
                 )),
+                SizedBox(width: 10),
                 Container(
-                  height: 50,
-                  width: 50,
-                  color: Colors.green,
-                )
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                          color: Theme.of(context).shadowColor,
+                          offset: Offset(0, 3.0),
+                          blurRadius: 4.0),
+                    ], borderRadius: BorderRadius.all(Radius.circular(25))),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Icon(Icons.search),
+                    )),
               ],
             ),
+            SizedBox(height: 50),
             Container(
               height: 50,
-              color: Colors.red,
+              decoration: BoxDecoration(
+                color: Colors.red,
+              ),
             )
           ],
         ));
