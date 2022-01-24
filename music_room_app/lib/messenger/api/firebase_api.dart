@@ -8,13 +8,14 @@ import '../utils.dart';
 import '../data.dart';
 
 class FirebaseApi {
-  static Future uploadMessage(String idUser, String message) async {
+  static Future uploadMessage(
+      String idUser, String message, String username) async {
     final refMessages =
         FirebaseFirestore.instance.collection('chats/$idUser/messages');
 
     final newMessage = Message(
-      idUser: myId,
-      // username: myUsername,
+      idUser: idUser,
+      username: username,
       message: message,
       createdAt: DateTime.now(),
     );

@@ -37,7 +37,7 @@ class MessagesWidget extends StatelessWidget {
 
                           return MessageWidget(
                             message: message,
-                            isMe: message.idUser == myId,
+                            isMe: message.idUser == idUser,
                           );
                         },
                       );
