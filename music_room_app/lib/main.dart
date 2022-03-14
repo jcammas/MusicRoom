@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:music_room_app/account/account.dart';
+import 'package:music_room_app/devices/devices.dart';
 import 'package:music_room_app/messenger/chat.dart';
 import 'package:music_room_app/messenger/messenger.dart';
 import 'package:music_room_app/services/database.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
           LibraryScreen.routeName: (_) => const LibraryScreen(),
           MessengerScreen.routeName: (_) => MessengerScreen(),
           ChatScreen.routeName: (_) => const ChatScreen(),
+          DevicesScreen.routeName: (_) => const DevicesScreen(),
         },
       ),
     );

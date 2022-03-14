@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/account/account.dart';
+import 'package:music_room_app/devices/devices.dart';
 import 'package:music_room_app/home/widgets/drawer_tile.dart';
 import 'package:music_room_app/landing.dart';
 import 'package:music_room_app/messenger/messenger.dart';
@@ -39,6 +40,11 @@ class MyDrawer extends StatelessWidget {
               icon: Icons.account_circle_outlined,
               text: 'My account',
               route: AccountScreen.routeName),
+          const DrawerTile(
+              icon: Icons.bluetooth,
+              text: 'Bluetooth devices',
+              route: DevicesScreen.routeName,
+          ),
           const DrawerTile(
             icon: Icons.chat,
             text: "Messenger",
