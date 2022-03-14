@@ -17,6 +17,7 @@ class SignInScreen extends StatelessWidget {
   }) : super(key: key);
 
   static String routeName = '/SignInScreen';
+  static const Key emailPasswordKey = Key('email-password');
 
   final SignInManager model;
   final bool isLoading;
@@ -110,6 +111,7 @@ class SignInScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8.0),
           SignInButton(
+            key: emailPasswordKey,
             text: 'Sign in with email',
             textColor: Colors.white,
             color: Colors.teal[700],
