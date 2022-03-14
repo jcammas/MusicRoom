@@ -36,7 +36,6 @@ class ChatsPage extends StatelessWidget {
                   return const Text('Something Went Wrong Try later');
                 } else {
                   final users = snapshot.data;
-
                   if (users!.isEmpty) {
                     return const Text('No Users Found');
                   } else {

@@ -1,11 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:music_room_app/home/models/user.dart';
-
 import 'package:music_room_app/messenger/models/message.dart';
 import 'package:music_room_app/messenger/models/user.dart';
-
 import '../utils.dart';
-import '../data.dart';
 
 class FirebaseApi {
   static Future uploadMessage(

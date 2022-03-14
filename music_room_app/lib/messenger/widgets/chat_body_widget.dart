@@ -30,7 +30,6 @@ class ChatBodyWidget extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
           final user = users[index];
-
           return SizedBox(
             height: 75,
             child: ListTile(
