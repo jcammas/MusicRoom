@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:music_room_app/messenger/models/message.dart';
 import 'package:music_room_app/messenger/models/user.dart';
+import '../models/message.dart';
 import '../utils.dart';
 
 class FirebaseApi {
+
   static Future uploadMessage(
-      String idUser, String message, String username) async {
+      String idReceiver, String idSender, String message, String username) async {
     final refMessages =
-        FirebaseFirestore.instance.collection('chats/$idUser/messages');
+        FirebaseFirestore.instance.collection('chats/$idChat/messages');
 
     final newMessage = Message(
       idUser: idUser,
