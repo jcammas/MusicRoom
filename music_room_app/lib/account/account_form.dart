@@ -8,8 +8,8 @@ import 'package:provider/provider.dart';
 import 'account_manager.dart';
 
 class AccountForm extends StatefulWidget {
-  const AccountForm({Key? key, required this.manager}) : super(key: key);
-  final AccountManager manager;
+  const AccountForm({Key? key, required this.model}) : super(key: key);
+  final AccountManager model;
 
   static Widget create(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
@@ -17,7 +17,7 @@ class AccountForm extends StatefulWidget {
     return ChangeNotifierProvider<AccountManager>(
       create: (_) => AccountManager(auth: auth, db: db),
       child: Consumer<AccountManager>(
-        builder: (_, manager, __) => AccountForm(manager: manager),
+        builder: (_, model, __) => AccountForm(model: model),
       ),
     );
   }
@@ -40,7 +40,7 @@ class _AccountFormState extends State<AccountForm> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     return StreamBuilder<UserApp>(
-      stream: widget.manager.getUserStream(),
+      stream: widget.model.getUserStream(),
       builder: (context, snapshot) {
         UserApp? user = snapshot.data;
         settingsData = fillSettingsData(user);
@@ -74,21 +74,21 @@ class _AccountFormState extends State<AccountForm> {
                         CustomSettingsTile(
                             type: SettingType.name,
                             title: 'Name',
-                            manager: widget.manager,
+                            model: widget.model,
                             user: user,
                             subtitle: settingsData['Name'].toString(),
                             iconData: Icons.face),
                         CustomSettingsTile(
                             type: SettingType.email,
                             title: 'Email',
-                            manager: widget.manager,
+                            model: widget.model,
                             user: user,
                             subtitle: settingsData['Email'].toString(),
                             iconData: Icons.email),
                         CustomSettingsTile(
                             type: SettingType.newPassword,
                             title: 'Change Password',
-                            manager: widget.manager,
+                            model: widget.model,
                             user: user,
                             iconData: Icons.lock),
                         SettingsTile(
@@ -109,7 +109,7 @@ class _AccountFormState extends State<AccountForm> {
                         CustomSettingsTile(
                             type: SettingType.delete,
                             title: 'Delete Account',
-                            manager: widget.manager,
+                            model: widget.model,
                             user: user,
                             iconData: Icons.delete_forever),
                       ],

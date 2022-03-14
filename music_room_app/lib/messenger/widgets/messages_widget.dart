@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/messenger/api/firebase_api.dart';
 import 'package:music_room_app/messenger/models/message.dart';
-
-import '../data.dart';
 import 'message_widget.dart';
 
 class MessagesWidget extends StatelessWidget {
@@ -37,7 +35,7 @@ class MessagesWidget extends StatelessWidget {
 
                           return MessageWidget(
                             message: message,
-                            isMe: message.idUser == myId,
+                            isMe: message.idUser == idUser,
                           );
                         },
                       );

@@ -29,15 +29,6 @@ class ProfileHeaderWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    buildIcon(Icons.call),
-                    const SizedBox(width: 12),
-                    buildIcon(Icons.videocam),
-                  ],
-                ),
-                const SizedBox(width: 4),
               ],
             )
           ],

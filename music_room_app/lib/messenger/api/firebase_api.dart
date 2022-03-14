@@ -1,24 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:music_room_app/messenger/models/message.dart';
 import 'package:music_room_app/messenger/models/user.dart';
-
+import '../models/message.dart';
 import '../utils.dart';
-import '../data.dart';
 
 class FirebaseApi {
-  static Stream<List<User>> getUsers() => FirebaseFirestore.instance
-      .collection('user_info')
-      .orderBy(UserField.lastMessageTime, descending: true)
-      .snapshots()
-      .transform(Utils.transformer(User.fromJson));
 
-  static Future uploadMessage(String idUser, String message) async {
+  static Future uploadMessage(
+      String idReceiver, String idSender, String message, String username) async {
     final refMessages =
-        FirebaseFirestore.instance.collection('chats/$idUser/messages');
+        FirebaseFirestore.instance.collection('chats/$idChat/messages');
 
     final newMessage = Message(
-      idUser: myId,
-      username: myUsername,
+      idUser: idUser,
+      username: username,
       message: message,
       createdAt: DateTime.now(),
     );

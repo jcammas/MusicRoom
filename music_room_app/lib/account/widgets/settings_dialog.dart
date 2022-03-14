@@ -27,9 +27,9 @@ Future<String?> showSettingsDialog(
     String settingName,
     String? currentValue,
     Widget? leading,
-    AccountManager manager,
+    AccountManager model,
     SettingType type) async {
-  manager.updateSettingValue(currentValue ?? '');
+  model.updateSettingValue(currentValue ?? '');
   final String titleText = type == SettingType.oldPassword
       ? 'Type your password :'
       : 'Make a Change !';
@@ -57,17 +57,17 @@ Future<String?> showSettingsDialog(
                   textInputAction: TextInputAction.done,
                   initialValue: currentValue,
                   decoration: InputDecoration(
-                    errorText: manager.showError ? 'Can\'t be empty' : null,
+                    errorText: model.showError ? 'Can\'t be empty' : null,
                     prefixIcon: leading,
                   ),
                   onChanged: (String value) {
-                    manager.updateSettingValue(value);
+                    model.updateSettingValue(value);
                   },
-                  onEditingComplete: () => _submit(context, manager, type),
+                  onEditingComplete: () => _submit(context, model, type),
                 ),
               ),
               TextButton(
-                onPressed: () => _submit(context, manager, type),
+                onPressed: () => _submit(context, model, type),
                 style: ButtonStyle(
                     padding: MaterialStateProperty.all<EdgeInsets>(
                         const EdgeInsets.all(16))),

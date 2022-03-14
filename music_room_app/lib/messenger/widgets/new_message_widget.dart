@@ -3,9 +3,11 @@ import 'package:music_room_app/messenger/api/firebase_api.dart';
 
 class NewMessageWidget extends StatefulWidget {
   final String? idUser;
+  final String? username;
 
   const NewMessageWidget({
     this.idUser,
+    this.username,
     Key? key,
   }) : super(key: key);
 
@@ -23,6 +25,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
     await FirebaseApi.uploadMessage(
       widget.idUser!,
       message,
+      widget.username!,
     );
 
     _controller.clear();
