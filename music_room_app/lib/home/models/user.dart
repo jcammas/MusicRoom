@@ -11,6 +11,7 @@ class UserApp implements DatabaseModel {
       {required this.name,
       required this.email,
       required this.uid,
+      required this.friends,
       this.playlists,
       this.spotifyProfile,
       required this.imageUrl});
@@ -20,7 +21,7 @@ class UserApp implements DatabaseModel {
   String name;
   String imageUrl;
   SpotifyProfile? spotifyProfile;
-  List<UserApp> friends = [];
+  List<String> friends = [];
   List<Device> devices = [];
   Map<String, Playlist>? playlists;
   String? avatarId;
@@ -36,6 +37,7 @@ class UserApp implements DatabaseModel {
     if (data != null) {
       final String userName = data['name'] ?? 'N/A';
       final String email = data['email'] ?? 'N/A';
+      final List<String> friends = new List<String>.from(data['friends']);
       SpotifyProfile? spotifyProfile;
       if (data['spotify_profile'] != null) {
         spotifyProfile = SpotifyProfile.fromMap(data['spotify_profile']);
@@ -43,6 +45,7 @@ class UserApp implements DatabaseModel {
       String imageUrl = data['image_url'] ?? defaultAvatarUrl;
       Map<String, dynamic>? playlistsData = data['playlists'];
       Map<String, Playlist> playlists = {};
+
       if (playlistsData != null) {
         playlistsData.updateAll((id, data) => Playlist.fromMap(data, id));
         playlists = playlistsData.cast();
@@ -53,14 +56,26 @@ class UserApp implements DatabaseModel {
           email: email,
           imageUrl: imageUrl,
           playlists: playlists,
+          friends: friends,
           spotifyProfile: spotifyProfile);
     } else {
-      return UserApp(uid: uid, name: "N/A", email: "N/A", imageUrl: defaultAvatarUrl);
+      return UserApp(
+          uid: uid,
+          name: "N/A",
+          email: "N/A",
+          imageUrl: defaultAvatarUrl,
+          friends: []);
     }
   }
 
   @override
   Map<String, dynamic> toMap() {
-    return {'uid': uid, 'name': name, 'email': email, 'image_url': imageUrl};
+    return {
+      'uid': uid,
+      'name': name,
+      'email': email,
+      'image_url': imageUrl,
+      'friends': friends,
+    };
   }
 }
