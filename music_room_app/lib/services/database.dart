@@ -44,7 +44,11 @@ abstract class Database {
 
   Future<UserApp> getUser();
 
-  Future<List<UserApp>> getAllUsers();
+  Future<List> getFriends();
+
+  Future<UserApp> getUserById(String uid, {String field = ""});
+
+  Future<List<UserApp>> getUsers({String nameQuery = ""});
 
   Future<bool> userExists({UserApp? user});
 
@@ -53,6 +57,8 @@ abstract class Database {
   Future<bool> userPlaylistHasTracks(Playlist playlist, {UserApp? user});
 
   Stream<UserApp> userStream({UserApp? user});
+
+  Stream<UserApp> userStreamById(String uid);
 
   Stream<List<UserApp>> usersStream();
 
@@ -184,9 +190,26 @@ class FirestoreDatabase implements Database {
       );
 
   @override
-  Future<List<UserApp>> getAllUsers() async => await _service.getCollection(
+  Future<List> getFriends({UserApp? user}) async => await _service.getDocument(
+        path: DBPath.user(user == null ? _uid : user.uid),
+        builder: (data, documentId) =>
+            UserApp.fromMap(data, documentId).friends,
+      );
+
+  @override
+  Future<UserApp> getUserById(String uid, {String field = ""}) async =>
+      await _service.getDocument(
+        path: DBPath.user(uid),
+        builder: (data, documentId) => UserApp.fromMap(data, documentId),
+        field: field,
+      );
+
+  @override
+  Future<List<UserApp>> getUsers({String nameQuery = ""}) async =>
+      await _service.getCollection(
         path: DBPath.users(),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
+        nameQuery: nameQuery,
       );
 
   @override
@@ -208,6 +231,12 @@ class FirestoreDatabase implements Database {
   @override
   Stream<UserApp> userStream({UserApp? user}) => _service.documentStream(
         path: DBPath.user(user == null ? _uid : user.uid),
+        builder: (data, documentId) => UserApp.fromMap(data, documentId),
+      );
+
+  @override
+  Stream<UserApp> userStreamById(String uid) => _service.documentStream(
+        path: DBPath.user(uid),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
 

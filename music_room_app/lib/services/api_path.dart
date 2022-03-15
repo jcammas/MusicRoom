@@ -12,7 +12,7 @@ class DBPath {
   static String rooms() => 'rooms/';
 
   static String chats() => 'chats/';
-  
+
   static String messages() => 'messages/';
 
   static String user(String uid) => users() + uid;
@@ -28,11 +28,9 @@ class DBPath {
 
   static String room(String roomId) => rooms() + roomId;
 
-  static String chatId(String uid1, String uid2) =>
-      concatOrdered(uid1, uid2);
+  static String chatId(String uid1, String uid2) => concatOrdered(uid1, uid2);
 
-  static String chat(String uid1, String uid2) =>
-      chats() + chatId(uid1, uid2);
+  static String chat(String uid1, String uid2) => chats() + chatId(uid1, uid2);
 
   static String userPlaylist(String uid, String playlistId) =>
       user(uid) + '/' + playlist(playlistId);
@@ -57,7 +55,7 @@ class DBPath {
 
   static String userSpotifyProfile(String uid, String spotifyProfileId) =>
       user(uid) + '/' + spotifyProfile(spotifyProfileId);
-  
+
   static String chatMessage(String senderId, String receiverId, String date) =>
       chatMessages(senderId, receiverId) + senderId + '_' + date;
 
@@ -71,6 +69,4 @@ class DBPath {
 class StoragePath {
   static String userAvatars() => 'user_avatars/';
   static String userAvatar(String uid) => userAvatars() + uid + '.jpg';
-
 }
-

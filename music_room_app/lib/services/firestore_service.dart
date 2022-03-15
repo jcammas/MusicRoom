@@ -59,6 +59,7 @@ class FirestoreService {
   Future<T> getDocument<T>({
     required String path,
     required T Function(Map<String, dynamic>? data, String documentID) builder,
+    String field = "",
   }) async {
     final reference = _firestore.doc(path);
     final snapshot = await reference.get();
@@ -94,8 +95,12 @@ class FirestoreService {
     required T Function(Map<String, dynamic> data, String documentId) builder,
     Query Function(Query query)? queryBuilder,
     int Function(T lhs, T rhs)? sort,
+    String nameQuery = "",
   }) async {
     Query query = _firestore.collection(path);
+    if (nameQuery != "") {
+      query.where("userSearch", arrayContains: nameQuery);
+    }
     if (queryBuilder != null) {
       query = queryBuilder(query);
     }
