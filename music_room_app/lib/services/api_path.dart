@@ -42,6 +42,6 @@ class DBPath {
   static String userPlaylistTracks(String uid, String playlistId) =>
       user(uid) + '/' + playlist(playlistId) + '/' + tracks();
 
-  static String userSpotifyProfile(String uid, String spotifyProfileId) => user(uid) + '/' + spotifyProfile(spotifyProfileId);
-
+  static String userSpotifyProfile(String uid, String spotifyProfileId) =>
+      user(uid) + '/' + spotifyProfile(spotifyProfileId);
 }

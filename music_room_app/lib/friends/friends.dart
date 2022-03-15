@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/user.dart';
-import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+// import 'package:music_room_app/services/auth.dart';
 // import 'package:music_room_app/services/auth.dart';
 // import 'models/user.dart';
 
@@ -132,35 +133,20 @@ class _FriendSectionState extends State<FriendSection> {
   }
 }
 
-class FriendCard extends StatelessWidget {
-  // final List friendList = [
-  //   {
-  //     'surname': 'Toto',
-  //     'name': 'Poto',
-  //     'avatar': 'https://picsum.photos/id/2/200',
-  //   },
-  //   {
-  //     'surname': 'Jambon',
-  //     'name': 'Beurre',
-  //     'avatar': 'https://picsum.photos/id/1/200',
-  //   },
-  //   {
-  //     'surname': 'Jean',
-  //     'name': 'Ticip',
-  //     'avatar': 'https://picsum.photos/id/3/200',
-  //   },
-  //   {
-  //     'surname': 'Joe',
-  //     'name': 'LaDouilleBlazeARallongeQuiCasseLeCraneFrrPourquoi',
-  //     'avatar': 'https://picsum.photos/id/4/200',
-  //   }
-  // ];
-  final String friendData;
-  FriendCard(this.friendData);
+class FriendCard extends StatefulWidget {
+  final String friendUid;
+  FriendCard(this.friendUid);
 
   @override
+  State<FriendCard> createState() => _FriendCardState();
+}
+
+class _FriendCardState extends State<FriendCard> {
+  @override
   Widget build(BuildContext context) {
-    String displayName = friendData;
+    final db = Provider.of<Database>(context, listen: false);
+    final Stream<UserApp> _friend = db.userStreamById(widget.friendUid);
+
     return Container(
       margin: EdgeInsets.all(10),
       height: 100,
@@ -173,45 +159,103 @@ class FriendCard extends StatelessWidget {
                 blurRadius: 6.0),
           ],
           borderRadius: BorderRadius.all(Radius.circular(18))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-              flex: 3,
-              child: Container(
-                width: 90,
-                height: 90,
-                margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                    color: Colors.blue,
-                    image: DecorationImage(
-                        image: NetworkImage('https://picsum.photos/id/4/200'),
-                        fit: BoxFit.cover)),
-              )),
-          Expanded(
-            flex: 5,
-            child: Text(displayName,
-                // overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.headline6),
-          ),
-          Expanded(
-              flex: 2,
-              child: MaterialButton(
-                  onPressed: () {},
-                  child: Icon(
-                    Icons.more_horiz,
-                    color: Colors.white,
-                  )))
-        ],
+      child: StreamBuilder<UserApp>(
+        stream: _friend,
+        builder: (BuildContext context, AsyncSnapshot<UserApp> snapshot) {
+          List<Widget> children;
+
+          if (snapshot.hasError) {
+            children = <Widget>[
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 60,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Text('Error: ${snapshot.error}'),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text('Stack trace: ${snapshot.stackTrace}'),
+              ),
+            ];
+          } else {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+                children = const <Widget>[];
+                break;
+
+              case ConnectionState.waiting:
+                children = const <Widget>[
+                  SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: CircularProgressIndicator(),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text('Awaiting friend\'s data'),
+                  )
+                ];
+                break;
+
+              default:
+                String displayName = snapshot.data!.name;
+                String avatar = snapshot.data!.avatarUrl;
+
+                children = <Widget>[
+                  Expanded(
+                      flex: 3,
+                      child: Container(
+                        width: 90,
+                        height: 90,
+                        margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(50)),
+                            color: Colors.blue,
+                            image: DecorationImage(
+                                image: NetworkImage(avatar),
+                                fit: BoxFit.cover)),
+                      )),
+                  Expanded(
+                    flex: 5,
+                    child: Text(displayName,
+                        style: Theme.of(context).textTheme.headline6),
+                  ),
+                  Expanded(
+                      flex: 2,
+                      child: MaterialButton(
+                          onPressed: () {},
+                          child: Icon(
+                            Icons.more_horiz,
+                            color: Colors.white,
+                          )))
+                ];
+                break;
+            }
+          }
+
+          return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: children);
+        },
       ),
     );
   }
 }
 
-class SearchSection extends StatelessWidget {
+class SearchSection extends StatefulWidget {
+  @override
+  State<SearchSection> createState() => _SearchSectionState();
+}
+
+class _SearchSectionState extends State<SearchSection> {
   @override
   Widget build(BuildContext context) {
+    final db = Provider.of<Database>(context, listen: false);
+    final TextEditingController _typeAheadController = TextEditingController();
+
     return Container(
         color: Theme.of(context).primaryColorLight,
         padding: EdgeInsets.fromLTRB(10, 10, 10, 15),
@@ -246,12 +290,32 @@ class SearchSection extends StatelessWidget {
                             offset: Offset(0, 3.0),
                             blurRadius: 4.0),
                       ]),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'John Doe',
-                      contentPadding: EdgeInsets.all(10),
-                      border: InputBorder.none,
-                    ),
+                  child: TypeAheadField(
+                    debounceDuration: Duration(microseconds: 500),
+                    textFieldConfiguration: TextFieldConfiguration(
+                        controller: _typeAheadController,
+                        autofocus: true,
+                        style: DefaultTextStyle.of(context)
+                            .style
+                            .copyWith(fontStyle: FontStyle.italic),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Jean Ticip',
+                          contentPadding: EdgeInsets.all(10),
+                        )),
+                    suggestionsCallback: (pattern) async {
+                      return await db.getUsers(
+                          nameQuery: _typeAheadController.text);
+                    },
+                    itemBuilder: (context, UserApp? suggestion) {
+                      final user = suggestion;
+                      return ListTile(
+                        title: Text(user!.name),
+                      );
+                    },
+                    onSuggestionSelected: (UserApp? suggestion) {
+                      _typeAheadController.text = suggestion!.name;
+                    },
                   ),
                 )),
                 SizedBox(width: 10),
