@@ -27,7 +27,7 @@ class Message implements DatabaseModel {
       DBPath.chatMessage(senderId, receiverId, createdAt.toIso8601String());
 
   factory Message.fromMap(Map<String, dynamic>? data, String id) {
-    List<String> ids = id.split('-');
+    List<String> ids = id.split('_');
     final String senderId = ids[0];
     DateTime createdAt;
     if (data != null) {

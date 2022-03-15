@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:music_room_app/messenger/models/user.dart';
-import 'package:music_room_app/messenger/utils.dart';
 
 class FirestoreService {
   FirestoreService._();

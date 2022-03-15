@@ -20,7 +20,7 @@ class Chat implements DatabaseModel {
   get docId => DBPath.chat(uid1, uid2);
 
   factory Chat.fromMap(Map<String, dynamic>? data, String id) {
-    List<String> ids = id.split('-');
+    List<String> ids = id.split('_');
     final String uid1 = ids[0];
     final String uid2 = ids.length > 1 ? ids[1] : 'N/A';
     if (data != null) {

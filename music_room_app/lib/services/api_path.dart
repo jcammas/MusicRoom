@@ -45,8 +45,8 @@ class DBPath {
   static String playlistTracks(String playlistId) =>
       playlist(playlistId) + '/' + tracks();
 
-  static String chatMessages(String senderId, String receiverId) =>
-      chat(senderId, receiverId) + '/' + messages();
+  static String chatMessages(String uid1, String uid2) =>
+      chat(uid1, uid2) + '/' + messages();
 
   static String userPlaylistTrack(
           String uid, String playlistId, String trackId) =>
@@ -59,11 +59,11 @@ class DBPath {
       user(uid) + '/' + spotifyProfile(spotifyProfileId);
   
   static String chatMessage(String senderId, String receiverId, String date) =>
-      chatMessages(senderId, receiverId) + '/' + senderId + '-' + date;
+      chatMessages(senderId, receiverId) + senderId + '_' + date;
 
   static String concatOrdered(String s1, String s2) {
     List<String> ls = [s1, s2];
     ls.sort();
-    return ls.join('-');
+    return ls.join('_');
   }
 }

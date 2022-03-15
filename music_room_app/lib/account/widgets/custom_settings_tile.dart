@@ -81,7 +81,7 @@ class CustomSettingsTile extends AbstractTile {
                 context, title, '', leading, model, SettingType.oldPassword);
           }
           await model.reAuthenticateUser();
-          await model.deleteUser(user);
+          await model.deleteUser();
           Navigator.of(context).pop();
           break;
 
