@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/messenger/api/firebase_api.dart';
+import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/messenger/models/message.dart';
+import '../../services/database.dart';
 import 'message_widget.dart';
 
 class MessagesWidget extends StatelessWidget {
-  final String? idUser;
+  final UserApp currentUser;
+  final UserApp interlocutor;
+  final Database db;
 
   const MessagesWidget({
-    this.idUser,
+    required this.currentUser,
+    required this.interlocutor,
+    required this.db,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => StreamBuilder<List<Message>>(
-        stream: FirebaseApi.getMessages(idUser!),
+        stream: db.chatMessagesStream(interlocutor),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
@@ -35,7 +40,7 @@ class MessagesWidget extends StatelessWidget {
 
                           return MessageWidget(
                             message: message,
-                            isMe: message.idUser == idUser,
+                            isMe: message.senderId == currentUser.uid,
                           );
                         },
                       );

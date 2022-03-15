@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/messenger/widgets/profile_header_widget.dart';
+import '../services/database.dart';
 import 'widgets/messages_widget.dart';
 import 'widgets/new_message_widget.dart';
 import 'widgets/profile_header_widget.dart';
 
 class ChatPage extends StatefulWidget {
-  final UserApp user;
+  final UserApp interlocutor;
+  final UserApp currentUser;
+  final Database db;
 
   const ChatPage({
-    required this.user,
+    required this.interlocutor,
+    required this.currentUser,
+    required this.db,
     Key? key,
   }) : super(key: key);
 
@@ -25,7 +30,7 @@ class _ChatPageState extends State<ChatPage> {
         body: SafeArea(
           child: Column(
             children: [
-              ProfileHeaderWidget(name: widget.user.name),
+              ProfileHeaderWidget(name: widget.interlocutor.name),
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(10),
@@ -36,12 +41,17 @@ class _ChatPageState extends State<ChatPage> {
                       topRight: Radius.circular(25),
                     ),
                   ),
-                  child: MessagesWidget(idUser: widget.user.uid),
+                  child: MessagesWidget(
+                    currentUser: widget.currentUser,
+                    interlocutor: widget.interlocutor,
+                    db: widget.db,
+                  ),
                 ),
               ),
               NewMessageWidget(
-                idUser: widget.user.uid,
-                username: widget.user.name,
+                currentUser: widget.currentUser,
+                interlocutor: widget.interlocutor,
+                db: widget.db,
               )
             ],
           ),
