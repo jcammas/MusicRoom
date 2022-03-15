@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
           name: auth.currentUser!.displayName ?? 'N/A',
           email: auth.currentUser!.email ?? 'N/A',
           uid: auth.currentUser!.uid,
+          friends: [],
         ));
       }
     }

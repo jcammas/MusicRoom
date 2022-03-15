@@ -10,6 +10,7 @@ class UserApp implements DatabaseModel {
     required this.name,
     required this.email,
     required this.uid,
+    required this.friends,
     this.playlists,
     this.spotifyProfile,
   });
@@ -18,7 +19,7 @@ class UserApp implements DatabaseModel {
   String email;
   String name;
   SpotifyProfile? spotifyProfile;
-  List<UserApp> friends = [];
+  List<String> friends = [];
   List<Device> devices = [];
   Map<String, Playlist>? playlists;
   String? avatarId;
@@ -34,12 +35,14 @@ class UserApp implements DatabaseModel {
     if (data != null) {
       final String userName = data['name'] ?? 'N/A';
       final String email = data['email'] ?? 'N/A';
+      final List<String> friends = new List<String>.from(data['friends']);
       SpotifyProfile? spotifyProfile;
       if (data['spotify_profile'] != null) {
         spotifyProfile = SpotifyProfile.fromMap(data['spotify_profile']);
       }
       Map<String, dynamic>? playlistsData = data['playlists'];
       Map<String, Playlist> playlists = {};
+
       if (playlistsData != null) {
         playlistsData.updateAll((id, data) => Playlist.fromMap(data, id));
         playlists = playlistsData.cast();
@@ -48,10 +51,11 @@ class UserApp implements DatabaseModel {
           uid: uid,
           name: userName,
           email: email,
+          friends: friends,
           playlists: playlists,
           spotifyProfile: spotifyProfile);
     } else {
-      return UserApp(uid: uid, name: "N/A", email: "N/A");
+      return UserApp(uid: uid, name: "N/A", email: "N/A", friends: []);
     }
   }
 
@@ -61,6 +65,7 @@ class UserApp implements DatabaseModel {
       'uid': uid,
       'name': name,
       'email': email,
+      'friends': friends,
     };
   }
 }
