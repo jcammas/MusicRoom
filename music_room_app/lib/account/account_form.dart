@@ -341,21 +341,21 @@ class _AccountFormState extends State<AccountForm> {
                         CustomSettingsTile(
                             type: SettingType.name,
                             title: 'Name',
-                            manager: widget.manager,
+                            model: widget.manager,
                             user: user,
                             subtitle: settingsData['Name'].toString(),
                             iconData: Icons.face),
                         CustomSettingsTile(
                             type: SettingType.email,
                             title: 'Email',
-                            manager: widget.manager,
+                            model: widget.manager,
                             user: user,
                             subtitle: settingsData['Email'].toString(),
                             iconData: Icons.email),
                         CustomSettingsTile(
                             type: SettingType.newPassword,
                             title: 'Change Password',
-                            manager: widget.manager,
+                            model: widget.manager,
                             user: user,
                             iconData: Icons.lock),
                         SettingsTile(
@@ -382,7 +382,7 @@ class _AccountFormState extends State<AccountForm> {
                         CustomSettingsTile(
                             type: SettingType.delete,
                             title: 'Delete Account',
-                            manager: widget.manager,
+                            model: widget.manager,
                             user: user,
                             iconData: Icons.delete_forever),
                       ],

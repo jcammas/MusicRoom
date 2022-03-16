@@ -9,15 +9,15 @@ import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:music_room_app/authentication/managers/login_manager.dart';
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key, required this.manager}) : super(key: key);
-  final LoginManager manager;
+  const LoginForm({Key? key, required this.model}) : super(key: key);
+  final LoginManager model;
 
   static Widget create(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
     return ChangeNotifierProvider<LoginManager>(
       create: (_) => LoginManager(auth: auth),
       child: Consumer<LoginManager>(
-        builder: (_, manager, __) => LoginForm(manager: manager),
+        builder: (_, model, __) => LoginForm(model: model),
       ),
     );
   }
@@ -38,10 +38,10 @@ class _LoginFormState extends State<LoginForm> {
   String footHeroText = 'Sign up';
   String errorText = 'Ops ! Sign in failed...';
 
-  LoginManager get manager => widget.manager;
+  LoginManager get model => widget.model;
 
   void _setTexts() {
-    switch (manager.formType) {
+    switch (model.formType) {
       case LoginFormType.signIn:
         {
           titleText = 'Sign In';
@@ -88,8 +88,8 @@ class _LoginFormState extends State<LoginForm> {
 
   void _submit() async {
     try {
-      await manager.submit();
-      if (manager.formType != LoginFormType.signIn) {
+      await model.submit();
+      if (model.formType != LoginFormType.signIn) {
         ScaffoldMessenger.of(context).showSnackBar(
           const EmailSentSnackBar(),
         );
@@ -101,28 +101,28 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _emailEditingComplete() {
-    if (manager.formType == LoginFormType.reset && manager.emailIsValid) {
+    if (model.formType == LoginFormType.reset && model.emailIsValid) {
       _submit();
     } else {
       final newFocus =
-          manager.emailIsValid ? _passwordFocusNode : _emailFocusNode;
+          model.emailIsValid ? _passwordFocusNode : _emailFocusNode;
       FocusScope.of(context).requestFocus(newFocus);
     }
   }
 
-  void _toggleResetPassword() => manager.updateFormType(LoginFormType.reset);
+  void _toggleResetPassword() => model.updateFormType(LoginFormType.reset);
 
   void _toggleFormType() {
-    manager.formType == LoginFormType.signIn
-        ? manager.updateFormType(LoginFormType.register)
-        : manager.updateFormType(LoginFormType.signIn);
+    model.formType == LoginFormType.signIn
+        ? model.updateFormType(LoginFormType.register)
+        : model.updateFormType(LoginFormType.signIn);
     _emailController.clear();
     _passwordController.clear();
   }
 
   GestureDetector _buildFootMessage() {
     return GestureDetector(
-      onTap: !manager.isLoading ? _toggleFormType : null,
+      onTap: !model.isLoading ? _toggleFormType : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -155,8 +155,8 @@ class _LoginFormState extends State<LoginForm> {
       textInputAction: TextInputAction.done,
       decoration: kTextFieldDecoration.copyWith(
         labelText: 'Password',
-        errorText: manager.showPasswordError ? 'Password can\'t be empty' : null,
-        enabled: manager.isLoading == false,
+        errorText: model.showPasswordError ? 'Password can\'t be empty' : null,
+        enabled: model.isLoading == false,
         prefixIcon: const Icon(
           Icons.lock,
           color: Color(0XFF072BB8),
@@ -167,7 +167,7 @@ class _LoginFormState extends State<LoginForm> {
           return "Please enter password";
         }
       },
-      onChanged: manager.updatePassword,
+      onChanged: model.updatePassword,
       onEditingComplete: _submit,
     );
   }
@@ -183,8 +183,8 @@ class _LoginFormState extends State<LoginForm> {
       decoration: kTextFieldDecoration.copyWith(
         labelText: 'Email',
         hintText: 'test@test.com',
-        errorText: manager.showEmailError ? 'Email can\'t be empty' : null,
-        enabled: manager.isLoading == false,
+        errorText: model.showEmailError ? 'Email can\'t be empty' : null,
+        enabled: model.isLoading == false,
         prefixIcon: const Icon(
           Icons.email,
           color: Color(0XFF072BB8),
@@ -195,7 +195,7 @@ class _LoginFormState extends State<LoginForm> {
           return "Please enter email";
         }
       },
-      onChanged: manager.updateEmail,
+      onChanged: model.updateEmail,
       onEditingComplete: _emailEditingComplete,
     );
   }
@@ -218,7 +218,7 @@ class _LoginFormState extends State<LoginForm> {
       SizedBox(height: sizeHeight * 0.05),
       LoginButton(
         title: buttonText,
-        onPressed: manager.canSubmit ? _submit : null,
+        onPressed: model.canSubmit ? _submit : null,
       ),
     ];
   }
@@ -234,7 +234,7 @@ class _LoginFormState extends State<LoginForm> {
       const SizedBox(height: 60),
       LoginButton(
         title: buttonText,
-        onPressed: manager.canSubmit ? _submit : null,
+        onPressed: model.canSubmit ? _submit : null,
       ),
       const SizedBox(height: 20),
       _buildFootMessage(),
@@ -244,21 +244,21 @@ class _LoginFormState extends State<LoginForm> {
           forgotPassword,
           style: const TextStyle(fontSize: 20, color: Color(0XFF072BB8)),
         ),
-        onPressed: !manager.isLoading ? _toggleResetPassword : null,
+        onPressed: !model.isLoading ? _toggleResetPassword : null,
       ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    return manager.isLoading
+    return model.isLoading
         ? const Center(
             child: CircularProgressIndicator(),
           )
         : Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
-            children: manager.formType == LoginFormType.reset
+            children: model.formType == LoginFormType.reset
                 ? _buildChildrenReset()
                 : _buildChildren(),
           );

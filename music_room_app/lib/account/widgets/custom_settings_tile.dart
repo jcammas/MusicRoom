@@ -14,13 +14,13 @@ class CustomSettingsTile extends AbstractTile {
       {Key? key,
       required this.type,
       required this.title,
-      required this.manager,
+      required this.model,
       required this.user,
       this.subtitle,
       this.iconData})
       : super(key: key);
   final String title;
-  final AccountManager manager;
+  final AccountManager model;
   final IconData? iconData;
   final String? subtitle;
   final UserApp? user;
@@ -31,25 +31,25 @@ class CustomSettingsTile extends AbstractTile {
       String settingName,
       String? currentValue,
       Widget? leading,
-      AccountManager manager,
+      AccountManager model,
       SettingType type) async {
-    SignInType signInType = manager.findSignInType();
+    SignInType signInType = model.findSignInType();
     try {
       switch (type) {
         case SettingType.name:
           await showSettingsDialog(
-              context, title, subtitle, leading, manager, type);
-          await manager.updateName(user);
+              context, title, subtitle, leading, model, type);
+          await model.updateName(user);
           break;
 
         case SettingType.email:
           if (signInType == SignInType.email) {
-            await showSettingsDialog(context, title, '', leading, manager,
+            await showSettingsDialog(context, title, '', leading, model,
                 SettingType.oldPassword);
-            await manager.reAuthenticateUser();
+            await model.reAuthenticateUser();
             await showSettingsDialog(
-                context, title, subtitle, leading, manager, type);
-            await manager.updateEmail(user);
+                context, title, subtitle, leading, model, type);
+            await model.updateEmail(user);
             await showAlertDialog(context,
                 title: 'New Email Sent',
                 content: const Text(
@@ -63,12 +63,12 @@ class CustomSettingsTile extends AbstractTile {
 
         case SettingType.newPassword:
           if (signInType == SignInType.email) {
-            await showSettingsDialog(context, title, '', leading, manager,
+            await showSettingsDialog(context, title, '', leading, model,
                 SettingType.oldPassword);
-            await manager.reAuthenticateUser();
+            await model.reAuthenticateUser();
             await showSettingsDialog(
-                context, title, subtitle, leading, manager, type);
-            await manager.updatePassword();
+                context, title, subtitle, leading, model, type);
+            await model.updatePassword();
           } else {
             throw Exception(
                 'You can\'t update your password with a Google or Facebook signIn.');
@@ -78,10 +78,10 @@ class CustomSettingsTile extends AbstractTile {
         case SettingType.delete:
           if (signInType == SignInType.email) {
             await showSettingsDialog(
-                context, title, '', leading, manager, SettingType.oldPassword);
+                context, title, '', leading, model, SettingType.oldPassword);
           }
-          await manager.reAuthenticateUser();
-          await manager.deleteUser();
+          await model.reAuthenticateUser();
+          await model.deleteUser();
           Navigator.of(context).pop();
           break;
 
@@ -110,11 +110,11 @@ class CustomSettingsTile extends AbstractTile {
                 .then((dynamic confirmed) async {
               if (confirmed == true) {
                 await makeAChange(
-                    context, title, subtitle, leading, manager, type);
+                    context, title, subtitle, leading, model, type);
               }
             });
           } else {
-            await makeAChange(context, title, subtitle, leading, manager, type);
+            await makeAChange(context, title, subtitle, leading, model, type);
           }
         });
   }

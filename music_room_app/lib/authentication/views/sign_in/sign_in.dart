@@ -12,14 +12,14 @@ import '../widgets/social_sign_in_button.dart';
 class SignInScreen extends StatelessWidget {
   const SignInScreen({
     Key? key,
-    required this.manager,
+    required this.model,
     required this.isLoading,
   }) : super(key: key);
 
   static String routeName = '/SignInScreen';
   static const Key emailPasswordKey = Key('email-password');
 
-  final SignInManager manager;
+  final SignInManager model;
   final bool isLoading;
 
   static Widget create(BuildContext context) {
@@ -31,7 +31,7 @@ class SignInScreen extends StatelessWidget {
           create: (_) => SignInManager(auth: auth, isLoading: isLoading),
           child: Consumer<SignInManager>(
             builder: (_, manager, __) =>
-                SignInScreen(manager: manager, isLoading: isLoading.value),
+                SignInScreen(model: manager, isLoading: isLoading.value),
           ),
         ),
       ),
@@ -59,7 +59,7 @@ class SignInScreen extends StatelessWidget {
 
   Future<void> _signInWithGoogle(BuildContext context) async {
     try {
-      await manager.signInWithGoogle();
+      await model.signInWithGoogle();
     } on Exception catch (e) {
       _showSignInError(context, e);
     }
@@ -67,7 +67,7 @@ class SignInScreen extends StatelessWidget {
 
   Future<void> _signInWithFacebook(BuildContext context) async {
     try {
-      await manager.signInWithFacebook();
+      await model.signInWithFacebook();
     } on Exception catch (e) {
       _showSignInError(context, e);
     }

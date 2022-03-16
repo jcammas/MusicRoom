@@ -2,6 +2,7 @@ import 'package:music_room_app/home/models/database_model.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/models/user.dart';
+import '../messenger/models/message.dart';
 import 'api_path.dart';
 import 'firestore_service.dart';
 
@@ -62,7 +63,12 @@ abstract class Database {
   Stream<List<TrackApp>> userPlaylistTracksStream(Playlist playlist,
       {UserApp? user});
 
+  Stream<List<Message>> chatMessagesStream(UserApp interlocutor,
+      {UserApp? user});
+
   set uid(String uid);
+
+  String get uid;
 }
 
 class FirestoreDatabase implements Database {
@@ -74,6 +80,9 @@ class FirestoreDatabase implements Database {
 
   @override
   set uid(String uid) => _uid = uid;
+
+  @override
+  get uid => _uid;
 
   @override
   Future<void> delete(DatabaseModel model) async =>
@@ -236,4 +245,14 @@ class FirestoreDatabase implements Database {
                 : 0
             : 0,
       );
+
+  @override
+  Stream<List<Message>> chatMessagesStream(UserApp interlocutor,
+          {UserApp? user}) =>
+      _service.collectionStream(
+          path: DBPath.chatMessages(
+              user == null ? _uid : user.uid, interlocutor.uid),
+          builder: (data, documentID) => Message.fromMap(data, documentID),
+          sort: (lhs, rhs) => rhs.createdAt.compareTo(lhs.createdAt),
+  );
 }
