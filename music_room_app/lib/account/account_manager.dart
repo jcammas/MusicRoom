@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/account/widgets/custom_settings_tile.dart';
 import 'package:music_room_app/home/models/user.dart';
@@ -92,27 +90,25 @@ class AccountManager with ChangeNotifier {
     }
   }
 
-  bool get showError {
-    return submitted && !inputIsValidAsText;
-  }
+  bool get showError => submitted && !inputIsValidAsText;
 
-  bool get inputIsValidAsEmail {
-    return CustomStringValidator.isValid(
-        settingValue, TextInputType.emailAddress);
-  }
+  bool get inputIsValidAsEmail =>
+      CustomStringValidator.isValid(settingValue, TextInputType.emailAddress);
 
-  bool get inputIsValidAsPassword {
-    return CustomStringValidator.isValid(
-        settingValue, TextInputType.visiblePassword);
-  }
+  bool get inputIsValidAsPassword => CustomStringValidator.isValid(
+      settingValue, TextInputType.visiblePassword);
 
-  bool get inputIsValidAsText {
-    return CustomStringValidator.isValid(settingValue, TextInputType.text);
-  }
+  bool get inputIsValidAsText =>
+      CustomStringValidator.isValid(settingValue, TextInputType.text);
 
-  void updateSettingValue(String value) => settingValue = value;
+  void updateSettingValue(String value) {
+    submitted = false;
+    settingValue = value;
+  }
 
   void isSubmitted() => submitted = true;
+
+  void notSubmitted() => submitted = false;
 
   SignInType findSignInType() => auth.findSignInType();
 

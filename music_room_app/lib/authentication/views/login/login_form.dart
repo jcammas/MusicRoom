@@ -165,6 +165,8 @@ class _LoginFormState extends State<LoginForm> {
       validator: (value) {
         if (value!.isEmpty) {
           return "Please enter password";
+        } else {
+          return null;
         }
       },
       onChanged: model.updatePassword,
@@ -193,6 +195,8 @@ class _LoginFormState extends State<LoginForm> {
       validator: (value) {
         if (value!.isEmpty) {
           return "Please enter email";
+        } else {
+          return null;
         }
       },
       onChanged: model.updateEmail,

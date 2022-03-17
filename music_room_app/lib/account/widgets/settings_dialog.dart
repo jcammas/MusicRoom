@@ -17,6 +17,7 @@ TextInputType _getTextInputType(SettingType type) {
 }
 
 void _submit(BuildContext context, AccountManager model, SettingType type) {
+  model.isSubmitted();
   if (model.canSubmit(type) == true) {
     Navigator.of(context).pop();
   }
@@ -31,7 +32,7 @@ Future<String?> showSettingsDialog(
     SettingType type) async {
   model.updateSettingValue(currentValue ?? '');
   final String titleText = type == SettingType.oldPassword
-      ? 'Type your password :'
+      ? 'Type your current password :'
       : 'Make a Change !';
   final bool obscureText =
       (type == SettingType.oldPassword || type == SettingType.newPassword)
@@ -39,24 +40,32 @@ Future<String?> showSettingsDialog(
           : false;
   return await showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return SimpleDialog(
-            contentPadding: EdgeInsets.zero,
-            titlePadding: const EdgeInsets.fromLTRB(24, 10, 24, 0),
-            title: Center(child: Text(titleText)),
+            contentPadding: const EdgeInsets.all(20),
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(20),
+                child: Center(
+                  child: Text(
+                    titleText,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12),
                 child: TextFormField(
                   keyboardType: _getTextInputType(type),
-                  textAlign: TextAlign.left,
                   obscureText: obscureText,
                   textInputAction: TextInputAction.done,
                   initialValue: currentValue,
+                  textAlign: TextAlign.center,
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.only(left: 46, top: 16),
                     errorText: model.showError ? 'Can\'t be empty' : null,
                     prefixIcon: leading,
                   ),
@@ -69,9 +78,14 @@ Future<String?> showSettingsDialog(
               TextButton(
                 onPressed: () => _submit(context, model, type),
                 style: ButtonStyle(
-                    padding: MaterialStateProperty.all<EdgeInsets>(
-                        const EdgeInsets.all(16))),
-                child: const Text('Apply'),
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.all(12)),
+                  alignment: Alignment.center,
+                ),
+                child: const Text(
+                  'Apply',
+                  style: TextStyle(color: const Color(0XFF072BB8)),
+                ),
               ),
             ],
           );

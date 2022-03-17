@@ -61,7 +61,7 @@ class LoginManager with ChangeNotifier {
   }
 
   void updateFormType(LoginFormType formType) => updateWith(
-        email: '',
+        email: formType == LoginFormType.reset ? email : '',
         password: '',
         formType: formType,
         isLoading: false,

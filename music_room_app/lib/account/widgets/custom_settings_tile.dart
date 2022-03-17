@@ -40,21 +40,33 @@ class CustomSettingsTile extends AbstractTile {
           await showSettingsDialog(
               context, title, subtitle, leading, model, type);
           await model.updateName(user);
+          model.notSubmitted();
           break;
 
         case SettingType.email:
           if (signInType == SignInType.email) {
-            await showSettingsDialog(context, title, '', leading, model,
-                SettingType.oldPassword);
-            await model.reAuthenticateUser();
             await showSettingsDialog(
-                context, title, subtitle, leading, model, type);
-            await model.updateEmail(user);
-            await showAlertDialog(context,
-                title: 'New Email Sent',
-                content: const Text(
-                    'Please check your inbox to verify your new email address.'),
-                defaultActionText: 'Ok');
+                context,
+                title,
+                '',
+                Icon(Icons.lock, color: Color(0XFF072BB8)),
+                model,
+                SettingType.oldPassword);
+            if (model.submitted) {
+              model.notSubmitted();
+              await model.reAuthenticateUser();
+              await showSettingsDialog(
+                  context, title, subtitle, leading, model, type);
+              await model.updateEmail(user);
+              if (model.submitted) {
+                model.notSubmitted();
+                await showAlertDialog(context,
+                    title: 'New Email Sent',
+                    content: const Text(
+                        'Please check your inbox to verify your new email address.'),
+                    defaultActionText: 'Ok');
+              }
+            }
           } else {
             throw Exception(
                 'You can\'t update your email with a Google or Facebook signIn.');
@@ -63,12 +75,21 @@ class CustomSettingsTile extends AbstractTile {
 
         case SettingType.newPassword:
           if (signInType == SignInType.email) {
-            await showSettingsDialog(context, title, '', leading, model,
-                SettingType.oldPassword);
-            await model.reAuthenticateUser();
             await showSettingsDialog(
-                context, title, subtitle, leading, model, type);
-            await model.updatePassword();
+                context,
+                title,
+                '',
+                Icon(Icons.lock, color: Color(0XFF072BB8)),
+                model,
+                SettingType.oldPassword);
+            if (model.submitted) {
+              model.notSubmitted();
+              await model.reAuthenticateUser();
+              await showSettingsDialog(
+                  context, title, subtitle, leading, model, type);
+              await model.updatePassword();
+              model.notSubmitted();
+            }
           } else {
             throw Exception(
                 'You can\'t update your password with a Google or Facebook signIn.');
@@ -78,11 +99,19 @@ class CustomSettingsTile extends AbstractTile {
         case SettingType.delete:
           if (signInType == SignInType.email) {
             await showSettingsDialog(
-                context, title, '', leading, model, SettingType.oldPassword);
+                context,
+                title,
+                '',
+                Icon(Icons.lock, color: Color(0XFF072BB8)),
+                model,
+                SettingType.oldPassword);
           }
-          await model.reAuthenticateUser();
-          await model.deleteUser();
-          Navigator.of(context).pop();
+          if (model.submitted) {
+            model.notSubmitted();
+            await model.reAuthenticateUser();
+            await model.deleteUser();
+            Navigator.of(context).pop();
+          }
           break;
 
         default:
