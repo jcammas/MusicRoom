@@ -5,16 +5,15 @@ import '../../home/models/user.dart';
 
 class UserImagePicker extends StatefulWidget {
   UserImagePicker(
-      {required this.originalImageUrl, this.user,
-      required this.imagePickFn});
+      {required this.originalavatarUrl, this.user, required this.imagePickFn});
 
   final void Function(File pickedImage, UserApp? user) imagePickFn;
-  final String originalImageUrl;
+  final String originalavatarUrl;
   final UserApp? user;
 
   @override
   _UserImagePickerState createState() =>
-      _UserImagePickerState(NetworkImage(originalImageUrl));
+      _UserImagePickerState(NetworkImage(originalavatarUrl));
 }
 
 class _UserImagePickerState extends State<UserImagePicker> {
@@ -33,10 +32,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
         _newImage = File(pickedImageFile.path);
         isLocal = true;
       });
-      widget.imagePickFn(
-        _newImage!,
-        widget.user
-      );
+      widget.imagePickFn(_newImage!, widget.user);
     }
   }
 

@@ -68,7 +68,7 @@ class AccountManager with ChangeNotifier {
       await auth.currentUser!.updatePhotoURL(url);
     }
     if (user != null) {
-      user.imageUrl = url;
+      user.avatarUrl = url;
       await db.update(user);
     } else {
       throw Exception('This user doesn\'t seem to exist in the database.');

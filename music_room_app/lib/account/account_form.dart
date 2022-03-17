@@ -43,7 +43,7 @@ class _AccountFormState extends State<AccountForm> {
     return <String, String>{
       'Name': user == null ? 'N/A' : user.name,
       'Email': user == null ? 'N/A' : user.email,
-      'ImageUrl': user == null ? defaultAvatarUrl : user.imageUrl
+      'avatarUrl': user == null ? defaultAvatarUrl : user.avatarUrl
     };
   }
 
@@ -325,7 +325,7 @@ class _AccountFormState extends State<AccountForm> {
                   padding: const EdgeInsets.all(10.0),
                   child: UserImagePicker(
                       user: user,
-                      originalImageUrl: settingsData['ImageUrl'],
+                      originalavatarUrl: settingsData['avatarUrl'],
                       imagePickFn: widget.manager.updateAvatar),
                 ),
               ),

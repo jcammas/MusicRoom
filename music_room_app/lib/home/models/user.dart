@@ -14,7 +14,7 @@ class UserApp implements DatabaseModel {
       required this.friends,
       this.playlists,
       this.spotifyProfile,
-      required this.imageUrl}) {
+      required this.avatarUrl}) {
     this.userSearch = this.setSearchParams(name);
   }
 
@@ -22,7 +22,7 @@ class UserApp implements DatabaseModel {
   final String uid;
   String email;
   String name;
-  String imageUrl;
+  String avatarUrl;
   SpotifyProfile? spotifyProfile;
   List<String> friends = [];
   List<Device> devices = [];
@@ -58,7 +58,7 @@ class UserApp implements DatabaseModel {
       if (data['spotify_profile'] != null) {
         spotifyProfile = SpotifyProfile.fromMap(data['spotify_profile']);
       }
-      String imageUrl = data['image_url'] ?? defaultAvatarUrl;
+      String avatarUrl = data['image_url'] ?? defaultAvatarUrl;
       Map<String, dynamic>? playlistsData = data['playlists'];
       Map<String, Playlist> playlists = {};
 
@@ -70,7 +70,7 @@ class UserApp implements DatabaseModel {
           uid: uid,
           name: userName,
           email: email,
-          imageUrl: imageUrl,
+          avatarUrl: avatarUrl,
           playlists: playlists,
           friends: friends,
           spotifyProfile: spotifyProfile);
@@ -79,7 +79,7 @@ class UserApp implements DatabaseModel {
           uid: uid,
           name: "N/A",
           email: "N/A",
-          imageUrl: defaultAvatarUrl,
+          avatarUrl: defaultAvatarUrl,
           friends: []);
     }
   }
@@ -91,7 +91,7 @@ class UserApp implements DatabaseModel {
       'name': name,
       'userSearch': userSearch,
       'email': email,
-      'image_url': imageUrl,
+      'image_url': avatarUrl,
       'friends': friends,
     };
   }
