@@ -12,7 +12,6 @@ class ChatsPage extends StatelessWidget {
 
   static const String routeName = '/chatsPage';
 
-
   @override
   Widget build(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
@@ -23,7 +22,7 @@ class ChatsPage extends StatelessWidget {
       drawer: MyDrawer(),
       body: SafeArea(
         child: FutureBuilder<List<UserApp>>(
-          future: db.getAllUsers(),
+          future: db.getUsers(),
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
@@ -38,11 +37,13 @@ class ChatsPage extends StatelessWidget {
                   if (users!.isEmpty) {
                     return const Text('No Users Found');
                   } else {
-                    final currentUser = users.firstWhere((user) => user.uid == db.uid);
+                    final currentUser =
+                        users.firstWhere((user) => user.uid == db.uid);
                     users.removeWhere((user) => user.uid == db.uid);
                     return Column(
                       children: [
-                        ChatHeaderWidget(users: users, currentUser: currentUser),
+                        ChatHeaderWidget(
+                            users: users, currentUser: currentUser),
                         ChatBodyWidget(users: users, currentUser: currentUser)
                       ],
                     );

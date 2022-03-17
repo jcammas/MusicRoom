@@ -202,7 +202,7 @@ class _FriendCardState extends State<FriendCard> {
 
               default:
                 String displayName = snapshot.data!.name;
-                String avatar = snapshot.data!.avatarUrl;
+                String avatar = snapshot.data!.imageUrl;
 
                 children = <Widget>[
                   Expanded(
