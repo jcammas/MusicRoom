@@ -4,12 +4,13 @@ class FirestoreService {
   FirestoreService._();
 
   static final instance = FirestoreService._();
+  final _firestore = FirebaseFirestore.instance;
 
   Future<void> setDocument(
       {required String path,
       required Map<String, dynamic> data,
       bool mergeOption = false}) async {
-    final reference = FirebaseFirestore.instance.doc(path);
+    final reference = _firestore.doc(path);
     mergeOption
         ? await reference.set(data, SetOptions(merge: true))
         : await reference.set(data);
@@ -19,12 +20,12 @@ class FirestoreService {
     required String path,
     required Map<String, dynamic> data,
   }) async {
-    final reference = FirebaseFirestore.instance.doc(path);
+    final reference = _firestore.doc(path);
     await reference.update(data);
   }
 
   Future<bool> documentExists({required String path}) async {
-    final docRef = FirebaseFirestore.instance.doc(path);
+    final docRef = _firestore.doc(path);
     final result = await docRef.get();
     return result.exists;
   }
@@ -33,7 +34,7 @@ class FirestoreService {
     required String path,
     Query Function(Query query)? queryBuilder,
   }) async {
-    Query query = FirebaseFirestore.instance.collection(path);
+    Query query = _firestore.collection(path);
     if (queryBuilder != null) {
       query = queryBuilder(query);
     }
@@ -42,7 +43,7 @@ class FirestoreService {
   }
 
   Future<void> deleteDocument({required String path}) async {
-    final reference = FirebaseFirestore.instance.doc(path);
+    final reference = _firestore.doc(path);
     await reference.delete();
   }
 
@@ -50,7 +51,7 @@ class FirestoreService {
     required String path,
     required T Function(Map<String, dynamic>? data, String documentID) builder,
   }) {
-    final reference = FirebaseFirestore.instance.doc(path);
+    final reference = _firestore.doc(path);
     final snapshots = reference.snapshots();
     return snapshots.map((snapshot) => builder(snapshot.data(), snapshot.id));
   }
@@ -59,7 +60,7 @@ class FirestoreService {
     required String path,
     required T Function(Map<String, dynamic>? data, String documentID) builder,
   }) async {
-    final reference = FirebaseFirestore.instance.doc(path);
+    final reference = _firestore.doc(path);
     final snapshot = await reference.get();
     return builder(snapshot.data(), snapshot.id);
   }
@@ -70,7 +71,7 @@ class FirestoreService {
     Query Function(Query query)? queryBuilder,
     int Function(T lhs, T rhs)? sort,
   }) {
-    Query query = FirebaseFirestore.instance.collection(path);
+    Query query = _firestore.collection(path);
     if (queryBuilder != null) {
       query = queryBuilder(query);
     }
@@ -94,7 +95,7 @@ class FirestoreService {
     Query Function(Query query)? queryBuilder,
     int Function(T lhs, T rhs)? sort,
   }) async {
-    Query query = FirebaseFirestore.instance.collection(path);
+    Query query = _firestore.collection(path);
     if (queryBuilder != null) {
       query = queryBuilder(query);
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_room_app/services/constants.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
           name: auth.currentUser!.displayName ?? 'N/A',
           email: auth.currentUser!.email ?? 'N/A',
           uid: auth.currentUser!.uid,
+          imageUrl: auth.currentUser!.photoURL ?? defaultAvatarUrl
         ));
       }
     }

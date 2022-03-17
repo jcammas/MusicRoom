@@ -1,0 +1,1 @@
+const String defaultAvatarUrl = "https://lh3.googleusercontent.com/a/AATXAJz4cQoShpLT5Hpi5f4iiLuFtqWwBixVIgjPMw9-=s96-c";

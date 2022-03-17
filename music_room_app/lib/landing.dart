@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/services/database.dart';
+import 'package:music_room_app/services/storage_service.dart';
 import 'package:provider/provider.dart';
 import 'authentication/views/sign_in/sign_in.dart';
 import 'home/home.dart';
@@ -15,6 +16,7 @@ class LandingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
     final db = Provider.of<Database>(context, listen: false);
+    final storage = Provider.of<StorageService>(context, listen: false);
     return StreamBuilder<User?>(
       stream: auth.authStateChanges(),
       builder: (context, snapshot) {
@@ -24,6 +26,7 @@ class LandingScreen extends StatelessWidget {
             return SignInScreen.create(context);
           }
           db.uid = user.uid;
+          storage.uid = user.uid;
           return const HomeScreen();
         }
         return const Scaffold(

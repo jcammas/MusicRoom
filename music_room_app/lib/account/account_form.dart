@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 import 'package:music_room_app/account/widgets/custom_settings_tile.dart';
+import 'package:music_room_app/account/widgets/user_image_picker.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/auth.dart';
+import 'package:music_room_app/services/constants.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
+import '../services/storage_service.dart';
 import 'account_manager.dart';
 
 class AccountForm extends StatefulWidget {
@@ -14,8 +17,9 @@ class AccountForm extends StatefulWidget {
   static Widget create(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
     final db = Provider.of<Database>(context, listen: false);
+    final storage = Provider.of<StorageService>(context, listen: false);
     return ChangeNotifierProvider<AccountManager>(
-      create: (_) => AccountManager(auth: auth, db: db),
+      create: (_) => AccountManager(auth: auth, db: db, storage: storage),
       child: Consumer<AccountManager>(
         builder: (_, model, __) => AccountForm(manager: model),
       ),
@@ -36,11 +40,10 @@ class _AccountFormState extends State<AccountForm> {
   bool isSwitchedPlaylistWithFriends = false;
 
   Map<String, dynamic> fillSettingsData(UserApp? user) {
-    return <String, dynamic>{
+    return <String, String>{
       'Name': user == null ? 'N/A' : user.name,
       'Email': user == null ? 'N/A' : user.email,
-      'Friends': user == null ? 'N/A' : user.friends,
-      'playlist': user == null ? 'N/A' : user.playlists,
+      'ImageUrl': user == null ? defaultAvatarUrl : user.imageUrl
     };
   }
 
@@ -320,12 +323,10 @@ class _AccountFormState extends State<AccountForm> {
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: CircleAvatar(
-                    radius: 45,
-                    child: ClipOval(
-                      child: Image.asset("images/avatar_random.png"),
-                    ),
-                  ),
+                  child: UserImagePicker(
+                      user: user,
+                      originalImageUrl: settingsData['ImageUrl'],
+                      imagePickFn: widget.manager.updateAvatar),
                 ),
               ),
               SizedBox(

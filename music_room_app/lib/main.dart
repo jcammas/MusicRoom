@@ -8,6 +8,7 @@ import 'package:music_room_app/spotify_library/library/library.dart';
 import 'package:provider/provider.dart';
 import 'landing.dart';
 import 'services/auth.dart';
+import 'services/storage_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<AuthBase>(create: (context) => Auth()),
         Provider<Database>(create: (context) => FirestoreDatabase()),
-        Provider<Spotify>(create: (context) => SpotifyService())
+        Provider<Spotify>(create: (context) => SpotifyService()),
+        Provider<StorageService>(create: (context) => StorageService())
       ],
       child: MaterialApp(
         title: 'Music Room',

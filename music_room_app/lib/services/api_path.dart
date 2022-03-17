@@ -67,3 +67,10 @@ class DBPath {
     return ls.join('_');
   }
 }
+
+class StoragePath {
+  static String userAvatars() => 'user_avatars/';
+  static String userAvatar(String uid) => userAvatars() + uid + '.jpg';
+
+}
+
