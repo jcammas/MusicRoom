@@ -12,7 +12,7 @@ class AvatarTile extends StatelessWidget {
   void _pickImage() async {
     final ImagePicker imagePicker = new ImagePicker();
     final pickedImageFile = await imagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 70, maxWidth: 150);
+        source: ImageSource.gallery, imageQuality: 70, maxWidth: 200);
     if (pickedImageFile != null) {
       imagePickFn(File(pickedImageFile.path), user);
     }
