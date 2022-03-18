@@ -41,6 +41,7 @@ class MessagesWidget extends StatelessWidget {
                           return MessageWidget(
                             message: message,
                             isMe: message.senderId == currentUser.uid,
+                            avatarUrl: interlocutor.avatarUrl,
                           );
                         },
                       );
