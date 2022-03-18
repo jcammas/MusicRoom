@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 import 'package:music_room_app/account/widgets/custom_settings_tile.dart';
 import 'package:music_room_app/account/widgets/privacy_settings.dart';
-import 'package:music_room_app/account/widgets/user_image_picker.dart';
+import 'package:music_room_app/account/widgets/avatar_tile.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/auth.dart';
-import 'package:music_room_app/services/constants.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
 import '../services/storage_service.dart';
@@ -38,7 +37,6 @@ class _AccountFormState extends State<AccountForm> {
     return <String, String>{
       'Name': user == null ? 'N/A' : user.name,
       'Email': user == null ? 'N/A' : user.email,
-      'avatarUrl': user == null ? defaultAvatarUrl : user.avatarUrl
     };
   }
 
@@ -79,9 +77,8 @@ class _AccountFormState extends State<AccountForm> {
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: UserImagePicker(
+                  child: AvatarTile(
                       user: user,
-                      avatarUrl: settingsData['avatarUrl'],
                       imagePickFn: widget.manager.updateAvatar),
                 ),
               ),
@@ -100,14 +97,14 @@ class _AccountFormState extends State<AccountForm> {
                             title: 'Name',
                             model: widget.manager,
                             user: user,
-                            subtitle: settingsData['Name'].toString(),
+                            subtitle: settingsData['Name'],
                             iconData: Icons.face),
                         CustomSettingsTile(
                             type: SettingType.email,
                             title: 'Email',
                             model: widget.manager,
                             user: user,
-                            subtitle: settingsData['Email'].toString(),
+                            subtitle: settingsData['Email'],
                             iconData: Icons.email),
                         CustomSettingsTile(
                             type: SettingType.newPassword,

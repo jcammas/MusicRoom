@@ -37,11 +37,13 @@ class MessagesWidget extends StatelessWidget {
                         itemCount: messages.length,
                         itemBuilder: (context, index) {
                           final message = messages[index];
-
+                          bool isMe = message.senderId == currentUser.uid;
                           return MessageWidget(
                             message: message,
-                            isMe: message.senderId == currentUser.uid,
-                            avatarUrl: interlocutor.avatarUrl,
+                            isMe: isMe,
+                            avatar: isMe
+                                ? currentUser.getAvatar()
+                                : interlocutor.getAvatar(),
                           );
                         },
                       );

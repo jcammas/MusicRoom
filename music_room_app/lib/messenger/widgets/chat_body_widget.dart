@@ -45,9 +45,9 @@ class ChatBodyWidget extends StatelessWidget {
                       interlocutor: user, currentUser: currentUser, db: db),
                 ));
               },
-              leading: const CircleAvatar(
+              leading: CircleAvatar(
                 radius: 25,
-                backgroundImage: AssetImage("images/avatar_random.png"),
+                backgroundImage: user.getAvatar(),
               ),
               title: Text(user.name),
             ),

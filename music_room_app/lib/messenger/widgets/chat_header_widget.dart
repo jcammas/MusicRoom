@@ -51,9 +51,9 @@ class ChatHeaderWidget extends StatelessWidget {
                               db: db),
                         ));
                       },
-                      child: const CircleAvatar(
+                      child: CircleAvatar(
                         radius: 24,
-                        backgroundImage: AssetImage('images/avatar_random.png'),
+                        backgroundImage: user.getAvatar(),
                       ),
                     ),
                   );

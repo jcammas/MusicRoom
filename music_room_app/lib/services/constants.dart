@@ -1,1 +1,0 @@
-const String defaultAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/musicroom-27d72.appspot.com/o/user_avatars%2Favatar_random.png?alt=media&token=cd472ae6-1d58-4e3a-9051-390f772392f6";

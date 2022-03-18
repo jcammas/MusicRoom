@@ -3,14 +3,14 @@ import 'package:music_room_app/messenger/models/message.dart';
 
 class MessageWidget extends StatelessWidget {
   final Message message;
-  final String avatarUrl;
+  final ImageProvider avatar;
   final bool isMe;
 
   const MessageWidget({
     Key? key,
     required this.message,
     required this.isMe,
-    required this.avatarUrl,
+    required this.avatar,
   }) : super(key: key);
 
   @override
@@ -24,7 +24,7 @@ class MessageWidget extends StatelessWidget {
         if (!isMe)
           CircleAvatar(
             radius: 16,
-            backgroundImage: NetworkImage(avatarUrl),
+            backgroundImage: avatar,
           ),
         Container(
           padding: const EdgeInsets.all(16),
