@@ -81,7 +81,7 @@ class _AccountFormState extends State<AccountForm> {
                   padding: const EdgeInsets.all(10.0),
                   child: UserImagePicker(
                       user: user,
-                      originalavatarUrl: settingsData['avatarUrl'],
+                      avatarUrl: settingsData['avatarUrl'],
                       imagePickFn: widget.manager.updateAvatar),
                 ),
               ),

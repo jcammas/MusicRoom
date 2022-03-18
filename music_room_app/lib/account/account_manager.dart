@@ -60,7 +60,7 @@ class AccountManager with ChangeNotifier {
     }
   }
 
-  void updateAvatar(File pickedImage, UserApp? user) async {
+  Future<void> updateAvatar(File pickedImage, UserApp? user) async {
     String url = await storage.saveAvatar(pickedImage: pickedImage);
     if (auth.currentUser != null) {
       await auth.currentUser!.updatePhotoURL(url);
