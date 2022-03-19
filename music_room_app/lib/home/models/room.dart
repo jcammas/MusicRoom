@@ -1,7 +1,6 @@
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/api_path.dart';
-
 import 'database_model.dart';
 
 class Room implements DatabaseModel {

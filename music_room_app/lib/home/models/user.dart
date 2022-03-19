@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/playlist.dart';
-import 'package:music_room_app/home/models/room.dart';
 import 'package:music_room_app/home/models/spotify_profile.dart';
 import 'package:music_room_app/services/api_path.dart';
 import 'database_model.dart';
@@ -17,6 +16,7 @@ class UserApp implements DatabaseModel {
       required this.friends,
       this.playlists,
       this.spotifyProfile,
+      this.room,
       required this.avatarUrl}) {
     this.userSearch = this.setSearchParams(name);
   }
@@ -25,12 +25,12 @@ class UserApp implements DatabaseModel {
   final String uid;
   String email;
   String name;
+  String? room;
   String avatarUrl;
   SpotifyProfile? spotifyProfile;
   List<String> friends = [];
   List<Device> devices = [];
   Map<String, Playlist>? playlists;
-  Room? currentRoom;
   String? defaultRoomPrivacySettings;
   String? defaultRoomVoteSystem;
   String? privacyLevel;
@@ -64,9 +64,9 @@ class UserApp implements DatabaseModel {
         spotifyProfile = SpotifyProfile.fromMap(data['spotify_profile']);
       }
       String avatarUrl = data['image_url'] ?? defaultAvatarUrl;
+      String room = data['room'] ?? null;
       Map<String, dynamic>? playlistsData = data['playlists'];
       Map<String, Playlist> playlists = {};
-
       if (playlistsData != null) {
         playlistsData.updateAll((id, data) => Playlist.fromMap(data, id));
         playlists = playlistsData.cast();
@@ -78,7 +78,8 @@ class UserApp implements DatabaseModel {
           avatarUrl: avatarUrl,
           playlists: playlists,
           friends: friends,
-          spotifyProfile: spotifyProfile);
+          spotifyProfile: spotifyProfile,
+          room: room);
     } else {
       return UserApp(
           uid: uid,
@@ -98,6 +99,7 @@ class UserApp implements DatabaseModel {
       'email': email,
       'image_url': avatarUrl,
       'friends': friends,
+      'room': room
     };
   }
 }
