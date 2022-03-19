@@ -64,7 +64,7 @@ class UserApp implements DatabaseModel {
         spotifyProfile = SpotifyProfile.fromMap(data['spotify_profile']);
       }
       String avatarUrl = data['image_url'] ?? defaultAvatarUrl;
-      String room = data['room'] ?? null;
+      String? room = data['room'];
       Map<String, dynamic>? playlistsData = data['playlists'];
       Map<String, Playlist> playlists = {};
       if (playlistsData != null) {

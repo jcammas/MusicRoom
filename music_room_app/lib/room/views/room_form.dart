@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/room/room_manager.dart';
+import 'package:music_room_app/room/managers/room_manager.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
 
@@ -22,8 +22,6 @@ class RoomForm extends StatefulWidget {
 
 class _RoomFormState extends State<RoomForm> {
   late Map<String, dynamic> settingsData;
-
-
 
   @override
   Widget build(BuildContext context) {
