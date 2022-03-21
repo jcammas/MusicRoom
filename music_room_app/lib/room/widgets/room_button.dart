@@ -9,15 +9,16 @@ class RoomButton extends CustomRaisedButton {
     Color textColor = Colors.white,
     required VoidCallback? onPressed,
   }) : super(
-    key: key,
-    child: Text(
-      text,
-      style: TextStyle(color: textColor, fontSize: 20.0, fontWeight: FontWeight.bold),
-    ),
-    color: color,
-    borderRadius: 10,
-    height: 70,
-    width: 100,
-    onPressed: onPressed,
-  );
+          key: key,
+          child: Text(
+            text,
+            style: TextStyle(
+                color: textColor, fontSize: 20.0, fontWeight: FontWeight.bold),
+          ),
+          color: color,
+          borderRadius: 10,
+          height: 70,
+          width: 100,
+          onPressed: onPressed,
+        );
 }

@@ -58,7 +58,6 @@ class LibraryScreen extends StatelessWidget {
                 child: PlaylistTile(
                   playlist: playlist,
                   onTap: () => PlaylistPage.show(context, playlist),
-                  // onTap: () => PlaylistEntriesPage.show(context, playlist),
                 ),
               ),
             ),
