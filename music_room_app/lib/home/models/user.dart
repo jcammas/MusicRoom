@@ -4,6 +4,7 @@ import 'package:music_room_app/home/models/room.dart';
 import 'package:music_room_app/home/models/spotify_profile.dart';
 import 'package:music_room_app/models/HasNameObject.dart';
 import 'package:music_room_app/services/api_path.dart';
+import 'package:music_room_app/widgets/utils.dart';
 import 'database_model.dart';
 import 'device.dart';
 
@@ -19,7 +20,7 @@ class UserApp implements DatabaseModel, HasNameObject {
       this.playlists,
       this.spotifyProfile,
       required this.avatarUrl}) {
-    this.userSearch = this.setSearchParams(name);
+    this.userSearch = setSearchParams(name);
   }
 
   late List<String> userSearch;
@@ -35,19 +36,6 @@ class UserApp implements DatabaseModel, HasNameObject {
   String? defaultRoomPrivacySettings;
   String? defaultRoomVoteSystem;
   String? privacyLevel;
-
-  List<String> setSearchParams(String str) {
-    List<String> searchParams = [];
-    String temp = "";
-
-    str = str.toLowerCase();
-    str = str.replaceAll(new RegExp(r'[^a-zA-Z]+'), '');
-    for (int i = 0; i < str.length; i++) {
-      temp = temp + str[i];
-      searchParams.add(temp);
-    }
-    return searchParams;
-  }
 
   ImageProvider getAvatar() => NetworkImage(avatarUrl);
 
