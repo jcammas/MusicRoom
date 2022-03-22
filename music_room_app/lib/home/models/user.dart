@@ -2,14 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/room.dart';
 import 'package:music_room_app/home/models/spotify_profile.dart';
+import 'package:music_room_app/models/HasNameObject.dart';
 import 'package:music_room_app/services/api_path.dart';
+import 'package:music_room_app/widgets/utils.dart';
 import 'database_model.dart';
 import 'device.dart';
 
 const String defaultAvatarUrl =
     "https://firebasestorage.googleapis.com/v0/b/musicroom-27d72.appspot.com/o/user_avatars%2Favatar_random.png?alt=media&token=cd472ae6-1d58-4e3a-9051-390f772392f6";
 
-class UserApp implements DatabaseModel {
+class UserApp implements DatabaseModel, HasNameObject {
   UserApp(
       {required this.name,
       required this.email,
@@ -18,7 +20,7 @@ class UserApp implements DatabaseModel {
       this.playlists,
       this.spotifyProfile,
       required this.avatarUrl}) {
-    this.userSearch = this.setSearchParams(name);
+    this.userSearch = setSearchParams(name);
   }
 
   late List<String> userSearch;
@@ -34,19 +36,6 @@ class UserApp implements DatabaseModel {
   String? defaultRoomPrivacySettings;
   String? defaultRoomVoteSystem;
   String? privacyLevel;
-
-  List<String> setSearchParams(String str) {
-    List<String> searchParams = [];
-    String temp = "";
-
-    str = str.toLowerCase();
-    str = str.replaceAll(new RegExp(r'[^a-zA-Z]+'), '');
-    for (int i = 0; i < str.length; i++) {
-      temp = temp + str[i];
-      searchParams.add(temp);
-    }
-    return searchParams;
-  }
 
   ImageProvider getAvatar() => NetworkImage(avatarUrl);
 

@@ -99,7 +99,7 @@ class FirestoreService {
   }) async {
     Query query = _firestore.collection(path);
     if (nameQuery != "") {
-      query.where("userSearch", arrayContains: nameQuery);
+      query = query.where("userSearch", arrayContains: nameQuery);
     }
     if (queryBuilder != null) {
       query = queryBuilder(query);
