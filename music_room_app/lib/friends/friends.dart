@@ -7,6 +7,7 @@ import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/widgets/search-bar.dart';
+import 'package:music_room_app/widgets/utils.dart';
 import 'package:provider/provider.dart';
 
 class FriendsScreen extends StatefulWidget {
@@ -254,7 +255,7 @@ class _SearchSectionState extends State<SearchSection> {
     Future<List<HasNameObject>> Function(dynamic pattern) getUserList =
         (pattern) async {
       final db = Provider.of<Database>(context, listen: false);
-      return await db.getUsers(nameQuery: pattern);
+      return await db.getUsers(nameQuery: formatSearchParam(pattern));
     };
 
     return Container(

@@ -33,20 +33,19 @@ class SearchBar extends StatelessWidget {
             debounceDuration: Duration(microseconds: 500),
             textFieldConfiguration: TextFieldConfiguration(
                 controller: _typeAheadController,
-                autofocus: true,
+                autofocus: false,
                 style: DefaultTextStyle.of(context)
                     .style
                     .copyWith(fontStyle: FontStyle.italic),
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintText: 'Jean Ticip',
+                  hintText: 'Search Name',
                   contentPadding: EdgeInsets.all(10),
                 )),
             suggestionsCallback: getItemList,
             itemBuilder: (context, HasNameObject suggestion) {
-              final user = suggestion;
               return ListTile(
-                title: Text(user.name),
+                title: Text(suggestion.name),
               );
             },
             onSuggestionSelected: (HasNameObject suggestion) {
