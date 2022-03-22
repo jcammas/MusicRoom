@@ -113,15 +113,10 @@ class _AccountFormState extends State<AccountForm> {
                             user: user,
                             iconData: Icons.lock),
                         SettingsTile(
-                          title: 'Devices Settings',
-                          leading: const Icon(Icons.radio),
-                          onPressed: (BuildContext context) {},
-                        ),
-                        SettingsTile(
                           title: 'Privacy Settings',
-                          leading: const Icon(
+                          leading: Icon(
                             Icons.privacy_tip,
-                            color: Color(0XFF072BB8),
+                            color: Theme.of(context).primaryColor,
                           ),
                           onPressed: (BuildContext context) {
                             showPrivacySettings(context);

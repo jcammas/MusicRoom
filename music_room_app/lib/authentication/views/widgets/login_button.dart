@@ -6,6 +6,7 @@ class LoginButton extends CustomRaisedButton {
     Key? key,
     required String title,
     required VoidCallback? onPressed,
+    required Color color
   }) : super(
           key: key,
           child: Text(
@@ -13,7 +14,7 @@ class LoginButton extends CustomRaisedButton {
             style: const TextStyle(color: Colors.white, fontSize: 20.0),
           ),
           height: 44.0,
-          color: const Color(0XFF072BB8),
+          color: color,
           width: double.infinity,
           borderRadius: 4.0,
           onPressed: onPressed,

@@ -21,7 +21,7 @@ Future<void> main() async {
   );
 }
 
-const _primaryColor = Color(0XFF072BB8);
+const _primaryColor = const Color(0XFF072BB8);
 const _lightBlue = const Color(0xFFE1F5FE);
 const _backgroundWhite = const Color(0xFFEFEFF4);
 const _lightGrey = const Color(0xFF757575);

@@ -42,6 +42,8 @@ abstract class Database {
 
   Future<void> update(DatabaseModel model);
 
+  Future<void> updateUserRoom(String roomId);
+
   Future<UserApp> getUser();
 
   Future<List> getFriends();
@@ -181,6 +183,13 @@ class FirestoreDatabase implements Database {
       await _service.updateDocument(
         path: model.docId,
         data: model.toMap(),
+      );
+
+  @override
+  Future<void> updateUserRoom(String roomId) async =>
+      await _service.updateDocument(
+        path: DBPath.user(_uid),
+        data: {'room': roomId},
       );
 
   @override

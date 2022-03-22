@@ -38,7 +38,7 @@ class _PrivacySettingsFormState extends State<PrivacySettingsForm> {
                 "Account Privacy",
                 style: TextStyle(
                   fontSize: 20,
-                  color: Color(0XFF072BB8),
+                  color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w900,
                   fontStyle: FontStyle.italic,
                 ),
@@ -78,7 +78,7 @@ class _PrivacySettingsFormState extends State<PrivacySettingsForm> {
                 "Only friends can see",
                 style: TextStyle(
                   fontSize: 20,
-                  color: Color(0XFF072BB8),
+                  color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w900,
                   fontStyle: FontStyle.italic,
                 ),
@@ -126,7 +126,7 @@ class _PrivacySettingsFormState extends State<PrivacySettingsForm> {
               ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(
-                      const Color(0XFF072BB8),
+                       Theme.of(context).primaryColor,
                     ),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(

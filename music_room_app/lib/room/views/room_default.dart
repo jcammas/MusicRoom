@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/room/managers/room_default_manager.dart';
 import 'package:music_room_app/room/widgets/room_button.dart';
@@ -34,49 +33,6 @@ class RoomDefault extends StatelessWidget {
         });
   }
 
-  // Future<void> showRoomDialog(BuildContext context, Widget form) {
-  //   if (!Platform.isIOS) {
-  //     return showDialog(
-  //       context: context,
-  //       builder: (context) =>
-  //           SimpleDialog(
-  //             content: form,
-  //             actions: <Widget>[
-  //               if (cancelActionText != null)
-  //                 TextButton(
-  //                   child: Text(cancelActionText),
-  //                   onPressed: () => Navigator.of(context).pop(false),
-  //                 ),
-  //               TextButton(
-  //                 child: Text(defaultActionText),
-  //                 onPressed: () => Navigator.of(context).pop(true),
-  //               ),
-  //             ],
-  //           ),
-  //     );
-  //   } else {
-  //     return showCupertinoDialog(
-  //       context: context,
-  //       builder: (context) =>
-  //           CupertinoAlertDialog(
-  //             title: Text(title),
-  //             content: content,
-  //             actions: <Widget>[
-  //               if (cancelActionText != null)
-  //                 CupertinoDialogAction(
-  //                   child: Text(cancelActionText),
-  //                   onPressed: () => Navigator.of(context).pop(false),
-  //                 ),
-  //               CupertinoDialogAction(
-  //                 child: Text(defaultActionText),
-  //                 onPressed: () => Navigator.of(context).pop(true),
-  //               ),
-  //             ],
-  //           ),
-  //     );
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     // final double screenHeight = MediaQuery.of(context).size.height;
@@ -87,12 +43,14 @@ class RoomDefault extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           RoomButton(
+            color: Theme.of(context).primaryColor,
             text: 'Create',
             onPressed: () {
               showBottomForm(context, CreateRoomForm.create(context));
             },
           ),
           RoomButton(
+            color: Theme.of(context).primaryColor,
             text: 'Join',
             onPressed: null,
           ),

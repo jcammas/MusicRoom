@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class EmailSentSnackBar extends SnackBar {
-  const EmailSentSnackBar({
+   const EmailSentSnackBar({
     Key? key,
   }) : super(
           key: key,

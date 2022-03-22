@@ -128,17 +128,17 @@ class _LoginFormState extends State<LoginForm> {
         children: [
           Text(
             footText,
-            style: const TextStyle(fontSize: 20, color: Color(0XFF072BB8)),
+            style: TextStyle(fontSize: 20, color: Theme.of(context).primaryColor),
           ),
           const SizedBox(width: 10),
           Hero(
             tag: '1',
             child: Text(
               footHeroText,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 21,
                   fontWeight: FontWeight.bold,
-                  color: Color(0XFF072BB8)),
+                  color: Theme.of(context).primaryColor),
             ),
           )
         ],
@@ -157,9 +157,9 @@ class _LoginFormState extends State<LoginForm> {
         labelText: 'Password',
         errorText: model.showPasswordError ? 'Password can\'t be empty' : null,
         enabled: model.isLoading == false,
-        prefixIcon: const Icon(
+        prefixIcon: Icon(
           Icons.lock,
-          color: Color(0XFF072BB8),
+          color: Theme.of(context).primaryColor,
         ),
       ),
       validator: (value) {
@@ -187,9 +187,9 @@ class _LoginFormState extends State<LoginForm> {
         hintText: 'test@test.com',
         errorText: model.showEmailError ? 'Email can\'t be empty' : null,
         enabled: model.isLoading == false,
-        prefixIcon: const Icon(
+        prefixIcon: Icon(
           Icons.email,
-          color: Color(0XFF072BB8),
+          color: Theme.of(context).primaryColor,
         ),
       ),
       validator: (value) {
@@ -207,8 +207,8 @@ class _LoginFormState extends State<LoginForm> {
   Text _buildTitle() {
     return Text(
       titleText,
-      style: const TextStyle(
-          fontSize: 50, color: Color(0XFF072BB8), fontWeight: FontWeight.w700),
+      style: TextStyle(
+          fontSize: 50, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w700),
     );
   }
 
@@ -223,6 +223,7 @@ class _LoginFormState extends State<LoginForm> {
       LoginButton(
         title: buttonText,
         onPressed: model.canSubmit ? _submit : null,
+        color: Theme.of(context).primaryColor
       ),
     ];
   }
@@ -239,6 +240,7 @@ class _LoginFormState extends State<LoginForm> {
       LoginButton(
         title: buttonText,
         onPressed: model.canSubmit ? _submit : null,
+        color: Theme.of(context).primaryColor
       ),
       const SizedBox(height: 20),
       _buildFootMessage(),
@@ -246,7 +248,7 @@ class _LoginFormState extends State<LoginForm> {
       TextButton(
         child: Text(
           forgotPassword,
-          style: const TextStyle(fontSize: 20, color: Color(0XFF072BB8)),
+          style: TextStyle(fontSize: 20, color: Theme.of(context).primaryColor),
         ),
         onPressed: !model.isLoading ? _toggleResetPassword : null,
       ),

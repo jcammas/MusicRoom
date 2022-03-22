@@ -91,7 +91,7 @@ class SignInScreen extends StatelessWidget {
         children: <Widget>[
           SizedBox(
             height: 60.0,
-            child: _buildHeader(),
+            child: _buildHeader(context),
           ),
           const SizedBox(height: 48.0),
           SocialSignInButton(
@@ -122,18 +122,18 @@ class SignInScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
-    return const Text(
+    return Text(
       'Sign in',
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 50,
-        color: Color(0XFF072BB8),
+        color: Theme.of(context).primaryColor,
         fontWeight: FontWeight.w700,
       ),
     );

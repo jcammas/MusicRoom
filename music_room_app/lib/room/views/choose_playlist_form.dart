@@ -52,9 +52,9 @@ class ChoosePlaylistForm extends StatelessWidget {
               playlist: playlist,
               onTap: () => manager.selectPlaylist(context, playlist),
               icon: manager.playlistId == playlist.id
-                  ? const Icon(
+                  ? Icon(
                       Icons.check_circle,
-                      color: Color(0XFF072BB8),
+                      color: Theme.of(context).primaryColor,
                     )
                   : const Icon(Icons.circle_outlined),
             ),

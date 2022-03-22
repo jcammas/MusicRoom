@@ -27,15 +27,9 @@ class _HomeScreenState extends State<HomeScreen> {
           friends: [],
         ));
       } else {
-        //On setup l'utilisateur courrant dans la db pour uniformiser la base.
+        //On setup l'utilisateur courant dans la db pour uniformiser la base.
         final current = await db.getUserById(auth.currentUser!.uid);
-        db.set(UserApp(
-          name: current.name,
-          email: current.email,
-          uid: current.uid,
-          friends: current.friends,
-          avatarUrl: current.avatarUrl,
-        ));
+        db.set(current);
       }
     }
   }

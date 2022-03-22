@@ -94,7 +94,7 @@ class _CreateRoomFormState extends State<CreateRoomForm> {
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(
                       manager.isReady()
-                          ? const Color(0XFF072BB8)
+                          ? Theme.of(context).primaryColor
                           : const Color(0XFF434343),
                     ),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(

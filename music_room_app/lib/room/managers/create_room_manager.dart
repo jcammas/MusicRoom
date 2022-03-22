@@ -40,8 +40,9 @@ class CreateRoomManager with ChangeNotifier implements ListItemsManager {
     if (name == null || selectedPlaylist == null) return false;
     try {
       pageIsLoading(true);
-      await db.set(
-          Room(name: name!, ownerId: db.uid, guests: [db.uid], playlist: selectedPlaylist));
+      Room newRoom = Room(name: name!, ownerId: db.uid, guests: [db.uid], playlist: selectedPlaylist);
+      await db.set(newRoom);
+      await db.updateUserRoom(newRoom.id);
       pageIsLoading(false);
       return true;
     } catch (e)  {
