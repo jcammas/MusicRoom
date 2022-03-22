@@ -1,8 +1,8 @@
 import '../../services/database.dart';
 
-class JoinManager {
+class RoomDefaultManager {
   Database db;
-  JoinManager({required this.db});
+  RoomDefaultManager({required this.db});
 
   createRoom(){
     return null;

@@ -77,7 +77,7 @@ class PlaylistPage extends StatelessWidget {
         return ChangeNotifierProvider<PlaylistManager>(
           create: (_) => manager,
           child: Consumer<PlaylistManager>(
-            builder: (_, model, __) => ListItemsBuilder<TrackApp>(
+            builder: (_, __, ___) => ListItemsBuilder<TrackApp>(
               snapshot: snapshot,
               manager: manager,
               emptyScreen: const EmptyContent(),

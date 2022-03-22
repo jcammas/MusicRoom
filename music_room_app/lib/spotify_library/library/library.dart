@@ -45,7 +45,7 @@ class LibraryScreen extends StatelessWidget {
         return ChangeNotifierProvider<LibraryManager>(
           create: (_) => manager,
           child: Consumer<LibraryManager>(
-            builder: (_, model, __) => ListItemsBuilder<Playlist>(
+            builder: (_, __, ___) => ListItemsBuilder<Playlist>(
               manager: manager,
               snapshot: snapshot,
               emptyScreen: EmptyLibrary(refreshFunction: manager.refreshItems),

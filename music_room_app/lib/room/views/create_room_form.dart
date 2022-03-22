@@ -1,32 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:music_room_app/room/views/choose_playlist_form.dart';
 import 'package:music_room_app/widgets/custom_text_field.dart';
-
+import 'package:music_room_app/widgets/show_alert_dialog.dart';
+import 'package:provider/provider.dart';
 import '../../home/models/playlist.dart';
+import '../../services/database.dart';
+import '../../widgets/show_exception_alert_dialog.dart';
+import '../managers/create_room_manager.dart';
 
 class CreateRoomForm extends StatefulWidget {
+  CreateRoomForm({required this.manager});
+
+  final CreateRoomManager manager;
+
   @override
   State<CreateRoomForm> createState() => _CreateRoomFormState();
+
+  static Widget create(BuildContext context) {
+    final db = Provider.of<Database>(context, listen: false);
+    return ChangeNotifierProvider<CreateRoomManager>(
+      create: (_) => CreateRoomManager(db: db),
+      child: Consumer<CreateRoomManager>(
+        builder: (_, manager, __) => CreateRoomForm(manager: manager),
+      ),
+    );
+  }
 }
 
 class _CreateRoomFormState extends State<CreateRoomForm> {
-  Playlist? playlist;
+  CreateRoomManager get manager => widget.manager;
+
+  Playlist? get playlist => manager.selectedPlaylist;
+
+  void _submit(BuildContext context) async {
+    try {
+      bool success = await manager.createRoom(context);
+      if (success) {
+        Navigator.pop(context);
+      } else {
+        await showAlertDialog(context,
+            title: 'Error',
+            content: const Text(
+                'Could not load event. Check name and playlist and try again.'),
+            defaultActionText: 'Ok');
+      }
+    } on Exception catch (e) {
+      await showExceptionAlertDialog(context, title: 'ERROR', exception: e);
+    }
+  }
 
   @override
   Widget build(context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        // padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.all(15),
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10.0),
-            topRight: Radius.circular(10.0),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
         alignment: Alignment.center,
-        child: Container(
-          padding: const EdgeInsets.all(15),
-          child: Column(
+        child:  Column(
             children: <Widget>[
               Align(
                 alignment: Alignment.centerLeft,
@@ -34,28 +70,32 @@ class _CreateRoomFormState extends State<CreateRoomForm> {
                     onPressed: () => Navigator.pop(context),
                     icon: Icon(Icons.arrow_back)),
               ),
-              CustomTextField(title: "Event name :"),
+              CustomTextField(
+                title: "Event name :",
+                onFieldSubmitted: manager.updateName,
+              ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.03,
+                height: height * 0.04,
               ),
               ListTile(
                 title: playlist == null
                     ? Text('Choose a playlist')
                     : Text(playlist!.name),
-                trailing:
-                    playlist == null ? const Icon(Icons.chevron_right) : null,
+                trailing: const Icon(Icons.chevron_right),
                 leading: playlist == null
-                    ? Padding(padding: EdgeInsets.only(left: 55.0))
+                    ? Padding(padding: EdgeInsets.only(left: width * 0.17))
                     : playlist!.returnImage(),
-                onTap: () => {},
+                onTap: () => ChoosePlaylistForm.show(context, widget.manager),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.05,
+                height: height * 0.05,
               ),
-              ElevatedButton(
+              manager.isLoading ? const Center(child: CircularProgressIndicator()) : ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(
-                      const Color(0XFF072BB8),
+                      manager.isReady()
+                          ? const Color(0XFF072BB8)
+                          : const Color(0XFF434343),
                     ),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
@@ -63,16 +103,17 @@ class _CreateRoomFormState extends State<CreateRoomForm> {
                       ),
                     ),
                   ),
-                  onPressed: () {
-                    setState(() {});
-                  },
+                  onPressed: manager.isReady()
+                      ? () => _submit(context) : () {},
                   child: Text(
                     "Create !",
                   )),
+              SizedBox(
+                height: height * 0.02,
+              ),
             ],
           ),
         ),
-      ),
     );
   }
 }

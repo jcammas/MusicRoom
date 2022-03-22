@@ -1,13 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:music_room_app/room/managers/join_manager.dart';
+import 'package:music_room_app/room/managers/room_default_manager.dart';
 import 'package:music_room_app/room/widgets/room_button.dart';
-import '../managers/join_manager.dart';
+import '../managers/room_default_manager.dart';
 import 'create_room_form.dart';
 
 class RoomDefault extends StatelessWidget {
   RoomDefault({Key? key, required this.manager}) : super(key: key);
 
-  final JoinManager manager;
+  final RoomDefaultManager manager;
 
   Future<void> showBottomForm(BuildContext context, Widget form) async {
     await showModalBottomSheet(
@@ -33,6 +34,49 @@ class RoomDefault extends StatelessWidget {
         });
   }
 
+  // Future<void> showRoomDialog(BuildContext context, Widget form) {
+  //   if (!Platform.isIOS) {
+  //     return showDialog(
+  //       context: context,
+  //       builder: (context) =>
+  //           SimpleDialog(
+  //             content: form,
+  //             actions: <Widget>[
+  //               if (cancelActionText != null)
+  //                 TextButton(
+  //                   child: Text(cancelActionText),
+  //                   onPressed: () => Navigator.of(context).pop(false),
+  //                 ),
+  //               TextButton(
+  //                 child: Text(defaultActionText),
+  //                 onPressed: () => Navigator.of(context).pop(true),
+  //               ),
+  //             ],
+  //           ),
+  //     );
+  //   } else {
+  //     return showCupertinoDialog(
+  //       context: context,
+  //       builder: (context) =>
+  //           CupertinoAlertDialog(
+  //             title: Text(title),
+  //             content: content,
+  //             actions: <Widget>[
+  //               if (cancelActionText != null)
+  //                 CupertinoDialogAction(
+  //                   child: Text(cancelActionText),
+  //                   onPressed: () => Navigator.of(context).pop(false),
+  //                 ),
+  //               CupertinoDialogAction(
+  //                 child: Text(defaultActionText),
+  //                 onPressed: () => Navigator.of(context).pop(true),
+  //               ),
+  //             ],
+  //           ),
+  //     );
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     // final double screenHeight = MediaQuery.of(context).size.height;
@@ -45,7 +89,7 @@ class RoomDefault extends StatelessWidget {
           RoomButton(
             text: 'Create',
             onPressed: () {
-              showBottomForm(context, CreateRoomForm());
+              showBottomForm(context, CreateRoomForm.create(context));
             },
           ),
           RoomButton(

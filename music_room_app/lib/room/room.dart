@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:music_room_app/room/managers/join_manager.dart';
+import 'package:music_room_app/room/managers/room_default_manager.dart';
 import 'package:music_room_app/room/views/room_form.dart';
 import 'package:music_room_app/room/views/room_default.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +41,7 @@ class RoomScreen extends StatelessWidget {
             {
               return RoomForm.create(context, roomId: user.room!, db: db);
             }
-            return RoomDefault(manager: JoinManager(db: db));
+            return RoomDefault(manager: RoomDefaultManager(db: db));
           }
         }
         return const Scaffold(
