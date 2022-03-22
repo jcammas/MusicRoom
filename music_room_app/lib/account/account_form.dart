@@ -21,7 +21,7 @@ class AccountForm extends StatefulWidget {
     return ChangeNotifierProvider<AccountManager>(
       create: (_) => AccountManager(auth: auth, db: db, storage: storage),
       child: Consumer<AccountManager>(
-        builder: (_, model, __) => AccountForm(manager: model),
+        builder: (_, manager, __) => AccountForm(manager: manager),
       ),
     );
   }
@@ -95,21 +95,21 @@ class _AccountFormState extends State<AccountForm> {
                         CustomSettingsTile(
                             type: SettingType.name,
                             title: 'Name',
-                            model: widget.manager,
+                            manager: widget.manager,
                             user: user,
                             subtitle: settingsData['Name'],
                             iconData: Icons.face),
                         CustomSettingsTile(
                             type: SettingType.email,
                             title: 'Email',
-                            model: widget.manager,
+                            manager: widget.manager,
                             user: user,
                             subtitle: settingsData['Email'],
                             iconData: Icons.email),
                         CustomSettingsTile(
                             type: SettingType.newPassword,
                             title: 'Change Password',
-                            model: widget.manager,
+                            manager: widget.manager,
                             user: user,
                             iconData: Icons.lock),
                         SettingsTile(
@@ -135,7 +135,7 @@ class _AccountFormState extends State<AccountForm> {
                         CustomSettingsTile(
                             type: SettingType.delete,
                             title: 'Delete Account',
-                            model: widget.manager,
+                            manager: widget.manager,
                             user: user,
                             iconData: Icons.delete_forever),
                       ],

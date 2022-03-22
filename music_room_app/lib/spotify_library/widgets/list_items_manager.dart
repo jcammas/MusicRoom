@@ -10,12 +10,6 @@ import 'package:music_room_app/services/spotify.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 
 abstract class ListItemsManager {
-  Future<void> refreshItems(BuildContext context);
-
-  Future<void> deleteItem(BuildContext context, DatabaseModel item);
-
-  void pageIsLoading(bool isLoading);
-
   bool get isLoading;
 }
 
@@ -28,7 +22,6 @@ class LibraryManager with ChangeNotifier implements ListItemsManager {
   @override
   bool isLoading;
 
-  @override
   Future<void> deleteItem(BuildContext context, DatabaseModel item) async {
     try {
       await db.deleteInUser(item);
@@ -41,7 +34,6 @@ class LibraryManager with ChangeNotifier implements ListItemsManager {
     }
   }
 
-  @override
   Future<void> refreshItems(BuildContext context) async {
     try {
       pageIsLoading(true);
@@ -64,7 +56,6 @@ class LibraryManager with ChangeNotifier implements ListItemsManager {
     }
   }
 
-  @override
   void pageIsLoading(bool isLoading) {
     this.isLoading = isLoading;
     notifyListeners();
@@ -84,7 +75,6 @@ class PlaylistManager with ChangeNotifier implements ListItemsManager {
   @override
   bool isLoading;
 
-  @override
   Future<void> deleteItem(BuildContext context, DatabaseModel item) async {
     try {
       await db.deleteInObjectInUser(playlist, item);
@@ -97,7 +87,6 @@ class PlaylistManager with ChangeNotifier implements ListItemsManager {
     }
   }
 
-  @override
   Future<void> refreshItems(BuildContext context) async {
     try {
       pageIsLoading(true);
@@ -125,7 +114,6 @@ class PlaylistManager with ChangeNotifier implements ListItemsManager {
       has ? pageIsLoading(false) : refreshItems(context);
   }
 
-  @override
   void pageIsLoading(bool isLoading) {
     this.isLoading = isLoading;
     notifyListeners();

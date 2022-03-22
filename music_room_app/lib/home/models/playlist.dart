@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/api_path.dart';
-
 import 'database_model.dart';
 
 class Playlist implements DatabaseModel {
@@ -24,9 +24,22 @@ class Playlist implements DatabaseModel {
   bool? public;
   List<Map<String, dynamic>>? images;
   Map<String, dynamic>? tracksData;
+  static const double imageSize = 55.0;
 
   @override
   get docId => DBPath.playlist(id);
+
+  Widget returnImage() {
+    if (this.images != null) {
+      if (this.images!.isNotEmpty) {
+        if (this.images!.first['url'] != null) {
+          return Image.network(this.images!.first['url'],
+              width: imageSize, height: imageSize);
+        }
+      }
+    }
+    return const Padding(padding: EdgeInsets.only(left: imageSize));
+  }
 
   factory Playlist.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
@@ -55,11 +68,7 @@ class Playlist implements DatabaseModel {
         tracksData: tracksData,
       );
     } else {
-      return Playlist(
-          id: 'N/A',
-          name: 'N/A',
-          tracksList: {}
-      );
+      return Playlist(id: 'N/A', name: 'N/A', tracksList: {});
     }
   }
 

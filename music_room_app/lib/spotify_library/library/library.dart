@@ -45,7 +45,7 @@ class LibraryScreen extends StatelessWidget {
         return ChangeNotifierProvider<LibraryManager>(
           create: (_) => manager,
           child: Consumer<LibraryManager>(
-            builder: (_, model, __) => ListItemsBuilder<Playlist>(
+            builder: (_, __, ___) => ListItemsBuilder<Playlist>(
               manager: manager,
               snapshot: snapshot,
               emptyScreen: EmptyLibrary(refreshFunction: manager.refreshItems),
@@ -58,7 +58,6 @@ class LibraryScreen extends StatelessWidget {
                 child: PlaylistTile(
                   playlist: playlist,
                   onTap: () => PlaylistPage.show(context, playlist),
-                  // onTap: () => PlaylistEntriesPage.show(context, playlist),
                 ),
               ),
             ),
