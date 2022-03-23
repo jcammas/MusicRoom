@@ -37,9 +37,9 @@ class RoomScreen extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           final UserApp? user = snapshot.data;
           if (user != null) {
-            if (user.room != null)
+            if (user.roomId != null)
             {
-              return RoomForm.create(context, roomId: user.room!, db: db);
+              return RoomForm.create(context, roomId: user.roomId!, db: db);
             }
             return RoomDefault(manager: RoomDefaultManager(db: db));
           }

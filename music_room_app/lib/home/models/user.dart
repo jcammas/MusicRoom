@@ -18,7 +18,7 @@ class UserApp implements DatabaseModel, HasNameObject {
       required this.friends,
       this.playlists,
       this.spotifyProfile,
-      this.room,
+      this.roomId,
       required this.avatarUrl}) {
     this.userSearch = setSearchParams(name);
   }
@@ -27,7 +27,7 @@ class UserApp implements DatabaseModel, HasNameObject {
   final String uid;
   String email;
   String name;
-  String? room;
+  String? roomId;
   String avatarUrl;
   SpotifyProfile? spotifyProfile;
   List<String> friends = [];
@@ -53,7 +53,7 @@ class UserApp implements DatabaseModel, HasNameObject {
         spotifyProfile = SpotifyProfile.fromMap(data['spotify_profile']);
       }
       String avatarUrl = data['image_url'] ?? defaultAvatarUrl;
-      String? room = data['room'];
+      String? roomId = data['room_id'];
       Map<String, dynamic>? playlistsData = data['playlists'];
       Map<String, Playlist> playlists = {};
       if (playlistsData != null) {
@@ -68,7 +68,7 @@ class UserApp implements DatabaseModel, HasNameObject {
           playlists: playlists,
           friends: friends,
           spotifyProfile: spotifyProfile,
-          room: room);
+          roomId: roomId);
     } else {
       return UserApp(
           uid: uid,
@@ -88,7 +88,7 @@ class UserApp implements DatabaseModel, HasNameObject {
       'email': email,
       'image_url': avatarUrl,
       'friends': friends,
-      'room': room
+      'room_id': roomId
     };
   }
 }

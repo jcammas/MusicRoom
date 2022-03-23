@@ -22,6 +22,8 @@ class RoomForm extends StatefulWidget {
 
 class _RoomFormState extends State<RoomForm> {
 
+  RoomManager get manager => widget.manager;
+
   TabItem _currentTab = TabItem.playlist;
 
   final Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {
@@ -32,15 +34,14 @@ class _RoomFormState extends State<RoomForm> {
 
   Map<TabItem, WidgetBuilder> get widgetBuilders {
     return {
-      TabItem.playlist: (_) => RoomPlaylistPage(),
-      TabItem.guests: (context) => RoomGuestsPage(),
+      TabItem.playlist: (_) => RoomPlaylistPage(manager: manager),
+      TabItem.guests: (_) => RoomGuestsPage(),
       TabItem.chat: (_) => RoomChatPage(),
     };
   }
 
   void _select(TabItem tabItem) {
     if (tabItem == _currentTab) {
-      // pop to first route
       navigatorKeys[tabItem]!.currentState!.popUntil((route) => route.isFirst);
     } else {
       setState(() => _currentTab = tabItem);
@@ -49,7 +50,7 @@ class _RoomFormState extends State<RoomForm> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    return manager.isLoading ? Center(child: CircularProgressIndicator()) : WillPopScope(
       onWillPop: () async => !await navigatorKeys[_currentTab]!.currentState!.maybePop(),
       child: CupertinoHomeScaffold(
         currentTab: _currentTab,

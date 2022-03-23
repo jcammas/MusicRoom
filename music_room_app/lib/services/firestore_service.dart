@@ -90,7 +90,7 @@ class FirestoreService {
     });
   }
 
-  Future<List<T>> getCollection<T>({
+  Future<List<T>> getCollectionList<T>({
     required String path,
     required T Function(Map<String, dynamic> data, String documentId) builder,
     Query Function(Query query)? queryBuilder,
@@ -115,4 +115,5 @@ class FirestoreService {
     }
     return result;
   }
+
 }

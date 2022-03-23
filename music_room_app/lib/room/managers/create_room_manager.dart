@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../home/models/playlist.dart';
 import '../../home/models/room.dart';
+import '../../home/models/track.dart';
 import '../../services/database.dart';
 import '../../spotify_library/widgets/list_items_manager.dart';
 
@@ -40,12 +41,19 @@ class CreateRoomManager with ChangeNotifier implements ListItemsManager {
     if (name == null || selectedPlaylist == null) return false;
     try {
       pageIsLoading(true);
-      Room newRoom = Room(name: name!, ownerId: db.uid, guests: [db.uid], playlist: selectedPlaylist);
+      List<TrackApp> tracksList = await db.getPlaylistTracks(selectedPlaylist!);
+      Room newRoom = Room(
+          name: name!,
+          ownerId: db.uid,
+          guests: [db.uid],
+          originalPlaylist: selectedPlaylist,
+          tracksList: []);
       await db.set(newRoom);
+      await db.setListInObject(newRoom, tracksList);
       await db.updateUserRoom(newRoom.id);
       pageIsLoading(false);
       return true;
-    } catch (e)  {
+    } catch (e) {
       pageIsLoading(false);
       rethrow;
     }

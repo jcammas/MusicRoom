@@ -1,4 +1,5 @@
 import 'package:music_room_app/home/models/playlist.dart';
+import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/api_path.dart';
 import 'database_model.dart';
 
@@ -7,14 +8,17 @@ enum SystemType { public, friends, guests }
 class Room implements DatabaseModel {
   Room(
       {required this.guests,
-      required this.playlist,
+      required this.originalPlaylist,
       required this.ownerId,
+        required this.tracksList,
       this.voteSystem = SystemType.public,
       this.privacySystem = SystemType.public,
       this.name = ''});
 
   List<String> guests = [];
-  Playlist? playlist;
+  Playlist? originalPlaylist;
+  List<TrackApp> tracksList;
+  Map<String, dynamic>? tracksData;
   String ownerId;
   String name;
   SystemType voteSystem;
@@ -22,7 +26,8 @@ class Room implements DatabaseModel {
 
   String get id => 'Room_of_' + ownerId;
   @override
-  get docId => DBPath.room(id);
+  String get docId => DBPath.room(id);
+  String get playlistId => originalPlaylist == null ? 'NA' : originalPlaylist!.id;
 
   static SystemType toSystemType(String? str) {
     switch (str) {
@@ -59,10 +64,17 @@ class Room implements DatabaseModel {
       final String owner = data['owner_id'] ?? getOwnerFromId(id);
       final SystemType voteSystem = toSystemType(data['voteSystem']);
       final SystemType privacySystem = toSystemType(data['privacySystem']);
+      List<TrackApp> tracksList = [];
+      Map<String, dynamic>? tracksListData = data['tracks_list'];
+      if (tracksListData != null) {
+        tracksListData.updateAll((id, track) => TrackApp.fromMap(track, id));
+        tracksList = tracksListData.values.toList().cast();
+      }
       return Room(
         name: name,
         guests: guests,
-        playlist: playlist,
+        originalPlaylist: playlist,
+        tracksList: tracksList,
         ownerId: owner,
         voteSystem: voteSystem,
         privacySystem: privacySystem,
@@ -70,8 +82,9 @@ class Room implements DatabaseModel {
     } else {
       return Room(
         guests: [id],
-        playlist: null,
-        ownerId: getOwnerFromId(id)
+        originalPlaylist: null,
+        ownerId: getOwnerFromId(id),
+        tracksList: [],
       );
     }
   }
@@ -81,7 +94,7 @@ class Room implements DatabaseModel {
     return {
       'name': name,
       'guests': guests,
-      'playlist': playlist?.toMap(),
+      'playlist': originalPlaylist?.toMap(),
       'owner_id': ownerId,
       'privacySystem': fromSystemType(privacySystem),
       'voteSystem': fromSystemType(voteSystem),
