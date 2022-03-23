@@ -35,8 +35,8 @@ class DBPath {
   static String userPlaylist(String uid, String playlistId) =>
       user(uid) + '/' + playlist(playlistId);
 
-  static String roomPlaylist(String roomId, String playlistId) =>
-      user(roomId) + '/' + playlist(playlistId);
+  static String roomTracks(String roomId) =>
+      room(roomId) + '/' + tracks();
 
   static String userPlaylists(String uid) => user(uid) + '/' + playlists();
 
@@ -58,9 +58,6 @@ class DBPath {
 
   static String userSpotifyProfile(String uid, String spotifyProfileId) =>
       user(uid) + '/' + spotifyProfile(spotifyProfileId);
-
-  static String roomPlaylistTracks(String roomId, String playlistId) =>
-      roomPlaylist(roomId, playlistId) + tracks();
 
   static String chatMessage(String senderId, String receiverId, String date) =>
       chatMessages(senderId, receiverId) + senderId + '_' + date;

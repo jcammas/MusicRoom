@@ -76,9 +76,7 @@ abstract class Database {
   Stream<List<Message>> chatMessagesStream(UserApp interlocutor,
       {UserApp? user});
 
-  Stream<Playlist> roomPlaylistStream(Room room);
-
-  Stream<List<TrackApp>> roomPlaylistTracksStream(Room room);
+  Stream<List<TrackApp>> roomTracksStream(Room room);
 
   set uid(String uid);
 
@@ -293,15 +291,9 @@ class FirestoreDatabase implements Database {
       );
 
   @override
-  Stream<Playlist> roomPlaylistStream(Room room) => _service.documentStream(
-        path: DBPath.roomPlaylist(room.id, room.playlistId),
-        builder: (data, documentId) => Playlist.fromMap(data, documentId),
-      );
-
-  @override
-  Stream<List<TrackApp>> roomPlaylistTracksStream(Room room) =>
+  Stream<List<TrackApp>> roomTracksStream(Room room) =>
       _service.collectionStream(
-        path: DBPath.roomPlaylistTracks(room.id, room.playlistId),
+        path: DBPath.roomTracks(room.id),
         builder: (data, documentID) => TrackApp.fromMap(data, documentID),
         sort: (lhs, rhs) => lhs.indexApp != null
             ? rhs.indexApp != null

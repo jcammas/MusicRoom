@@ -9,15 +9,15 @@ import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:music_room_app/authentication/managers/login_manager.dart';
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key, required this.model}) : super(key: key);
-  final LoginManager model;
+  const LoginForm({Key? key, required this.manager}) : super(key: key);
+  final LoginManager manager;
 
   static Widget create(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
     return ChangeNotifierProvider<LoginManager>(
       create: (_) => LoginManager(auth: auth),
       child: Consumer<LoginManager>(
-        builder: (_, model, __) => LoginForm(model: model),
+        builder: (_, manager, __) => LoginForm(manager: manager),
       ),
     );
   }
@@ -38,7 +38,7 @@ class _LoginFormState extends State<LoginForm> {
   String footHeroText = 'Sign up';
   String errorText = 'Ops ! Sign in failed...';
 
-  LoginManager get model => widget.model;
+  LoginManager get model => widget.manager;
 
   void _setTexts() {
     switch (model.formType) {

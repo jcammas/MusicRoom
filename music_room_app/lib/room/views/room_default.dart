@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/room/managers/room_default_manager.dart';
 import 'package:music_room_app/room/widgets/room_button.dart';
-import '../managers/room_default_manager.dart';
 import 'create_room_form.dart';
 
 class RoomDefault extends StatelessWidget {
-  RoomDefault({Key? key, required this.manager}) : super(key: key);
+  RoomDefault({Key? key}) : super(key: key);
 
-  final RoomDefaultManager manager;
 
   Future<void> showBottomForm(BuildContext context, Widget form) async {
     await showModalBottomSheet(
