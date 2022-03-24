@@ -32,6 +32,8 @@ class CupertinoHomeScaffold extends StatelessWidget {
         final item = TabItem.values[index];
         return CupertinoTabView(
           navigatorKey: navigatorKeys[item],
+          // onGenerateRoute: ((settings) => MaterialPageRoute(
+          //     builder: (context) => routeMap[settings.name]!(context))),
           builder: (context) => widgetBuilders[item]!(context),
         );
       },

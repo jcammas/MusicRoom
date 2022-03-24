@@ -11,8 +11,8 @@ class RoomPlaylistManager with ChangeNotifier implements ListItemsManager {
   Room room;
   bool isLoading = false;
 
-  RoomPlaylistManager({required this.db, required this.room}) {
-  }
+  RoomPlaylistManager(
+      {required this.db, required this.room}) {}
 
   void loadingState(bool value) {
     isLoading = value;
@@ -25,7 +25,6 @@ class RoomPlaylistManager with ChangeNotifier implements ListItemsManager {
     loadingState(true);
     await db.updateUserRoom(null);
     await db.delete(room);
-    loadingState(false);
   }
 
   Future<void> deleteTrack(BuildContext context, TrackApp item) async {

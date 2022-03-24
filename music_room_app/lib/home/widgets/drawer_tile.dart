@@ -19,9 +19,7 @@ class DrawerTile extends StatelessWidget {
               Navigator.of(context).pushNamed(route!);
             }
           } else {
-            if (route == '/') {
-              Navigator.of(context).pop();
-            }
+            if (route == '/') Navigator.of(context).pop();
             Navigator.of(context).pushReplacementNamed(route!);
           }
         }

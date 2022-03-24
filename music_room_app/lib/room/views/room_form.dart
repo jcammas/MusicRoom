@@ -51,10 +51,10 @@ class _RoomFormState extends State<RoomForm> {
   void getRoom() async {
     room = await db.getRoomById(roomId);
     if (room!.name == Room.emptyRoomName) db.updateUserRoom(null);
-    setState(() {
-      _isLoading = false;
-    });
-    ;
+    if (mounted)
+      setState(() {
+        _isLoading = false;
+      });
   }
 
   @override

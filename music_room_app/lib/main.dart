@@ -27,6 +27,15 @@ const _backgroundWhite = const Color(0xFFEFEFF4);
 const _lightGrey = const Color(0xFF757575);
 const _lightDark = const Color(0x8A000000);
 
+Map<String, Widget Function(BuildContext)> routeMap = {
+  '/': (_) => const LandingScreen(),
+  AccountScreen.routeName: (_) => const AccountScreen(),
+  LibraryScreen.routeName: (_) => const LibraryScreen(),
+  ChatsPage.routeName: (_) => const ChatsPage(),
+  FriendsScreen.routeName: (_) => const FriendsScreen(),
+  RoomScreen.routeName: (_) => RoomScreen.create(),
+};
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -139,14 +148,7 @@ class MyApp extends StatelessWidget {
                   color: Colors.black)),
         ),
         initialRoute: "/",
-        routes: {
-          '/': (_) => const LandingScreen(),
-          AccountScreen.routeName: (_) => const AccountScreen(),
-          LibraryScreen.routeName: (_) => const LibraryScreen(),
-          ChatsPage.routeName: (_) => const ChatsPage(),
-          FriendsScreen.routeName: (_) => const FriendsScreen(),
-          RoomScreen.routeName: (_) => const RoomScreen(),
-        },
+        routes: routeMap,
       ),
     );
   }
