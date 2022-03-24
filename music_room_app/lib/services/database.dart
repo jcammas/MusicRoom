@@ -47,6 +47,8 @@ abstract class Database {
 
   Future<void> updateUserRoom(String? roomId);
 
+  Future<void> updateRoomGuests(Room room);
+
   Future<UserApp> getUser({UserApp? user});
 
   Future<Room> getRoomById(String roomId);
@@ -63,6 +65,8 @@ abstract class Database {
   Future<bool> userPlaylistHasTracks(Playlist playlist, {UserApp? user});
 
   Stream<UserApp> userStream({UserApp? user});
+
+  Stream<List<UserApp>> usersStream({List<String>? ids});
 
   Stream<UserApp> userStreamById(String uid);
 
@@ -219,6 +223,13 @@ class FirestoreDatabase implements Database {
       );
 
   @override
+  Future<void> updateRoomGuests(Room room) async =>
+      await _service.updateDocument(
+        path: DBPath.room(room.docId),
+        data: {'guests': room.guests},
+      );
+
+  @override
   Future<UserApp> getUser({UserApp? user}) async => await _service.getDocument(
         path: DBPath.user(user == null ? _uid : user.uid),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
@@ -299,6 +310,14 @@ class FirestoreDatabase implements Database {
         builder: (data, documentID) => Playlist.fromMap(data, documentID),
         sort: (lhs, rhs) => lhs.name.compareTo(rhs.name),
       );
+
+  @override
+  Stream<List<UserApp>> usersStream({List<String>? ids}) => _service.collectionStream(
+    path: DBPath.users(),
+    builder: (data, documentId) => UserApp.fromMap(data, documentId),
+    queryBuilder: (query) => ids == null ? query :
+    query.where('uid', whereIn: ids),
+  );
 
   @override
   Stream<List<TrackApp>> userPlaylistTracksStream(Playlist playlist,

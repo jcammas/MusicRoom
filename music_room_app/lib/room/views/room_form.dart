@@ -35,7 +35,7 @@ class _RoomFormState extends State<RoomForm> {
   Map<TabItem, WidgetBuilder> get widgetBuilders {
     return {
       TabItem.playlist: (_) => RoomPlaylistPage.create(db: db, room: room!),
-      TabItem.guests: (_) => RoomGuestsPage(),
+      TabItem.guests: (_) => RoomGuestsPage.create(db: db, room: room!),
       TabItem.chat: (_) => RoomChatPage(),
     };
   }
