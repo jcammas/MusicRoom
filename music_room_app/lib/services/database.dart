@@ -57,6 +57,8 @@ abstract class Database {
 
   Future<List<UserApp>> getUsers({String nameQuery = ""});
 
+  Future<List<Room>> getRooms({String nameQuery = ""});
+
   Future<List<TrackApp>> getPlaylistTracks(Playlist playlist,
       {String nameQuery = ""});
 
@@ -256,6 +258,16 @@ class FirestoreDatabase implements Database {
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
         queryBuilder: (query) => nameQuery != ""
             ? query.where("userSearch", arrayContains: nameQuery)
+            : query,
+      );
+
+  @override
+  Future<List<Room>> getRooms({String nameQuery = ""}) async =>
+      await _service.getCollectionList(
+        path: DBPath.rooms(),
+        builder: (data, documentId) => Room.fromMap(data, documentId),
+        queryBuilder: (query) => nameQuery != ""
+            ? query.where("name", arrayContains: nameQuery)
             : query,
       );
 

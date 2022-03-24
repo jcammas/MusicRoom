@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:music_room_app/room/widgets/guest_tile.dart';
 import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
-import 'package:music_room_app/spotify_library/playlist/track_tile.dart';
 import 'package:provider/provider.dart';
 import '../../home/models/room.dart';
 import '../../home/models/user.dart';
