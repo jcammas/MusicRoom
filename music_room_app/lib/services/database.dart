@@ -2,11 +2,14 @@ import 'package:music_room_app/home/models/database_model.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/models/user.dart';
+import '../home/models/room.dart';
 import '../messenger/models/message.dart';
 import 'api_path.dart';
 import 'firestore_service.dart';
 
 abstract class Database {
+  deleteById(String docId, List<String>? collIds);
+
   Future<void> delete(DatabaseModel model);
 
   Future<void> deleteUser();
@@ -42,25 +45,32 @@ abstract class Database {
 
   Future<void> update(DatabaseModel model);
 
-  Future<UserApp> getUser();
+  Future<void> updateUserRoom(String? roomId);
 
-  Future<List> getFriends();
+  Future<void> updateRoomGuests(Room room);
+
+  Future<UserApp> getUser({UserApp? user});
+
+  Future<Room> getRoomById(String roomId);
 
   Future<UserApp> getUserById(String uid, {String field = ""});
 
   Future<List<UserApp>> getUsers({String nameQuery = ""});
 
-  Future<bool> userExists({UserApp? user});
+  Future<List<TrackApp>> getPlaylistTracks(Playlist playlist,
+      {String nameQuery = ""});
 
-  Future<bool> userHasPlaylists({UserApp? user});
+  Future<bool> userExists({UserApp? user});
 
   Future<bool> userPlaylistHasTracks(Playlist playlist, {UserApp? user});
 
   Stream<UserApp> userStream({UserApp? user});
 
+  Stream<List<UserApp>> usersStream({List<String>? ids});
+
   Stream<UserApp> userStreamById(String uid);
 
-  Stream<List<UserApp>> usersStream();
+  Stream<Room> roomStreamById(String roomId);
 
   Stream<Playlist> userPlaylistStream(Playlist playlist, {UserApp? user});
 
@@ -71,6 +81,8 @@ abstract class Database {
 
   Stream<List<Message>> chatMessagesStream(UserApp interlocutor,
       {UserApp? user});
+
+  Stream<List<TrackApp>> roomTracksStream(Room room);
 
   set uid(String uid);
 
@@ -91,27 +103,47 @@ class FirestoreDatabase implements Database {
   get uid => _uid;
 
   @override
+  Future<void> deleteById(String docId, List<String>? collIds) async {
+    if (collIds != null) {
+      for (String id in collIds) {
+        await _service.deleteCollection(path: id);
+      }
+    }
+    await _service.deleteDocument(path: docId);
+  }
+
+  @override
   Future<void> delete(DatabaseModel model) async =>
-      await _service.deleteDocument(path: model.docId);
+      await deleteById(model.docId, model.wrappedCollectionsIds);
 
   @override
-  Future<void> deleteUser() async =>
-      await _service.deleteDocument(path: DBPath.user(_uid));
+  Future<void> deleteUser() async => await deleteById(DBPath.user(_uid),
+      [_uid, DBPath.userPlaylists(_uid), DBPath.userSpotifyProfiles(_uid)]);
 
   @override
-  Future<void> deleteInUser(DatabaseModel model) async => await _service
-      .deleteDocument(path: DBPath.user(_uid) + '/' + model.docId);
+  Future<void> deleteInUser(DatabaseModel model) async => await deleteById(
+      DBPath.user(_uid) + '/' + model.docId,
+      model.wrappedCollectionsIds
+          .map((id) => DBPath.user(_uid) + '/' + id)
+          .toList());
 
   @override
   Future<void> deleteInObject(
           DatabaseModel parent, DatabaseModel child) async =>
-      await _service.deleteDocument(path: parent.docId + '/' + child.docId);
+      await deleteById(
+          parent.docId + '/' + child.docId,
+          child.wrappedCollectionsIds
+              .map((id) => parent.docId + '/' + id)
+              .toList());
 
   @override
   Future<void> deleteInObjectInUser(
           DatabaseModel parent, DatabaseModel child) async =>
-      await _service.deleteDocument(
-          path: DBPath.user(_uid) + '/' + parent.docId + '/' + child.docId);
+      await deleteById(
+          DBPath.user(_uid) + '/' + parent.docId + '/' + child.docId,
+          child.wrappedCollectionsIds
+              .map((id) => DBPath.user(_uid) + '/' + parent.docId + '/' + id)
+              .toList());
 
   @override
   Future<void> set(DatabaseModel model, {bool mergeOption = false}) async =>
@@ -184,16 +216,23 @@ class FirestoreDatabase implements Database {
       );
 
   @override
-  Future<UserApp> getUser({UserApp? user}) async => await _service.getDocument(
-        path: DBPath.user(user == null ? _uid : user.uid),
-        builder: (data, documentId) => UserApp.fromMap(data, documentId),
+  Future<void> updateUserRoom(String? roomId) async =>
+      await _service.updateDocument(
+        path: DBPath.user(_uid),
+        data: {'room_id': roomId},
       );
 
   @override
-  Future<List> getFriends({UserApp? user}) async => await _service.getDocument(
+  Future<void> updateRoomGuests(Room room) async =>
+      await _service.updateDocument(
+        path: DBPath.room(room.docId),
+        data: {'guests': room.guests},
+      );
+
+  @override
+  Future<UserApp> getUser({UserApp? user}) async => await _service.getDocument(
         path: DBPath.user(user == null ? _uid : user.uid),
-        builder: (data, documentId) =>
-            UserApp.fromMap(data, documentId).friends,
+        builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
 
   @override
@@ -205,21 +244,32 @@ class FirestoreDatabase implements Database {
       );
 
   @override
+  Future<Room> getRoomById(String roomId) async => await _service.getDocument(
+        path: DBPath.room(roomId),
+        builder: (data, documentId) => Room.fromMap(data, documentId),
+      );
+
+  @override
   Future<List<UserApp>> getUsers({String nameQuery = ""}) async =>
-      await _service.getCollection(
+      await _service.getCollectionList(
         path: DBPath.users(),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
-        nameQuery: nameQuery,
+        queryBuilder: (query) => nameQuery != ""
+            ? query.where("userSearch", arrayContains: nameQuery)
+            : query,
+      );
+
+  @override
+  Future<List<TrackApp>> getPlaylistTracks(Playlist playlist,
+          {String nameQuery = ""}) async =>
+      await _service.getCollectionList(
+        path: DBPath.playlistTracks(playlist.id),
+        builder: (data, documentId) => TrackApp.fromMap(data, documentId),
       );
 
   @override
   Future<bool> userExists({UserApp? user}) async => await _service
       .documentExists(path: DBPath.user(user == null ? _uid : user.uid));
-
-  @override
-  Future<bool> userHasPlaylists({UserApp? user}) async =>
-      await _service.collectionIsNotEmpty(
-          path: DBPath.userPlaylists(user == null ? _uid : user.uid));
 
   @override
   Future<bool> userPlaylistHasTracks(Playlist playlist,
@@ -235,14 +285,14 @@ class FirestoreDatabase implements Database {
       );
 
   @override
-  Stream<UserApp> userStreamById(String uid) => _service.documentStream(
-        path: DBPath.user(uid),
-        builder: (data, documentId) => UserApp.fromMap(data, documentId),
+  Stream<Room> roomStreamById(String roomId) => _service.documentStream(
+        path: DBPath.room(roomId),
+        builder: (data, documentId) => Room.fromMap(data, documentId),
       );
 
   @override
-  Stream<List<UserApp>> usersStream() => _service.collectionStream(
-        path: DBPath.users(),
+  Stream<UserApp> userStreamById(String uid) => _service.documentStream(
+        path: DBPath.user(uid),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
       );
 
@@ -262,6 +312,14 @@ class FirestoreDatabase implements Database {
       );
 
   @override
+  Stream<List<UserApp>> usersStream({List<String>? ids}) => _service.collectionStream(
+    path: DBPath.users(),
+    builder: (data, documentId) => UserApp.fromMap(data, documentId),
+    queryBuilder: (query) => ids == null ? query :
+    query.where('uid', whereIn: ids),
+  );
+
+  @override
   Stream<List<TrackApp>> userPlaylistTracksStream(Playlist playlist,
           {UserApp? user}) =>
       _service.collectionStream(
@@ -276,12 +334,24 @@ class FirestoreDatabase implements Database {
       );
 
   @override
+  Stream<List<TrackApp>> roomTracksStream(Room room) =>
+      _service.collectionStream(
+        path: DBPath.roomTracks(room.id),
+        builder: (data, documentID) => TrackApp.fromMap(data, documentID),
+        sort: (lhs, rhs) => lhs.indexApp != null
+            ? rhs.indexApp != null
+                ? lhs.indexApp!.compareTo(rhs.indexApp!)
+                : 0
+            : 0,
+      );
+
+  @override
   Stream<List<Message>> chatMessagesStream(UserApp interlocutor,
           {UserApp? user}) =>
       _service.collectionStream(
-          path: DBPath.chatMessages(
-              user == null ? _uid : user.uid, interlocutor.uid),
-          builder: (data, documentID) => Message.fromMap(data, documentID),
-          sort: (lhs, rhs) => rhs.createdAt.compareTo(lhs.createdAt),
-  );
+        path: DBPath.chatMessages(
+            user == null ? _uid : user.uid, interlocutor.uid),
+        builder: (data, documentID) => Message.fromMap(data, documentID),
+        sort: (lhs, rhs) => rhs.createdAt.compareTo(lhs.createdAt),
+      );
 }

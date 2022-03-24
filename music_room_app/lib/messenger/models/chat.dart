@@ -18,6 +18,8 @@ class Chat implements DatabaseModel {
 
   @override
   get docId => DBPath.chat(uid1, uid2);
+  @override
+  List<String> get wrappedCollectionsIds => [DBPath.chatMessages(uid1, uid2)];
 
   factory Chat.fromMap(Map<String, dynamic>? data, String id) {
     List<String> ids = id.split('_');
@@ -57,4 +59,5 @@ class Chat implements DatabaseModel {
       'messages': messages,
     };
   }
+
 }

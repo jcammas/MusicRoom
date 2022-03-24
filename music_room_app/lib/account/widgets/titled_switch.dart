@@ -7,7 +7,7 @@ class TitledSwitch extends StatelessWidget {
   final Function(bool) onChanged;
   final double fontSize;
   final FontWeight fontWeight;
-  final Color color;
+  final Color? themeColor;
   final MainAxisAlignment alignment;
 
   TitledSwitch({
@@ -18,11 +18,12 @@ class TitledSwitch extends StatelessWidget {
     this.fontSize = 20.0,
     this.fontWeight = FontWeight.w500,
     this.alignment = MainAxisAlignment.center,
-    this.color = const Color(0XFF072BB8),
+    this.themeColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    Color color = themeColor ?? Theme.of(context).primaryColor;
     return Row(
       mainAxisAlignment: alignment,
       children: [

@@ -32,13 +32,12 @@ class DBPath {
 
   static String chat(String uid1, String uid2) => chats() + chatId(uid1, uid2);
 
-  static String userPlaylist(String uid, String playlistId) =>
-      user(uid) + '/' + playlist(playlistId);
+  static String roomTracks(String roomId) => room(roomId) + '/' + tracks();
 
   static String userPlaylists(String uid) => user(uid) + '/' + playlists();
 
-  static String playlistTrack(String playlistId, String trackId) =>
-      playlist(playlistId) + '/' + track(trackId);
+  static String userSpotifyProfiles(String uid) =>
+      user(uid) + '/' + spotifyProfiles();
 
   static String playlistTracks(String playlistId) =>
       playlist(playlistId) + '/' + tracks();
@@ -46,15 +45,24 @@ class DBPath {
   static String chatMessages(String uid1, String uid2) =>
       chat(uid1, uid2) + '/' + messages();
 
+  static String userPlaylistTracks(String uid, String playlistId) =>
+      userPlaylist(uid, playlistId) + '/' + tracks();
+
+  static String userPlaylist(String uid, String playlistId) =>
+      userPlaylists(uid) + playlistId;
+
+  static String playlistTrack(String playlistId, String trackId) =>
+      playlistTracks(playlistId) + trackId;
+
+  static String roomTrack(String roomId, String trackId) =>
+      roomTracks(roomId) + trackId;
+
   static String userPlaylistTrack(
           String uid, String playlistId, String trackId) =>
-      user(uid) + '/' + playlist(playlistId) + '/' + track(trackId);
-
-  static String userPlaylistTracks(String uid, String playlistId) =>
-      user(uid) + '/' + playlist(playlistId) + '/' + tracks();
+      userPlaylistTracks(uid, playlistId) + trackId;
 
   static String userSpotifyProfile(String uid, String spotifyProfileId) =>
-      user(uid) + '/' + spotifyProfile(spotifyProfileId);
+      userSpotifyProfiles(uid) + spotifyProfileId;
 
   static String chatMessage(String senderId, String receiverId, String date) =>
       chatMessages(senderId, receiverId) + senderId + '_' + date;
@@ -68,5 +76,6 @@ class DBPath {
 
 class StoragePath {
   static String userAvatars() => 'user_avatars/';
+
   static String userAvatar(String uid) => userAvatars() + uid + '.jpg';
 }

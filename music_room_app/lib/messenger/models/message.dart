@@ -25,6 +25,8 @@ class Message implements DatabaseModel {
   @override
   get docId =>
       DBPath.chatMessage(senderId, receiverId, createdAt.toIso8601String());
+  @override
+  List<String> get wrappedCollectionsIds => [];
 
   factory Message.fromMap(Map<String, dynamic>? data, String id) {
     List<String> ids = id.split('_');

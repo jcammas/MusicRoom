@@ -55,6 +55,6 @@ class CustomTextField extends StatelessWidget {
 // enabled: model.isLoading == false,
 // prefixIcon: const Icon(
 // Icons.email,
-// color: Color(0XFF072BB8),
+// color: Theme.of(context).primaryColor,
 // ),
 // ),

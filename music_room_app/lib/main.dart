@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:music_room_app/account/account.dart';
 import 'package:music_room_app/messenger/chats_page.dart';
 import 'package:music_room_app/friends/friends.dart';
-import 'package:music_room_app/room/room.dart';
+import 'package:music_room_app/room/roomScreen.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify.dart';
 import 'package:music_room_app/spotify_library/library/library.dart';
@@ -21,11 +21,20 @@ Future<void> main() async {
   );
 }
 
-const _primaryColor = Color(0XFF072BB8);
+const _primaryColor = const Color(0XFF072BB8);
 const _lightBlue = const Color(0xFFE1F5FE);
 const _backgroundWhite = const Color(0xFFEFEFF4);
 const _lightGrey = const Color(0xFF757575);
 const _lightDark = const Color(0x8A000000);
+
+Map<String, Widget Function(BuildContext)> routeMap = {
+  '/': (_) => const LandingScreen(),
+  AccountScreen.routeName: (_) => const AccountScreen(),
+  LibraryScreen.routeName: (_) => const LibraryScreen(),
+  ChatsPage.routeName: (_) => const ChatsPage(),
+  FriendsScreen.routeName: (_) => const FriendsScreen(),
+  RoomScreen.routeName: (_) => RoomScreen.create(),
+};
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -139,14 +148,7 @@ class MyApp extends StatelessWidget {
                   color: Colors.black)),
         ),
         initialRoute: "/",
-        routes: {
-          '/': (_) => const LandingScreen(),
-          AccountScreen.routeName: (_) => const AccountScreen(),
-          LibraryScreen.routeName: (_) => const LibraryScreen(),
-          ChatsPage.routeName: (_) => const ChatsPage(),
-          FriendsScreen.routeName: (_) => const FriendsScreen(),
-          RoomScreen.routeName: (_) => const RoomScreen(),
-        },
+        routes: routeMap,
       ),
     );
   }

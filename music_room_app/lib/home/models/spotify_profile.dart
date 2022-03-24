@@ -27,6 +27,8 @@ class SpotifyProfile implements DatabaseModel {
 
   @override
   get docId => DBPath.spotifyProfile(id);
+  @override
+  get wrappedCollectionsIds => [];
 
   factory SpotifyProfile.fromMap(Map<String, dynamic>? data) {
     if (data != null) {

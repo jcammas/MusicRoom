@@ -5,7 +5,7 @@ class RoomButton extends CustomRaisedButton {
   RoomButton({
     Key? key,
     String text = 'No Text',
-    Color color = const Color(0XFF072BB8),
+    required Color color,
     Color textColor = Colors.white,
     required VoidCallback? onPressed,
   }) : super(

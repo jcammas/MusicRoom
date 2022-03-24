@@ -49,7 +49,7 @@ class CustomSettingsTile extends AbstractTile {
                 context,
                 title,
                 '',
-                Icon(Icons.lock, color: Color(0XFF072BB8)),
+                Icon(Icons.lock, color: Theme.of(context).primaryColor),
                 manager,
                 SettingType.oldPassword);
             if (manager.submitted) {
@@ -79,7 +79,7 @@ class CustomSettingsTile extends AbstractTile {
                 context,
                 title,
                 '',
-                Icon(Icons.lock, color: Color(0XFF072BB8)),
+                Icon(Icons.lock, color: Theme.of(context).primaryColor),
                 manager,
                 SettingType.oldPassword);
             if (manager.submitted) {
@@ -102,7 +102,7 @@ class CustomSettingsTile extends AbstractTile {
                 context,
                 title,
                 '',
-                Icon(Icons.lock, color: Color(0XFF072BB8)),
+                Icon(Icons.lock, color: Theme.of(context).primaryColor),
                 manager,
                 SettingType.oldPassword);
           }
@@ -124,7 +124,7 @@ class CustomSettingsTile extends AbstractTile {
 
   @override
   Widget build(BuildContext context) {
-    final Widget? leading = Icon(iconData, color: const Color(0XFF072BB8));
+    final Widget? leading = Icon(iconData, color: Theme.of(context).primaryColor);
     return SettingsTile(
         title: title,
         subtitle: subtitle,

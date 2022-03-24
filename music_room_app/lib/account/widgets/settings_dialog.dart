@@ -82,9 +82,9 @@ Future<String?> showSettingsDialog(
                       const EdgeInsets.all(12)),
                   alignment: Alignment.center,
                 ),
-                child: const Text(
+                child: Text(
                   'Apply',
-                  style: TextStyle(color: const Color(0XFF072BB8)),
+                  style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
               ),
             ],

@@ -1,33 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/room/managers/room_manager.dart';
+import 'package:music_room_app/room/views/room_chat.dart';
+import 'package:music_room_app/room/views/room_guests.dart';
+import 'package:music_room_app/room/views/room_playlist.dart';
 import 'package:music_room_app/services/database.dart';
-import 'package:provider/provider.dart';
+import '../../home/models/room.dart';
+import '../widgets/cupertino_home_scaffold.dart';
+import '../widgets/tab_item.dart';
 
 class RoomForm extends StatefulWidget {
-  const RoomForm({Key? key, required this.manager}) : super(key: key);
-  final RoomManager manager;
-
-  static Widget create(BuildContext context, {required Database db, required String roomId}) {
-    return ChangeNotifierProvider<RoomManager>(
-      create: (_) => RoomManager(db: db, roomId: roomId),
-      child: Consumer<RoomManager>(
-        builder: (_, model, __) => RoomForm(manager: model),
-      ),
-    );
-  }
+  const RoomForm({Key? key, required this.db, required this.roomId})
+      : super(key: key);
+  final Database db;
+  final String roomId;
 
   @override
   State<RoomForm> createState() => _RoomFormState();
 }
 
 class _RoomFormState extends State<RoomForm> {
-  late Map<String, dynamic> settingsData;
+  TabItem _currentTab = TabItem.playlist;
+  bool _isLoading = true;
+  Room? room;
+
+  Database get db => widget.db;
+
+  String get roomId => widget.roomId;
+
+  final Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {
+    TabItem.playlist: GlobalKey<NavigatorState>(),
+    TabItem.guests: GlobalKey<NavigatorState>(),
+    TabItem.chat: GlobalKey<NavigatorState>(),
+  };
+
+  Map<TabItem, WidgetBuilder> get widgetBuilders {
+    return {
+      TabItem.playlist: (_) => RoomPlaylistPage.create(db: db, room: room!),
+      TabItem.guests: (_) => RoomGuestsPage.create(db: db, room: room!),
+      TabItem.chat: (_) => RoomChatPage(),
+    };
+  }
+
+  void _select(TabItem tabItem) {
+    if (tabItem == _currentTab) {
+      navigatorKeys[tabItem]!.currentState!.popUntil((route) => route.isFirst);
+    } else {
+      setState(() => _currentTab = tabItem);
+    }
+  }
+
+  void getRoom() async {
+    room = await db.getRoomById(roomId);
+    if (room!.name == Room.emptyRoomName) db.updateUserRoom(null);
+    if (mounted)
+      setState(() {
+        _isLoading = false;
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // final double screenHeight = MediaQuery.of(context).size.height;
-    return SingleChildScrollView(
-          child: Center(),
-        );
-      }
+    getRoom();
+    return _isLoading
+        ? Center(child: CircularProgressIndicator())
+        : room!.name == Room.emptyRoomName
+            ? Center(child: CircularProgressIndicator())
+            : WillPopScope(
+                onWillPop: () async =>
+                    !await navigatorKeys[_currentTab]!.currentState!.maybePop(),
+                child: CupertinoHomeScaffold(
+                  currentTab: _currentTab,
+                  onSelectTab: _select,
+                  widgetBuilders: widgetBuilders,
+                  navigatorKeys: navigatorKeys,
+                ),
+              );
+  }
 }

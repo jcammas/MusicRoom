@@ -28,6 +28,8 @@ class Playlist implements DatabaseModel {
 
   @override
   get docId => DBPath.playlist(id);
+  @override
+  get wrappedCollectionsIds => [DBPath.playlistTracks(id)];
 
   Widget returnImage() {
     if (this.images != null) {
@@ -44,7 +46,7 @@ class Playlist implements DatabaseModel {
   factory Playlist.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
       final String name = data['name'] ?? 'N/A';
-      final Map<String, dynamic> owner = data['owner'] ?? 'N/A';
+      final Map<String, dynamic>? owner = data['owner'];
       final String? description = data['description'];
       final bool? collaborative = data['collaborative'];
       final bool? public = data['public'];

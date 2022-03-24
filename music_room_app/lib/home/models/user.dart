@@ -5,7 +5,6 @@ import 'package:music_room_app/models/HasNameObject.dart';
 import 'package:music_room_app/services/api_path.dart';
 import 'package:music_room_app/widgets/utils.dart';
 import 'database_model.dart';
-import 'device.dart';
 
 const String defaultAvatarUrl =
     "https://firebasestorage.googleapis.com/v0/b/musicroom-27d72.appspot.com/o/user_avatars%2Favatar_random.png?alt=media&token=cd472ae6-1d58-4e3a-9051-390f772392f6";
@@ -18,7 +17,7 @@ class UserApp implements DatabaseModel, HasNameObject {
       required this.friends,
       this.playlists,
       this.spotifyProfile,
-      this.room,
+      this.roomId,
       required this.avatarUrl}) {
     this.userSearch = setSearchParams(name);
   }
@@ -27,11 +26,10 @@ class UserApp implements DatabaseModel, HasNameObject {
   final String uid;
   String email;
   String name;
-  String? room;
+  String? roomId;
   String avatarUrl;
   SpotifyProfile? spotifyProfile;
   List<String> friends = [];
-  List<Device> devices = [];
   Map<String, Playlist>? playlists;
   String? defaultRoomPrivacySettings;
   String? defaultRoomVoteSystem;
@@ -41,6 +39,21 @@ class UserApp implements DatabaseModel, HasNameObject {
 
   @override
   get docId => DBPath.user(uid);
+
+  @override
+  get wrappedCollectionsIds {
+    List<String> res = [
+      DBPath.userPlaylists(uid),
+      DBPath.userSpotifyProfiles(uid)
+    ];
+    if (playlists != null) {
+      playlists!.forEach((key, playlist) => res.addAll(playlist
+          .wrappedCollectionsIds
+          .map((id) => DBPath.user(uid) + '/' + id)
+          .toList()));
+    }
+    return res;
+  }
 
   factory UserApp.fromMap(Map<String, dynamic>? data, String uid) {
     if (data != null) {
@@ -53,7 +66,7 @@ class UserApp implements DatabaseModel, HasNameObject {
         spotifyProfile = SpotifyProfile.fromMap(data['spotify_profile']);
       }
       String avatarUrl = data['image_url'] ?? defaultAvatarUrl;
-      String? room = data['room'];
+      String? roomId = data['room_id'];
       Map<String, dynamic>? playlistsData = data['playlists'];
       Map<String, Playlist> playlists = {};
       if (playlistsData != null) {
@@ -68,7 +81,7 @@ class UserApp implements DatabaseModel, HasNameObject {
           playlists: playlists,
           friends: friends,
           spotifyProfile: spotifyProfile,
-          room: room);
+          roomId: roomId);
     } else {
       return UserApp(
           uid: uid,
@@ -88,7 +101,7 @@ class UserApp implements DatabaseModel, HasNameObject {
       'email': email,
       'image_url': avatarUrl,
       'friends': friends,
-      'room': room
+      'room_id': roomId
     };
   }
 }
