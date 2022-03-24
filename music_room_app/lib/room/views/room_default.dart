@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:music_room_app/room/widgets/room_button.dart';
+import '../../home/widgets/drawer.dart';
+import '../../widgets/custom_appbar.dart';
 import 'create_room_form.dart';
 
 class RoomDefault extends StatelessWidget {
@@ -32,6 +35,20 @@ class RoomDefault extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: customAppBar(
+        appText: 'Room',
+        context: context,
+      ),
+      backgroundColor: Theme.of(context).backgroundColor,
+      drawer: const MyDrawer(),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light,
+          child: buildContents(context)),
+    );
+  }
+
+  Widget buildContents(BuildContext context) {
     // final double screenHeight = MediaQuery.of(context).size.height;
     return Padding(
       padding: const EdgeInsets.all(16.0),

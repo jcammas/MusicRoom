@@ -14,7 +14,6 @@ class TrackApp implements DatabaseModel {
       this.externalIds,
       this.type,
       this.isPlayable,
-      this.linkedFrom,
       this.isLocal,
       this.restrictions,
       this.popularity,
@@ -33,7 +32,6 @@ class TrackApp implements DatabaseModel {
   Map<String, dynamic>? externalIds;
   String? type;
   bool? isPlayable;
-  TrackApp? linkedFrom;
   bool? isLocal;
   Map<String, dynamic>? restrictions;
   int? popularity;
@@ -43,6 +41,8 @@ class TrackApp implements DatabaseModel {
 
   @override
   get docId => DBPath.track(id);
+  @override
+  get wrappedCollectionsIds => [];
 
   factory TrackApp.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
@@ -56,7 +56,6 @@ class TrackApp implements DatabaseModel {
       final Map<String, dynamic>? externalIds = data['external_ids'];
       final String? type = data['type'];
       final bool? isPlayable = data['is_playable'];
-      final TrackApp? linkedFrom = data['linked_from'];
       final bool? isLocal = data['is_local'];
       final Map<String, dynamic>? restrictions = data['restrictions'];
       final int? popularity = data['popularity'];
@@ -75,7 +74,6 @@ class TrackApp implements DatabaseModel {
         externalIds: externalIds,
         type: type,
         isPlayable: isPlayable,
-        linkedFrom: linkedFrom,
         isLocal: isLocal,
         restrictions: restrictions,
         popularity: popularity,
@@ -102,7 +100,6 @@ class TrackApp implements DatabaseModel {
       'external_ids': externalIds,
       'type': type,
       'is_playable': isPlayable,
-      'linked_from': linkedFrom,
       'is_local': isLocal,
       'restrictions': restrictions,
       'popularity': popularity,

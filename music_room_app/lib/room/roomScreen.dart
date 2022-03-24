@@ -15,20 +15,6 @@ class RoomScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: customAppBar(
-        appText: 'Room',
-        context: context,
-      ),
-      backgroundColor: Theme.of(context).backgroundColor,
-      drawer: const MyDrawer(),
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.light,
-          child: _buildContents(context)),
-    );
-  }
-
-  Widget _buildContents(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
     return StreamBuilder<UserApp?>(
       stream: db.userStream(),
@@ -36,17 +22,25 @@ class RoomScreen extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           final UserApp? user = snapshot.data;
           if (user != null) {
-            if (user.roomId != null)
-            {
+            if (user.roomId != null) {
               return RoomForm(roomId: user.roomId!, db: db);
             }
             return RoomDefault();
           }
         }
-        return const Scaffold(
-          body: Center(
-            // child: CircularProgressIndicator(),
-            child: CircularProgressIndicator(color: Colors.black87),
+        return Scaffold(
+          appBar: customAppBar(
+            appText: 'Room',
+            context: context,
+          ),
+          backgroundColor: Theme.of(context).backgroundColor,
+          drawer: const MyDrawer(),
+          body: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle.light,
+            child: Center(
+              // child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(color: Colors.black87),
+            ),
           ),
         );
       },

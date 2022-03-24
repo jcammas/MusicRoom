@@ -47,6 +47,11 @@ class FirestoreService {
     await reference.delete();
   }
 
+  Future<void> deleteCollection({required String path}) async {
+    List<String> ids = await getCollectionList(path: path, builder: (data, id) => id);
+    ids.forEach((id) => deleteDocument(path: path + id));
+  }
+
   Stream<T> documentStream<T>({
     required String path,
     required T Function(Map<String, dynamic>? data, String documentID) builder,
@@ -95,12 +100,8 @@ class FirestoreService {
     required T Function(Map<String, dynamic> data, String documentId) builder,
     Query Function(Query query)? queryBuilder,
     int Function(T lhs, T rhs)? sort,
-    String nameQuery = "",
   }) async {
     Query query = _firestore.collection(path);
-    if (nameQuery != "") {
-      query = query.where("userSearch", arrayContains: nameQuery);
-    }
     if (queryBuilder != null) {
       query = queryBuilder(query);
     }

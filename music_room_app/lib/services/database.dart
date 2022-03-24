@@ -8,6 +8,8 @@ import 'api_path.dart';
 import 'firestore_service.dart';
 
 abstract class Database {
+  deleteById(String docId, List<String>? collIds);
+
   Future<void> delete(DatabaseModel model);
 
   Future<void> deleteUser();
@@ -97,27 +99,47 @@ class FirestoreDatabase implements Database {
   get uid => _uid;
 
   @override
+  Future<void> deleteById(String docId, List<String>? collIds) async {
+    if (collIds != null) {
+      for (String id in collIds) {
+        await _service.deleteCollection(path: id);
+      }
+    }
+    await _service.deleteDocument(path: docId);
+  }
+
+  @override
   Future<void> delete(DatabaseModel model) async =>
-      await _service.deleteDocument(path: model.docId);
+      await deleteById(model.docId, model.wrappedCollectionsIds);
 
   @override
-  Future<void> deleteUser() async =>
-      await _service.deleteDocument(path: DBPath.user(_uid));
+  Future<void> deleteUser() async => await deleteById(DBPath.user(_uid),
+      [_uid, DBPath.userPlaylists(_uid), DBPath.userSpotifyProfiles(_uid)]);
 
   @override
-  Future<void> deleteInUser(DatabaseModel model) async => await _service
-      .deleteDocument(path: DBPath.user(_uid) + '/' + model.docId);
+  Future<void> deleteInUser(DatabaseModel model) async => await deleteById(
+      DBPath.user(_uid) + '/' + model.docId,
+      model.wrappedCollectionsIds
+          .map((id) => DBPath.user(_uid) + '/' + id)
+          .toList());
 
   @override
   Future<void> deleteInObject(
           DatabaseModel parent, DatabaseModel child) async =>
-      await _service.deleteDocument(path: parent.docId + '/' + child.docId);
+      await deleteById(
+          parent.docId + '/' + child.docId,
+          child.wrappedCollectionsIds
+              .map((id) => parent.docId + '/' + id)
+              .toList());
 
   @override
   Future<void> deleteInObjectInUser(
           DatabaseModel parent, DatabaseModel child) async =>
-      await _service.deleteDocument(
-          path: DBPath.user(_uid) + '/' + parent.docId + '/' + child.docId);
+      await deleteById(
+          DBPath.user(_uid) + '/' + parent.docId + '/' + child.docId,
+          child.wrappedCollectionsIds
+              .map((id) => DBPath.user(_uid) + '/' + parent.docId + '/' + id)
+              .toList());
 
   @override
   Future<void> set(DatabaseModel model, {bool mergeOption = false}) async =>
@@ -221,16 +243,18 @@ class FirestoreDatabase implements Database {
       await _service.getCollectionList(
         path: DBPath.users(),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
-        nameQuery: nameQuery,
+        queryBuilder: (query) => nameQuery != ""
+            ? query.where("userSearch", arrayContains: nameQuery)
+            : query,
       );
 
   @override
   Future<List<TrackApp>> getPlaylistTracks(Playlist playlist,
-      {String nameQuery = ""}) async => await _service.getCollectionList(
-    path: DBPath.playlistTracks(playlist.id),
-    builder: (data, documentId) => TrackApp.fromMap(data, documentId),
-    nameQuery: nameQuery,
-  );
+          {String nameQuery = ""}) async =>
+      await _service.getCollectionList(
+        path: DBPath.playlistTracks(playlist.id),
+        builder: (data, documentId) => TrackApp.fromMap(data, documentId),
+      );
 
   @override
   Future<bool> userExists({UserApp? user}) async => await _service

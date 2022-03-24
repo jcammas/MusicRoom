@@ -30,6 +30,8 @@ class Room implements DatabaseModel {
 
   @override
   String get docId => DBPath.room(id);
+  @override
+  get wrappedCollectionsIds => [DBPath.roomTracks(id)];
 
   static SystemType toSystemType(String? str) {
     switch (str) {

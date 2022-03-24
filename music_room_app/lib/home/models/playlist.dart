@@ -28,6 +28,8 @@ class Playlist implements DatabaseModel {
 
   @override
   get docId => DBPath.playlist(id);
+  @override
+  get wrappedCollectionsIds => [DBPath.playlistTracks(id)];
 
   Widget returnImage() {
     if (this.images != null) {

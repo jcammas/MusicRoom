@@ -5,7 +5,6 @@ import 'package:music_room_app/models/HasNameObject.dart';
 import 'package:music_room_app/services/api_path.dart';
 import 'package:music_room_app/widgets/utils.dart';
 import 'database_model.dart';
-import 'device.dart';
 
 const String defaultAvatarUrl =
     "https://firebasestorage.googleapis.com/v0/b/musicroom-27d72.appspot.com/o/user_avatars%2Favatar_random.png?alt=media&token=cd472ae6-1d58-4e3a-9051-390f772392f6";
@@ -31,7 +30,6 @@ class UserApp implements DatabaseModel, HasNameObject {
   String avatarUrl;
   SpotifyProfile? spotifyProfile;
   List<String> friends = [];
-  List<Device> devices = [];
   Map<String, Playlist>? playlists;
   String? defaultRoomPrivacySettings;
   String? defaultRoomVoteSystem;
@@ -41,6 +39,21 @@ class UserApp implements DatabaseModel, HasNameObject {
 
   @override
   get docId => DBPath.user(uid);
+
+  @override
+  get wrappedCollectionsIds {
+    List<String> res = [
+      DBPath.userPlaylists(uid),
+      DBPath.userSpotifyProfiles(uid)
+    ];
+    if (playlists != null) {
+      playlists!.forEach((key, playlist) => res.addAll(playlist
+          .wrappedCollectionsIds
+          .map((id) => DBPath.user(uid) + '/' + id)
+          .toList()));
+    }
+    return res;
+  }
 
   factory UserApp.fromMap(Map<String, dynamic>? data, String uid) {
     if (data != null) {
