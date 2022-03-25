@@ -4,4 +4,5 @@ abstract class DatabaseModel {
   Map<String, dynamic> toMap();
   String get docId;
   List<String> get wrappedCollectionsIds;
+  String get name;
 }

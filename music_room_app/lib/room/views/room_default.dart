@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:music_room_app/room/managers/room_scaffold_manager.dart';
 import 'package:music_room_app/room/widgets/room_button.dart';
 import 'create_room_form.dart';
+import 'join_room_form.dart';
 
 class RoomDefault extends StatelessWidget {
   RoomDefault({required this.scaffoldManager});
@@ -12,18 +13,9 @@ class RoomDefault extends StatelessWidget {
     await showModalBottomSheet(
         context: context,
         constraints: BoxConstraints(
-          maxWidth: MediaQuery
-              .of(context)
-              .size
-              .width * 0.9,
-          maxHeight: MediaQuery
-              .of(context)
-              .size
-              .height * 0.9,
-          minHeight: MediaQuery
-              .of(context)
-              .size
-              .height * 0.8,
+          maxWidth: MediaQuery.of(context).size.width * 0.9,
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
+          minHeight: MediaQuery.of(context).size.height * 0.8,
         ),
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
@@ -50,9 +42,11 @@ class RoomDefault extends StatelessWidget {
             },
           ),
           RoomButton(
-            color: Colors.black45,
+            color: Theme.of(context).primaryColor,
             text: 'Join',
-            onPressed: null,
+            onPressed: () {
+              showBottomForm(context, JoinRoomForm.create(context));
+            },
           ),
         ],
       ),

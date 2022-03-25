@@ -46,7 +46,7 @@ class CreateRoomManager with ChangeNotifier implements ListItemsManager {
           name: name!,
           ownerId: db.uid,
           guests: [db.uid],
-          sourcePlaylist: selectedPlaylist ?? Playlist.fromMap(null, 'N/A'),
+          sourcePlaylist: selectedPlaylist!,
           tracksList: []);
       await db.set(newRoom);
       await db.setListInObject(newRoom, tracksList);

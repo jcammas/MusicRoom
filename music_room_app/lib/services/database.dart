@@ -227,7 +227,7 @@ class FirestoreDatabase implements Database {
   @override
   Future<void> updateRoomGuests(Room room) async =>
       await _service.updateDocument(
-        path: DBPath.room(room.docId),
+        path: room.docId,
         data: {'guests': room.guests},
       );
 
@@ -257,7 +257,7 @@ class FirestoreDatabase implements Database {
         path: DBPath.users(),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
         queryBuilder: (query) => nameQuery != ""
-            ? query.where("userSearch", arrayContains: nameQuery)
+            ? query.where("user_search", arrayContains: nameQuery)
             : query,
       );
 
@@ -267,7 +267,7 @@ class FirestoreDatabase implements Database {
         path: DBPath.rooms(),
         builder: (data, documentId) => Room.fromMap(data, documentId),
         queryBuilder: (query) => nameQuery != ""
-            ? query.where("name", arrayContains: nameQuery)
+            ? query.where("room_search", arrayContains: nameQuery)
             : query,
       );
 

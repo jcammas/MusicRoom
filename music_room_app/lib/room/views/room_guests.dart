@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/room/widgets/guest_tile.dart';
+import 'package:music_room_app/room/widgets/tiles.dart';
 import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
 import 'package:provider/provider.dart';
 import '../../home/models/room.dart';
 import '../../home/models/user.dart';
 import '../../services/database.dart';
-import '../managers/room_guests_manager.dart';
+import '../managers/room_manager.dart';
 
 class RoomGuestsPage extends StatefulWidget {
   const RoomGuestsPage({required this.manager});

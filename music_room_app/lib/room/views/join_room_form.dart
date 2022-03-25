@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/widgets/custom_text_field.dart';
+import 'package:music_room_app/widgets/search-bar.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:provider/provider.dart';
 import '../../home/models/room.dart';
 import '../../services/database.dart';
 import '../../widgets/show_exception_alert_dialog.dart';
 import '../managers/join_room_manager.dart';
+import '../widgets/tiles.dart';
 
 class JoinRoomForm extends StatefulWidget {
   JoinRoomForm({required this.manager});
@@ -39,8 +40,7 @@ class _JoinRoomFormState extends State<JoinRoomForm> {
       } else {
         await showAlertDialog(context,
             title: 'Error',
-            content: const Text(
-                'Could not load event. Try again.'),
+            content: const Text('Could not load event. Try again.'),
             defaultActionText: 'Ok');
       }
     } on Exception catch (e) {
@@ -61,7 +61,7 @@ class _JoinRoomFormState extends State<JoinRoomForm> {
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
         alignment: Alignment.center,
-        child:  Column(
+        child: Column(
           children: <Widget>[
             Align(
               alignment: Alignment.centerLeft,
@@ -69,35 +69,42 @@ class _JoinRoomFormState extends State<JoinRoomForm> {
                   onPressed: () => Navigator.pop(context),
                   icon: Icon(Icons.arrow_back)),
             ),
-            CustomTextField(
-              title: "Event name :",
-              onFieldSubmitted: manager.updateName,
-            ),
+            SearchBar(
+                getItemList: manager.getRooms, onSelected: manager.selectRoom),
             SizedBox(
               height: height * 0.04,
             ),
-            // list of rooms
+            selectedRoom == null
+                ? SizedBox(
+                    height: height * 0.03,
+                  )
+                : RoomTile(
+                    room: selectedRoom!,
+                    onTap: () => {},
+                  ),
             SizedBox(
               height: height * 0.05,
             ),
-            manager.isLoading ? const Center(child: CircularProgressIndicator()) : ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    manager.isReady()
-                        ? Theme.of(context).primaryColor
-                        : const Color(0XFF434343),
-                  ),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+            manager.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                        manager.isReady()
+                            ? Theme.of(context).primaryColor
+                            : const Color(0XFF434343),
+                      ),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                onPressed: manager.isReady()
-                    ? () => _submit(context) : () {},
-                child: Text(
-                  "Create !",
-                )),
+                    onPressed:
+                        manager.isReady() ? () => _submit(context) : () {},
+                    child: Text(
+                      "Join !",
+                    )),
             SizedBox(
               height: height * 0.02,
             ),

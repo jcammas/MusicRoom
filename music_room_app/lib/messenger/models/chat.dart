@@ -20,6 +20,7 @@ class Chat implements DatabaseModel {
   get docId => DBPath.chat(uid1, uid2);
   @override
   List<String> get wrappedCollectionsIds => [DBPath.chatMessages(uid1, uid2)];
+  String get name => (userName1 ?? "Unknown") + '_' + (userName2 ?? "Unknown");
 
   factory Chat.fromMap(Map<String, dynamic>? data, String id) {
     List<String> ids = id.split('_');
