@@ -3,12 +3,15 @@ import '../../home/models/playlist.dart';
 import '../../home/models/room.dart';
 import '../../home/models/track.dart';
 import '../../services/database.dart';
+import '../../services/spotify.dart';
 import '../../spotify_library/widgets/list_items_manager.dart';
 
 class CreateRoomManager with ChangeNotifier implements ListItemsManager {
-  CreateRoomManager({required this.db, this.isLoading = false});
+  CreateRoomManager(
+      {required this.db, required this.spotify, this.isLoading = false});
 
   final Database db;
+  final Spotify spotify;
   Playlist? selectedPlaylist;
   String? name;
   @override
@@ -41,6 +44,9 @@ class CreateRoomManager with ChangeNotifier implements ListItemsManager {
     if (name == null || selectedPlaylist == null) return false;
     try {
       pageIsLoading(true);
+      PlaylistManager manager = PlaylistManager(
+          spotify: spotify, db: db, playlist: selectedPlaylist!, isLoading: true);
+      await manager.fillIfEmpty(context, awaitRefresh: true);
       List<TrackApp> tracksList = await db.getPlaylistTracks(selectedPlaylist!);
       Room newRoom = Room(
           name: name!,
