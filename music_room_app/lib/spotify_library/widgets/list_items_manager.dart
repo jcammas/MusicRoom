@@ -108,10 +108,15 @@ class PlaylistManager with ChangeNotifier implements ListItemsManager {
     }
   }
 
-  Future<void> fillIfEmpty(BuildContext context) async {
-      pageIsLoading(true);
-      bool has = await db.userPlaylistHasTracks(playlist);
-      has ? pageIsLoading(false) : refreshItems(context);
+  Future<void> fillIfEmpty(BuildContext context,
+      {bool awaitRefresh = false}) async {
+    pageIsLoading(true);
+    bool has = await db.userPlaylistHasTracks(playlist);
+    has
+        ? pageIsLoading(false)
+        : awaitRefresh
+            ? await refreshItems(context)
+            : refreshItems(context);
   }
 
   void pageIsLoading(bool isLoading) {

@@ -6,6 +6,7 @@ import 'package:music_room_app/spotify_library/playlist/track_tile.dart';
 import 'package:provider/provider.dart';
 import '../../home/models/room.dart';
 import '../../services/database.dart';
+import '../../services/spotify.dart';
 import '../managers/room_scaffold_manager.dart';
 import '../managers/room_manager.dart';
 

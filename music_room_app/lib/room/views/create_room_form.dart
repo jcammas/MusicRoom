@@ -5,6 +5,7 @@ import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:provider/provider.dart';
 import '../../home/models/playlist.dart';
 import '../../services/database.dart';
+import '../../services/spotify.dart';
 import '../../widgets/show_exception_alert_dialog.dart';
 import '../managers/create_room_manager.dart';
 
@@ -18,8 +19,9 @@ class CreateRoomForm extends StatefulWidget {
 
   static Widget create(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
+    final spotify = Provider.of<Spotify>(context, listen: false);
     return ChangeNotifierProvider<CreateRoomManager>(
-      create: (_) => CreateRoomManager(db: db),
+      create: (_) => CreateRoomManager(db: db, spotify: spotify),
       child: Consumer<CreateRoomManager>(
         builder: (_, manager, __) => CreateRoomForm(manager: manager),
       ),
