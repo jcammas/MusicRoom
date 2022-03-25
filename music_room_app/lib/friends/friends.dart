@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:music_room_app/home/models/database_model.dart';
 import 'package:music_room_app/home/models/user.dart';
-import 'package:music_room_app/models/HasNameObject.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
@@ -252,7 +252,7 @@ class SearchSection extends StatefulWidget {
 class _SearchSectionState extends State<SearchSection> {
   @override
   Widget build(BuildContext context) {
-    Future<List<HasNameObject>> Function(dynamic pattern) getUserList =
+    Future<List<DatabaseModel>> Function(dynamic pattern) getUserList =
         (pattern) async {
       final db = Provider.of<Database>(context, listen: false);
       return await db.getUsers(nameQuery: formatSearchParam(pattern));

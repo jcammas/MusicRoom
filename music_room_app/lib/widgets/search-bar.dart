@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:music_room_app/models/HasNameObject.dart';
+import 'package:music_room_app/home/models/database_model.dart';
 
 class SearchBar extends StatelessWidget {
   const SearchBar({
-    required Future<List<HasNameObject>> Function(dynamic pattern) getItemList,
-    Key? key,
-  })  : getItemList = getItemList,
-        super(key: key);
+    required this.getItemList,
+    this.onSelected,
+  });
 
-  final getItemList;
+  final Future<List<DatabaseModel>> Function(String pattern) getItemList;
+  final void Function(DatabaseModel selected)?
+      onSelected;
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController _typeAheadController = TextEditingController();
@@ -43,13 +45,14 @@ class SearchBar extends StatelessWidget {
                   contentPadding: EdgeInsets.all(10),
                 )),
             suggestionsCallback: getItemList,
-            itemBuilder: (context, HasNameObject suggestion) {
+            itemBuilder: (context, DatabaseModel suggestion) {
               return ListTile(
                 title: Text(suggestion.name),
               );
             },
-            onSuggestionSelected: (HasNameObject suggestion) {
+            onSuggestionSelected: (DatabaseModel suggestion) {
               _typeAheadController.text = suggestion.name;
+              onSelected != null ? onSelected!(suggestion) : null;
             },
           ),
         )),

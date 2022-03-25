@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../home/models/room.dart';
 import '../../services/database.dart';
 import '../managers/room_scaffold_manager.dart';
-import '../managers/room_playlist_manager.dart';
+import '../managers/room_manager.dart';
 
 class RoomPlaylistPage extends StatefulWidget {
   const RoomPlaylistPage({required this.manager});
@@ -33,7 +33,7 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
     RoomScaffoldManager scaffoldManager =
         Provider.of<RoomScaffoldManager>(context, listen: false);
     scaffoldManager.setScaffold(
-        title: manager.room.name, funcText: 'End', topRightFn: manager.endRoom);
+        title: manager.room.name, funcText: manager.isOwner()? 'End' : 'Quit', topRightFn: manager.quitRoom);
   }
 
   @override

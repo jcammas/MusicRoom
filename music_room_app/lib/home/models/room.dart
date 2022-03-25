@@ -1,6 +1,7 @@
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/api_path.dart';
+import 'package:music_room_app/widgets/utils.dart';
 import 'database_model.dart';
 
 enum SystemType { public, friends, guests }
@@ -14,8 +15,11 @@ class Room implements DatabaseModel {
     required this.tracksList,
     this.voteSystem = SystemType.public,
     this.privacySystem = SystemType.public,
-  });
+  }){
+    this.roomSearch = setSearchParams(name);
+  }
 
+  late List<String> roomSearch;
   List<String> guests;
   Playlist sourcePlaylist;
   List<TrackApp> tracksList;
@@ -66,11 +70,11 @@ class Room implements DatabaseModel {
       final List<String> guests = dataGuests.cast();
       final Map<dynamic, dynamic> playlistData = data['source_playlist'];
       final Playlist sourcePlaylist =
-          Playlist.fromMap(playlistData.values.first, playlistData.keys.first);
+          Playlist.fromMap(playlistData.cast(), playlistData['id']);
       final String name = data['name'] ?? sourcePlaylist.name;
       final String owner = data['owner_id'] ?? getOwnerFromId(id);
-      final SystemType voteSystem = toSystemType(data['voteSystem']);
-      final SystemType privacySystem = toSystemType(data['privacySystem']);
+      final SystemType voteSystem = toSystemType(data['vote_system']);
+      final SystemType privacySystem = toSystemType(data['privacy_system']);
       List<TrackApp> tracksList = [];
       Map<String, dynamic>? tracksListData = data['tracks_list'];
       if (tracksListData != null) {
@@ -104,8 +108,9 @@ class Room implements DatabaseModel {
       'guests': guests,
       'source_playlist': sourcePlaylist.toMap(),
       'owner_id': ownerId,
-      'privacySystem': fromSystemType(privacySystem),
-      'voteSystem': fromSystemType(voteSystem),
+      'privacy_system': fromSystemType(privacySystem),
+      'vote_system': fromSystemType(voteSystem),
+      'room_search': roomSearch,
     };
   }
 }
