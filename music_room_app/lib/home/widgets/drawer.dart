@@ -6,7 +6,7 @@ import 'package:music_room_app/landing.dart';
 import 'package:music_room_app/messenger/chats_page.dart';
 import 'package:music_room_app/spotify_library/library/library.dart';
 
-import '../../room/roomScreen.dart';
+import '../../room/room_screen.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({Key? key}) : super(key: key);

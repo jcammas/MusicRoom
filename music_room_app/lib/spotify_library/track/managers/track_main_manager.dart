@@ -15,14 +15,19 @@ import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 import 'package:music_room_app/spotify_library/track/library_static.dart';
+import '../../../home/models/room.dart';
+import '../../../services/database.dart';
 
-class TrackMainManager with ChangeNotifier {
-  TrackMainManager(
-      {required this.context,
-      required this.playlist,
-      required this.trackApp,
-      required this.tracksList,
-      required this.spotify}) {
+class TrackMainManager with ChangeNotifier implements TrackManager {
+  TrackMainManager({
+    required this.context,
+    required this.playlist,
+    required this.trackApp,
+    required this.tracksList,
+    required this.spotify,
+    required this.db,
+    this.room,
+  }) {
     _initManagers();
   }
 
@@ -37,6 +42,8 @@ class TrackMainManager with ChangeNotifier {
   StreamSubscription<ConnectionStatus>? connStatusSubscription;
   StreamSubscription<PlayerState>? playerStateSubscription;
   Spotify spotify;
+  Database db;
+  Room? room;
   late List<TrackManager> managers;
   late TrackImageManager imageManager;
   late TrackControlRowManager controlRowManager;
@@ -172,6 +179,7 @@ class TrackMainManager with ChangeNotifier {
   }
 
   void whenPlayerStateChange(PlayerState newState) {
+    if (room != null) db.updateRoomPlayerState(room!, newState);
     for (TrackManager manager in managers) {
       manager.whenPlayerStateChange(newState);
     }

@@ -1,10 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import '../../home/models/playlist.dart';
 import '../../home/models/room.dart';
 import '../../home/models/track.dart';
 import '../../services/database.dart';
+import '../../services/spotify.dart';
 import '../../spotify_library/widgets/list_items_manager.dart';
 import '../../widgets/show_exception_alert_dialog.dart';
+import 'package:spotify_sdk/models/connection_status.dart';
+import 'package:spotify_sdk/models/player_state.dart';
+import 'package:spotify_sdk/spotify_sdk.dart';
 
 class RoomManager with ChangeNotifier implements ListItemsManager {
   Database db;
@@ -42,11 +47,15 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
 }
 
 class RoomPlaylistManager extends RoomManager {
-
-  RoomPlaylistManager({required Database db, required Room room})
+  RoomPlaylistManager(
+      {required Database db, required Room room, required this.spotify})
       : super(db: db, room: room);
 
+  Spotify spotify;
+
   roomTracksStream() => db.roomTracksStream(room);
+
+  Playlist get sourcePlaylist => room.sourcePlaylist;
 
   Future<void> deleteTrack(BuildContext context, TrackApp item) async {
     try {
@@ -66,5 +75,4 @@ class RoomGuestsManager extends RoomManager {
       : super(db: db, room: room);
 
   roomGuestsStream() => db.usersStream(ids: room.guests);
-
 }

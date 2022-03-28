@@ -2,6 +2,9 @@ import 'package:music_room_app/home/models/database_model.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/models/user.dart';
+import 'package:spotify_sdk/models/player_options.dart';
+import 'package:spotify_sdk/models/player_restrictions.dart';
+import 'package:spotify_sdk/models/player_state.dart';
 import '../home/models/room.dart';
 import '../messenger/models/message.dart';
 import 'api_path.dart';
@@ -49,6 +52,8 @@ abstract class Database {
 
   Future<void> updateRoomGuests(Room room);
 
+  Future<void> updateRoomPlayerState(Room room, PlayerState playerState);
+
   Future<UserApp> getUser({UserApp? user});
 
   Future<Room> getRoomById(String roomId);
@@ -71,6 +76,8 @@ abstract class Database {
   Stream<List<UserApp>> usersStream({List<String>? ids});
 
   Stream<UserApp> userStreamById(String uid);
+
+  Stream<Room> roomStream(Room room);
 
   Stream<Room> roomStreamById(String roomId);
 
@@ -231,6 +238,29 @@ class FirestoreDatabase implements Database {
         data: {'guests': room.guests},
       );
 
+  Future<void> updateRoomPlayerState(Room room, PlayerState playerState) async {
+    Map<String, dynamic> data = playerState.toJson();
+    if (playerState.track != null) {
+      Map<String, dynamic> track = playerState.track!.toJson();
+      List<Map<String, dynamic>> artists =
+          playerState.track!.artists.map((artist) => artist.toJson()).toList();
+      Map<String, dynamic> album = playerState.track!.album.toJson();
+      String trackId = playerState.track!.uri.split(':')[2];
+      track['artists'] = artists;
+      track['album'] = album;
+      data['track'] = TrackApp.fromMap(track, trackId).toMap();
+    } else {
+      data['track'] = null;
+    }
+    data['playback_options'] = playerState.playbackOptions.toJson();
+    data['playback_restrictions'] = playerState.playbackRestrictions.toJson();
+
+    await _service.updateDocument(
+      path: room.docId,
+      data: {'player_state': data},
+    );
+  }
+
   @override
   Future<UserApp> getUser({UserApp? user}) async => await _service.getDocument(
         path: DBPath.user(user == null ? _uid : user.uid),
@@ -297,6 +327,12 @@ class FirestoreDatabase implements Database {
       );
 
   @override
+  Stream<Room> roomStream(Room room) => _service.documentStream(
+        path: room.docId,
+        builder: (data, documentId) => Room.fromMap(data, documentId),
+      );
+
+  @override
   Stream<Room> roomStreamById(String roomId) => _service.documentStream(
         path: DBPath.room(roomId),
         builder: (data, documentId) => Room.fromMap(data, documentId),
@@ -324,12 +360,13 @@ class FirestoreDatabase implements Database {
       );
 
   @override
-  Stream<List<UserApp>> usersStream({List<String>? ids}) => _service.collectionStream(
-    path: DBPath.users(),
-    builder: (data, documentId) => UserApp.fromMap(data, documentId),
-    queryBuilder: (query) => ids == null ? query :
-    query.where('uid', whereIn: ids),
-  );
+  Stream<List<UserApp>> usersStream({List<String>? ids}) =>
+      _service.collectionStream(
+        path: DBPath.users(),
+        builder: (data, documentId) => UserApp.fromMap(data, documentId),
+        queryBuilder: (query) =>
+            ids == null ? query : query.where('uid', whereIn: ids),
+      );
 
   @override
   Stream<List<TrackApp>> userPlaylistTracksStream(Playlist playlist,

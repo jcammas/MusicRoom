@@ -2,6 +2,7 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/api_path.dart';
 import 'package:music_room_app/widgets/utils.dart';
+import 'package:spotify_sdk/models/player_state.dart';
 import 'database_model.dart';
 
 enum SystemType { public, friends, guests }
@@ -13,9 +14,10 @@ class Room implements DatabaseModel {
     required this.sourcePlaylist,
     required this.ownerId,
     required this.tracksList,
+    this.playerState,
     this.voteSystem = SystemType.public,
     this.privacySystem = SystemType.public,
-  }){
+  }) {
     this.roomSearch = setSearchParams(name);
   }
 
@@ -27,13 +29,14 @@ class Room implements DatabaseModel {
   String name;
   SystemType voteSystem;
   SystemType privacySystem;
+  PlayerState? playerState;
 
   String get id => 'Room_of_' + ownerId;
   static String emptyRoomName = 'Room is empty';
 
-
   @override
   String get docId => DBPath.room(id);
+
   @override
   get wrappedCollectionsIds => [DBPath.roomTracks(id)];
 
@@ -81,15 +84,18 @@ class Room implements DatabaseModel {
         tracksListData.updateAll((id, track) => TrackApp.fromMap(track, id));
         tracksList = tracksListData.values.toList().cast();
       }
+      final PlayerState? playerState = data['player_state'] == null
+          ? null
+          : PlayerState.fromJson(data['player_state']);
       return Room(
-        name: name,
-        guests: guests,
-        sourcePlaylist: sourcePlaylist,
-        tracksList: tracksList,
-        ownerId: owner,
-        voteSystem: voteSystem,
-        privacySystem: privacySystem,
-      );
+          name: name,
+          guests: guests,
+          sourcePlaylist: sourcePlaylist,
+          tracksList: tracksList,
+          ownerId: owner,
+          voteSystem: voteSystem,
+          privacySystem: privacySystem,
+          playerState: playerState);
     } else {
       return Room(
         name: emptyRoomName,
@@ -111,6 +117,7 @@ class Room implements DatabaseModel {
       'privacy_system': fromSystemType(privacySystem),
       'vote_system': fromSystemType(voteSystem),
       'room_search': roomSearch,
+      'player_state': playerState?.toJson(),
     };
   }
 }

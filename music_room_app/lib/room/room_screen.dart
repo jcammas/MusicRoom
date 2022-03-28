@@ -38,8 +38,7 @@ class RoomScreen extends StatelessWidget {
               final UserApp? user = snapshot.data;
               if (user != null) {
                 if (user.roomId != null) {
-                  return RoomForm(
-                      roomId: user.roomId!, db: db);
+                  return RoomForm(roomId: user.roomId!, db: db);
                 }
                 return RoomDefault(scaffoldManager: manager);
               }

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../home/models/room.dart';
 import '../../services/database.dart';
 import '../../services/spotify.dart';
+import '../../spotify_library/track/views/track_page.dart';
 import '../managers/room_scaffold_manager.dart';
 import '../managers/room_manager.dart';
 
@@ -15,9 +16,11 @@ class RoomPlaylistPage extends StatefulWidget {
 
   final RoomPlaylistManager manager;
 
-  static Widget create({required Database db, required Room room}) {
+  static Widget create({required BuildContext context, required Room room}) {
+    final Spotify spotify = Provider.of<Spotify>(context, listen: false);
+    final Database db = Provider.of<Database>(context, listen: false);
     return ChangeNotifierProvider<RoomPlaylistManager>(
-      create: (_) => RoomPlaylistManager(db: db, room: room),
+      create: (_) => RoomPlaylistManager(db: db, room: room, spotify: spotify),
       child: Consumer<RoomPlaylistManager>(
           builder: (_, manager, __) => RoomPlaylistPage(manager: manager)),
     );
@@ -34,7 +37,9 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
     RoomScaffoldManager scaffoldManager =
         Provider.of<RoomScaffoldManager>(context, listen: false);
     scaffoldManager.setScaffold(
-        title: manager.room.name, funcText: manager.isOwner()? 'End' : 'Quit', topRightFn: manager.quitRoom);
+        title: manager.room.name,
+        funcText: manager.isOwner() ? 'End' : 'Quit',
+        topRightFn: manager.quitRoom);
   }
 
   @override
@@ -52,7 +57,12 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
             background: Container(color: Colors.red),
             direction: DismissDirection.endToStart,
             onDismissed: (direction) => manager.deleteTrack(context, track),
-            child: TrackTile(track: track, onTap: () => {}),
+            child: TrackTile(
+              track: track,
+              onTap: () => TrackPage.show(context, manager.sourcePlaylist,
+                  track, snapshot.data!, manager.spotify, manager.db,
+                  room: manager.room),
+            ),
           ),
         );
       },

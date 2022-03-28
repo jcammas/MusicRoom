@@ -89,7 +89,7 @@ class PlaylistPage extends StatelessWidget {
                 child: TrackTile(
                   track: track,
                   onTap: () => TrackPage.show(
-                      context, playlist, track, snapshot.data!, spotify),
+                      context, playlist, track, snapshot.data!, spotify, db),
                 ),
               ),
             ),
