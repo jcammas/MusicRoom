@@ -2,8 +2,6 @@ import 'package:music_room_app/home/models/database_model.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/models/user.dart';
-import 'package:spotify_sdk/models/player_options.dart';
-import 'package:spotify_sdk/models/player_restrictions.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import '../home/models/room.dart';
 import '../messenger/models/message.dart';
@@ -238,6 +236,7 @@ class FirestoreDatabase implements Database {
         data: {'guests': room.guests},
       );
 
+  @override
   Future<void> updateRoomPlayerState(Room room, PlayerState playerState) async {
     Map<String, dynamic> data = playerState.toJson();
     if (playerState.track != null) {
@@ -245,10 +244,13 @@ class FirestoreDatabase implements Database {
       List<Map<String, dynamic>> artists =
           playerState.track!.artists.map((artist) => artist.toJson()).toList();
       Map<String, dynamic> album = playerState.track!.album.toJson();
-      String trackId = playerState.track!.uri.split(':')[2];
+      Map<String, dynamic> artist = playerState.track!.artist.toJson();
+      Map<String, dynamic> imageUri = playerState.track!.imageUri.toJson();
       track['artists'] = artists;
+      track['artist'] = artist;
+      track['image_id'] = imageUri;
       track['album'] = album;
-      data['track'] = TrackApp.fromMap(track, trackId).toMap();
+      data['track'] = track;
     } else {
       data['track'] = null;
     }

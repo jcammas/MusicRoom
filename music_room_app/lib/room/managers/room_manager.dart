@@ -7,9 +7,6 @@ import '../../services/database.dart';
 import '../../services/spotify.dart';
 import '../../spotify_library/widgets/list_items_manager.dart';
 import '../../widgets/show_exception_alert_dialog.dart';
-import 'package:spotify_sdk/models/connection_status.dart';
-import 'package:spotify_sdk/models/player_state.dart';
-import 'package:spotify_sdk/spotify_sdk.dart';
 
 class RoomManager with ChangeNotifier implements ListItemsManager {
   Database db;

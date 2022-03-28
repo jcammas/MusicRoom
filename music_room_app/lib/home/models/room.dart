@@ -69,13 +69,14 @@ class Room implements DatabaseModel {
 
   factory Room.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
-      final List<dynamic> dataGuests = data['guests'] ?? [id];
+      final String uid = getOwnerFromId(id);
+      final List<dynamic> dataGuests = data['guests'] ?? [uid];
       final List<String> guests = dataGuests.cast();
       final Map<dynamic, dynamic> playlistData = data['source_playlist'];
       final Playlist sourcePlaylist =
           Playlist.fromMap(playlistData.cast(), playlistData['id']);
       final String name = data['name'] ?? sourcePlaylist.name;
-      final String owner = data['owner_id'] ?? getOwnerFromId(id);
+      final String owner = data['owner_id'] ?? uid;
       final SystemType voteSystem = toSystemType(data['vote_system']);
       final SystemType privacySystem = toSystemType(data['privacy_system']);
       List<TrackApp> tracksList = [];
@@ -86,7 +87,7 @@ class Room implements DatabaseModel {
       }
       final PlayerState? playerState = data['player_state'] == null
           ? null
-          : PlayerState.fromJson(data['player_state']);
+          : _playerStateFromJson(data['player_state']);
       return Room(
           name: name,
           guests: guests,
@@ -97,14 +98,26 @@ class Room implements DatabaseModel {
           privacySystem: privacySystem,
           playerState: playerState);
     } else {
-      return Room(
-        name: emptyRoomName,
-        guests: [id],
-        sourcePlaylist: Playlist.fromMap(null, 'N/A'),
-        ownerId: getOwnerFromId(id),
-        tracksList: [],
-      );
+      return emptyRoom(getOwnerFromId(id));
     }
+  }
+
+  static PlayerState? _playerStateFromJson(data) {
+    try {
+      return PlayerState.fromJson(data['player_state']);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Room emptyRoom(String uid) {
+    return Room(
+      name: emptyRoomName,
+      guests: [uid],
+      sourcePlaylist: Playlist.fromMap(null, 'N/A'),
+      ownerId: uid,
+      tracksList: [],
+    );
   }
 
   @override

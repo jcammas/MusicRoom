@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spotify_sdk/models/player_state.dart';
 import '../../home/models/playlist.dart';
 import '../../home/models/room.dart';
 import '../../home/models/track.dart';
