@@ -161,9 +161,9 @@ class SpotifySdkService {
     }
   }
 
-  static togglePlay(bool isPaused) async {
+  static togglePlay(bool pause) async {
     try {
-      isPaused ? await SpotifySdk.resume() : await SpotifySdk.pause();
+      pause ? await SpotifySdk.pause() : await SpotifySdk.resume();
     } on PlatformException catch (e) {
       SpotifySdkService.setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -191,7 +191,7 @@ class SpotifySdkService {
     }
   }
 
-  static TrackApp updateTrackFromSdk(
+  static TrackApp findNewTrackApp(
       TrackApp trackApp, List<TrackApp> tracksList, String? newId) {
     if (newId != null) {
       return tracksList.firstWhere((track) => track.id == newId,
@@ -200,14 +200,11 @@ class SpotifySdkService {
     return trackApp;
   }
 
-  static TrackApp? loadOrUpdateTrackFromSdk(
+  static TrackApp? findNewTrackAppOrNull(
       TrackApp? trackApp, List<TrackApp>? tracksList, String? newId) {
     if (newId != null && tracksList != null) {
-      try {
-        return tracksList.firstWhere((track) => track.id == newId);
-      } catch (e) {
-        return null;
-      }
+        return tracksList.firstWhere((track) => track.id == newId,
+            orElse: () => trackApp ?? tracksList.first);
     }
     return trackApp;
   }
@@ -246,15 +243,13 @@ class SpotifySdkService {
   static Future<void> skipToIndex(String playlistId, int nextIndex) async {
     try {
       await SpotifySdk.skipToIndex(
-          spotifyUri: 'spotify:playlist:' + playlistId,
-          trackIndex: nextIndex);
+          spotifyUri: 'spotify:playlist:' + playlistId, trackIndex: nextIndex);
     } on PlatformException catch (e) {
       SpotifySdkService.setStatus(e.code, message: e.message);
     } on MissingPluginException {
       SpotifySdkService.setStatus('not implemented');
     }
   }
-
 
   static void setStatus(String code, {String? message}) {
     var text = message ?? '';

@@ -98,7 +98,7 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
 
   toggleShuffle() async => await SpotifySdkService.toggleShuffle();
 
-  togglePlay() async => await SpotifySdkService.togglePlay(isPaused);
+  togglePlay() async => await SpotifySdkService.togglePlay(!isPaused);
 
   toggleRepeat() async => await SpotifySdkService.toggleRepeat();
 

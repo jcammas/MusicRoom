@@ -71,7 +71,7 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
 class RoomPlaylistManager extends RoomManager {
   RoomPlaylistManager(
       {required Database db, required Room room, required this.spotify})
-      : super(db: db, room: room){
+      : super(db: db, room: room) {
     initPlaylistManager();
     refreshTracksList();
   }
@@ -85,7 +85,8 @@ class RoomPlaylistManager extends RoomManager {
   String? getTrackSdkId(Track? trackSdk) =>
       trackSdk == null ? null : trackSdk.uri.split(':')[2];
 
-  Future<void> refreshTracksList() async => tracksList = await db.getRoomTracks(room);
+  Future<void> refreshTracksList() async =>
+      tracksList = await db.getRoomTracks(room);
 
   Playlist get sourcePlaylist => room.sourcePlaylist;
 
@@ -100,14 +101,13 @@ class RoomPlaylistManager extends RoomManager {
   Future<void> whenRoomChange(Room newRoom) async {
     PlayerState? newPlayerState = newRoom.playerState;
     if (newPlayerState != null) {
-      await refreshTracksList();
       String? newId = getTrackSdkId(newPlayerState.track);
       bool isNew = currentTrack?.id != newId;
-      if (!isMaster) remoteControlSdk(newPlayerState, isNew);
       if (isNew) {
-        currentTrack = SpotifySdkService.loadOrUpdateTrackFromSdk(
+        currentTrack = SpotifySdkService.findNewTrackAppOrNull(
             currentTrack, tracksList, newId);
       }
+      if (!isMaster) remoteControlSdk(newPlayerState, isNew);
     }
     room = newRoom;
     notifyListeners();
@@ -120,7 +120,7 @@ class RoomPlaylistManager extends RoomManager {
     } else if (!playNew) {
       await SpotifySdkService.seekTo(newPlayerState.playbackPosition);
     }
-    SpotifySdkService.togglePlay(newPlayerState.isPaused);
+    await SpotifySdkService.togglePlay(newPlayerState.isPaused);
   }
 
   Future<void> connectSpotifySdk(BuildContext context) async {

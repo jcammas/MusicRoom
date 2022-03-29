@@ -51,6 +51,7 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
         ? StreamBuilder<List<TrackApp>>(
             stream: manager.roomTracksStream(),
             builder: (context, snapshot) {
+              manager.tracksList = snapshot.data;
               return ListItemsBuilder<TrackApp>(
                 snapshot: snapshot,
                 manager: manager,
