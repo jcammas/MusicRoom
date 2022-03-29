@@ -159,8 +159,9 @@ class SpotifySdkService {
     }
   }
 
-  static togglePlay(bool pause) async {
+  static togglePlay(bool? pause) async {
     try {
+      pause = pause ?? false;
       pause ? await SpotifySdk.pause() : await SpotifySdk.resume();
     } on PlatformException catch (e) {
       SpotifySdkService.setStatus(e.code, message: e.message);

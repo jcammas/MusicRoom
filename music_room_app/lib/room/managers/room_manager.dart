@@ -95,6 +95,7 @@ class RoomPlaylistManager extends RoomManager {
     if (isConnected) {
       SpotifySdkService.playTrackBySpotifyUri(room.playerState?.track?.uri);
       SpotifySdkService.seekTo(room.playerState?.track?.duration);
+      SpotifySdkService.togglePlay(room.playerState?.isPaused);
     }
     roomSubscription = roomStream().listen(whenRoomChange);
   }
