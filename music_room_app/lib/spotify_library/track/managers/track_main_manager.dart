@@ -35,7 +35,6 @@ class TrackMainManager with ChangeNotifier implements TrackManager {
   String? token;
   bool isConnected = false;
   bool isLoading = false;
-  ConnectionStatus? connStatus;
   StreamSubscription<ConnectionStatus>? connStatusSubscription;
   StreamSubscription<PlayerState>? playerStateSubscription;
   SpotifyWeb spotify;
@@ -123,4 +122,5 @@ class TrackMainManager with ChangeNotifier implements TrackManager {
     }
     super.dispose();
   }
+
 }

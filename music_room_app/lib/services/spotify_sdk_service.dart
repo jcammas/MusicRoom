@@ -86,7 +86,7 @@ class SpotifySdkService {
 
   static Future<void> disconnect() async {
     try {
-      await SpotifySdkService.disconnect();
+      await SpotifySdk.disconnect();
     } on PlatformException catch (e) {
       SpotifySdkService.setStatus(e.code, message: e.message);
     } on MissingPluginException {

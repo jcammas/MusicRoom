@@ -4,7 +4,7 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify_web.dart';
-import 'package:music_room_app/spotify_library/library/empty_library.dart';
+import 'package:music_room_app/widgets/connect_spotify_form.dart';
 import 'package:music_room_app/spotify_library/playlist/playlist_page.dart';
 import 'package:music_room_app/spotify_library/library/playlist_tile.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
@@ -48,7 +48,7 @@ class LibraryScreen extends StatelessWidget {
             builder: (_, __, ___) => ListItemsBuilder<Playlist>(
               manager: manager,
               snapshot: snapshot,
-              emptyScreen: EmptyLibrary(refreshFunction: manager.refreshItems),
+              emptyScreen: ConnectSpotifyForm(refreshFunction: manager.refreshItems),
               itemBuilder: (context, playlist) => Dismissible(
                 key: Key('playlist-${playlist.id}'),
                 background: Container(color: Colors.red),

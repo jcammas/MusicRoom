@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:spotify_sdk/enums/repeat_mode_enum.dart';
+import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
 import '../../home/models/playlist.dart';
@@ -18,18 +18,16 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
   late bool isMaster;
   Room room;
   bool isLoading = false;
+  bool isConnected = false;
+  StreamSubscription<ConnectionStatus>? connStatusSubscription;
 
   RoomManager({required this.db, required this.room}) {
     isMaster = db.uid == room.ownerId;
-  }
-
-  void loadingState(bool value) {
-    isLoading = value;
-    notifyListeners();
+    initManager();
   }
 
   Future<void> quitRoom(BuildContext context) async {
-    loadingState(true);
+    updateLoading(true);
     await db.updateUserRoom(null);
     await deleteGuest(context, db.uid);
     isMaster ? await db.delete(room) : null;
@@ -47,6 +45,26 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
       );
     }
   }
+
+  Future<void> initManager() async {
+    connStatusSubscription = SpotifySdkService.subscribeConnectionStatus(
+        onData: whenConnStatusChange, onError: (error) =>  updateConnected(false));
+    isConnected = await SpotifySdkService.checkConnection();
+  }
+
+  void whenConnStatusChange(ConnectionStatus newStatus) =>
+      updateConnected(newStatus.connected);
+
+  void updateConnected(bool isConnected) =>
+      updateWith(isConnected: isConnected);
+
+  void updateLoading(bool isLoading) => updateWith(isLoading: isLoading);
+
+  void updateWith({bool? isConnected, bool? isLoading}) {
+    this.isConnected = isConnected ?? this.isConnected;
+    this.isLoading = isLoading ?? this.isLoading;
+    notifyListeners();
+  }
 }
 
 class RoomPlaylistManager extends RoomManager {
@@ -58,6 +76,7 @@ class RoomPlaylistManager extends RoomManager {
   StreamSubscription<Room>? roomSubscription;
   TrackApp? currentTrack;
   Track? trackSdk;
+  String? token;
 
   String? get trackSdkId =>
       trackSdk == null ? null : trackSdk!.uri.split(':')[2];
@@ -89,7 +108,8 @@ class RoomPlaylistManager extends RoomManager {
         if (currentTrack?.id != newId) {
           currentTrack = SpotifySdkService.loadOrUpdateTrackFromSdk(
               currentTrack, newRoom.tracksList, newId);
-          if (currentTrack != null) await SpotifySdkService.playTrack(currentTrack!);
+          if (currentTrack != null)
+            await SpotifySdkService.playTrack(currentTrack!);
         } else {
           await SpotifySdkService.seekTo(newPlayerState.playbackPosition);
         }
@@ -97,6 +117,22 @@ class RoomPlaylistManager extends RoomManager {
       } else {
         SpotifySdkService.togglePlay(true);
       }
+    }
+  }
+
+  Future<void> connectSpotifySdk(BuildContext context) async {
+    try {
+      updateLoading(true);
+      token = await spotify.getAccessToken();
+      token = await SpotifySdkService.connectSpotifySdk(token);
+      updateWith(isLoading: false, isConnected: true);
+    } on Exception catch (e) {
+      updateWith(isLoading: false, isConnected: false);
+      showExceptionAlertDialog(
+        context,
+        title: 'Operation failed',
+        exception: e,
+      );
     }
   }
 

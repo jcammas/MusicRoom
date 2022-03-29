@@ -8,6 +8,7 @@ import '../../home/models/room.dart';
 import '../../services/database.dart';
 import '../../services/spotify_web.dart';
 import '../../spotify_library/track/views/track_page.dart';
+import '../../widgets/connect_spotify_form.dart';
 import '../managers/room_scaffold_manager.dart';
 import '../managers/room_manager.dart';
 
@@ -45,7 +46,7 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, updateScaffold);
-    return StreamBuilder<List<TrackApp>>(
+    return manager.isConnected ? StreamBuilder<List<TrackApp>>(
       stream: manager.roomTracksStream(),
       builder: (context, snapshot) {
         return ListItemsBuilder<TrackApp>(
@@ -66,6 +67,6 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
           ),
         );
       },
-    );
+    ) : ConnectSpotifyForm(refreshFunction: manager.connectSpotifySdk);
   }
 }

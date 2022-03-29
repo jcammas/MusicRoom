@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class EmptyLibrary extends StatelessWidget {
-  const EmptyLibrary({Key? key, required this.refreshFunction})
+class ConnectSpotifyForm extends StatelessWidget {
+  const ConnectSpotifyForm({Key? key, required this.refreshFunction})
       : super(key: key);
   final String title = 'Hit me';
   final Future<void> Function(BuildContext context) refreshFunction;
