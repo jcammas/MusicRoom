@@ -138,26 +138,24 @@ class SpotifySdkService {
 
   static Future<void> playTrackInPlaylist(
       TrackApp trackApp, Playlist playlist) async {
-    try {
-      trackApp.indexSpotify == null
-          ? await SpotifySdk.play(spotifyUri: 'spotify:track:' + trackApp.id)
-          : await SpotifySdk.skipToIndex(
-              spotifyUri: 'spotify:playlist:' + playlist.id,
-              trackIndex: trackApp.indexSpotify!);
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented');
-    }
+    trackApp.indexSpotify == null
+        ? await playTrackBySpotifyUri('spotify:track:' + trackApp.id)
+        : await skipToIndex(
+            'spotify:playlist:' + playlist.id, trackApp.indexSpotify!);
   }
 
-  static Future<void> playTrack(TrackApp trackApp) async {
-    try {
-      await SpotifySdk.play(spotifyUri: 'spotify:track:' + trackApp.id);
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented');
+  static Future<void> playTrack(TrackApp trackApp) async =>
+      await playTrackBySpotifyUri('spotify:track:' + trackApp.id);
+
+  static Future<void> playTrackBySpotifyUri(String? spotifyUri) async {
+    if (spotifyUri != null) {
+      try {
+        await SpotifySdk.play(spotifyUri: spotifyUri);
+      } on PlatformException catch (e) {
+        SpotifySdkService.setStatus(e.code, message: e.message);
+      } on MissingPluginException {
+        SpotifySdkService.setStatus('not implemented');
+      }
     }
   }
 
@@ -191,7 +189,7 @@ class SpotifySdkService {
     }
   }
 
-  static TrackApp findNewTrackApp(
+  static TrackApp findNewTrackAppOrSame(
       TrackApp trackApp, List<TrackApp> tracksList, String? newId) {
     if (newId != null) {
       return tracksList.firstWhere((track) => track.id == newId,
@@ -201,12 +199,15 @@ class SpotifySdkService {
   }
 
   static TrackApp? findNewTrackAppOrNull(
-      TrackApp? trackApp, List<TrackApp>? tracksList, String? newId) {
+      List<TrackApp>? tracksList, String? newId) {
     if (newId != null && tracksList != null) {
-        return tracksList.firstWhere((track) => track.id == newId,
-            orElse: () => trackApp ?? tracksList.first);
+      try {
+        return tracksList.firstWhere((track) => track.id == newId);
+      } catch (e) {
+        return null;
+      }
     }
-    return trackApp;
+    return null;
   }
 
   static Future<Duration> seekTo(int milliseconds) async {

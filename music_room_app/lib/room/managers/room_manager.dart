@@ -19,11 +19,9 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
   Room room;
   bool isLoading = false;
   bool isConnected = false;
-  StreamSubscription<ConnectionStatus>? connStatusSubscription;
 
   RoomManager({required this.db, required this.room}) {
     isMaster = db.uid == room.ownerId;
-    initManager();
   }
 
   Future<void> quitRoom(BuildContext context) async {
@@ -46,16 +44,6 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
     }
   }
 
-  Future<void> initManager() async {
-    connStatusSubscription = SpotifySdkService.subscribeConnectionStatus(
-        onData: whenConnStatusChange,
-        onError: (error) => updateConnected(false));
-    updateConnected(await SpotifySdkService.checkConnection());
-  }
-
-  void whenConnStatusChange(ConnectionStatus newStatus) =>
-      updateConnected(newStatus.connected);
-
   void updateConnected(bool isConnected) =>
       updateWith(isConnected: isConnected);
 
@@ -77,10 +65,15 @@ class RoomPlaylistManager extends RoomManager {
   }
 
   final SpotifyWeb spotify;
-  StreamSubscription<Room>? roomSubscription;
   List<TrackApp>? tracksList;
   TrackApp? currentTrack;
   String? token;
+  StreamSubscription<Room>? roomSubscription;
+  StreamSubscription<ConnectionStatus>? connStatusSubscription;
+  StreamSubscription<PlayerState>? playerStateSubscription;
+  bool isPaused = true;
+  Duration position = const Duration(milliseconds: 0);
+  Timer? timer;
 
   String? getTrackSdkId(Track? trackSdk) =>
       trackSdk == null ? null : trackSdk.uri.split(':')[2];
@@ -95,29 +88,51 @@ class RoomPlaylistManager extends RoomManager {
   roomStream() => db.roomStream(room);
 
   Future<void> initPlaylistManager() async {
+    connStatusSubscription = SpotifySdkService.subscribeConnectionStatus(
+        onData: whenConnStatusChange,
+        onError: (error) => updateConnected(false));
+    isConnected = await SpotifySdkService.checkConnection();
+    if (isConnected) {
+      SpotifySdkService.playTrackBySpotifyUri(room.playerState?.track?.uri);
+    }
     roomSubscription = roomStream().listen(whenRoomChange);
+  }
+
+  void whenConnStatusChange(ConnectionStatus newStatus) {
+    updateConnected(newStatus.connected);
+    playerStateSubscription =
+        SpotifySdkService.subscribePlayerState(onData: whenPlayerStateChange);
+  }
+
+  void whenPlayerStateChange(PlayerState newState) {
+    currentTrack = SpotifySdkService.findNewTrackAppOrNull(
+        tracksList, getTrackSdkId(newState.track));
+    position = Duration(milliseconds: newState.playbackPosition);
+    if (isPaused != newState.isPaused) {
+      timer != null ? timer!.cancel() : null;
+      newState.isPaused == false ? initTimer() : null;
+      isPaused = newState.isPaused;
+    }
   }
 
   Future<void> whenRoomChange(Room newRoom) async {
     PlayerState? newPlayerState = newRoom.playerState;
     if (newPlayerState != null) {
-      String? newId = getTrackSdkId(newPlayerState.track);
-      bool isNew = currentTrack?.id != newId;
-      if (isNew) {
-        currentTrack = SpotifySdkService.findNewTrackAppOrNull(
-            currentTrack, tracksList, newId);
-      }
-      if (!isMaster) remoteControlSdk(newPlayerState, isNew);
+      TrackApp? newTrackApp = SpotifySdkService.findNewTrackAppOrNull(
+          tracksList, getTrackSdkId(newPlayerState.track));
+      if (!isMaster) remoteControlSdk(newPlayerState, newTrackApp);
     }
     room = newRoom;
     notifyListeners();
   }
 
   Future<void> remoteControlSdk(
-      PlayerState newPlayerState, bool playNew) async {
-    if (playNew && currentTrack != null) {
-      await SpotifySdkService.playTrack(currentTrack!);
-    } else if (!playNew) {
+      PlayerState newPlayerState, TrackApp? newTrack) async {
+    if (currentTrack?.id != newTrack?.id && newTrack != null) {
+      await SpotifySdkService.playTrack(newTrack);
+    }
+    int diff = newPlayerState.playbackPosition - position.inMilliseconds;
+    if (diff > 500 || diff < -500) {
       await SpotifySdkService.seekTo(newPlayerState.playbackPosition);
     }
     await SpotifySdkService.togglePlay(newPlayerState.isPaused);
@@ -137,6 +152,18 @@ class RoomPlaylistManager extends RoomManager {
         exception: e,
       );
     }
+  }
+
+  initTimer() {
+    if (timer != null) {
+      timer!.cancel();
+    }
+    timer = Timer.periodic(const Duration(seconds: 1), updatePositionOneSecond);
+  }
+
+  void updatePositionOneSecond(Timer timer) {
+    position += const Duration(seconds: 1);
+    notifyListeners();
   }
 
   Future<void> deleteTrack(BuildContext context, TrackApp item) async {

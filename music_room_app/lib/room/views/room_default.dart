@@ -27,7 +27,6 @@ class RoomDefault extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final double screenHeight = MediaQuery.of(context).size.height;
     Future.delayed(Duration.zero, scaffoldManager.resetScaffold);
     return Padding(
       padding: const EdgeInsets.all(16.0),

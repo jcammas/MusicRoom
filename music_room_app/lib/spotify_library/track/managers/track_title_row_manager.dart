@@ -41,7 +41,7 @@ class TrackTitleRowManager with ChangeNotifier implements TrackManager {
       String? newId = trackSdkId;
       if (trackApp.id != newId) {
         trackApp =
-            SpotifySdkService.findNewTrackApp(trackApp, tracksList, newId);
+            SpotifySdkService.findNewTrackAppOrSame(trackApp, tracksList, newId);
         notifyListeners();
       }
     }
