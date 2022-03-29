@@ -210,7 +210,8 @@ class SpotifySdkService {
     return null;
   }
 
-  static Future<Duration> seekTo(int milliseconds) async {
+  static Future<Duration> seekTo(int? milliseconds) async {
+    milliseconds = milliseconds ?? 0;
     try {
       await SpotifySdk.seekTo(positionedMilliseconds: milliseconds);
     } on PlatformException catch (e) {
