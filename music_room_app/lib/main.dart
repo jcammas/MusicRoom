@@ -6,7 +6,7 @@ import 'package:music_room_app/messenger/chats_page.dart';
 import 'package:music_room_app/friends/friends.dart';
 import 'package:music_room_app/room/room_screen.dart';
 import 'package:music_room_app/services/database.dart';
-import 'package:music_room_app/services/spotify.dart';
+import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/spotify_library/library/library.dart';
 import 'package:provider/provider.dart';
 import 'landing.dart';
@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<AuthBase>(create: (context) => Auth()),
         Provider<Database>(create: (context) => FirestoreDatabase()),
-        Provider<Spotify>(create: (context) => SpotifyService()),
+        Provider<SpotifyWeb>(create: (context) => SpotifyWebService()),
         Provider<StorageService>(create: (context) => StorageService())
       ],
       child: MaterialApp(

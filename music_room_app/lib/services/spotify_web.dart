@@ -10,7 +10,7 @@ import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/spotify_constants.dart';
 import 'package:music_room_app/widgets/logger.dart';
 
-abstract class Spotify {
+abstract class SpotifyWeb {
   Future<String?> getAccessToken();
 
   Future<SpotifyProfile> getCurrentUserProfile();
@@ -20,7 +20,7 @@ abstract class Spotify {
   Future<List<TrackApp>> getPlaylistTracks(String playlistId);
 }
 
-class SpotifyService implements Spotify {
+class SpotifyWebService implements SpotifyWeb {
   final FlutterAppAuth appAuth = FlutterAppAuth();
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   String? refreshToken;

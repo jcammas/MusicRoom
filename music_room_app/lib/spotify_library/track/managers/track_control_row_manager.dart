@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/spotify_library/track/library_static.dart';
+import 'package:music_room_app/services/spotify_sdk_service.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
 import 'package:spotify_sdk/models/player_options.dart' as player_options;
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
-import 'package:spotify_sdk/spotify_sdk.dart';
 
 class TrackControlRowManager with ChangeNotifier implements TrackManager {
   TrackControlRowManager(
@@ -60,20 +58,10 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   }
 
   Future<void> skipNext() async {
-    try {
-      if (isShuffling || repeatMode != player_options.RepeatMode.off) {
-        await SpotifySdk.skipNext();
-      } else {
-        await SpotifySdk.skipToIndex(
-            spotifyUri: 'spotify:playlist:' + playlist.id,
-            trackIndex: _findNextSpotifyIndex());
-      }
-    } on PlatformException catch (e) {
-      TrackStatic.setStatus(e.code, message: e.message);
-      rethrow;
-    } on MissingPluginException {
-      TrackStatic.setStatus('not implemented');
-      rethrow;
+    if (isShuffling || repeatMode != player_options.RepeatMode.off) {
+      await SpotifySdkService.skipNext();
+    } else {
+      await SpotifySdkService.skipToIndex(playlist.id, _findNextSpotifyIndex());
     }
   }
 
@@ -96,58 +84,23 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   }
 
   Future<void> skipPrevious() async {
-    try {
-      if (isShuffling || repeatMode != player_options.RepeatMode.off) {
-        await SpotifySdk.skipPrevious();
+    if (isShuffling || repeatMode != player_options.RepeatMode.off) {
+      await SpotifySdkService.skipPrevious();
+    } else {
+      if (position < const Duration(seconds: 4)) {
+        await SpotifySdkService.skipToIndex(
+            playlist.id, _findPreviousSpotifyIndex());
       } else {
-        if (position < const Duration(seconds: 4)) {
-          await SpotifySdk.skipToIndex(
-              spotifyUri: 'spotify:playlist:' + playlist.id,
-              trackIndex: _findPreviousSpotifyIndex());
-        } else {
-          TrackStatic.playTrack(trackApp, playlist);
-        }
+        SpotifySdkService.playTrackInPlaylist(trackApp, playlist);
       }
-    } on PlatformException catch (e) {
-      TrackStatic.setStatus(e.code, message: e.message);
-      rethrow;
-    } on MissingPluginException {
-      TrackStatic.setStatus('not implemented');
-      rethrow;
     }
   }
 
-  Future<void> toggleShuffle() async {
-    try {
-      await SpotifySdk.toggleShuffle();
-    } on PlatformException catch (e) {
-      TrackStatic.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      TrackStatic.setStatus('not implemented');
-    }
-  }
+  toggleShuffle() async => await SpotifySdkService.toggleShuffle();
 
-  Future<void> toggleRepeat() async {
-    try {
-      await SpotifySdk.toggleRepeat();
-    } on PlatformException catch (e) {
-      TrackStatic.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      TrackStatic.setStatus('not implemented');
-    }
-  }
+  togglePlay() async => await SpotifySdkService.togglePlay(isPaused);
 
-  togglePlay() async {
-    try {
-      isPaused ? await SpotifySdk.resume() : await SpotifySdk.pause();
-    } on PlatformException catch (e) {
-      TrackStatic.setStatus(e.code, message: e.message);
-      rethrow;
-    } on MissingPluginException {
-      TrackStatic.setStatus('not implemented');
-      rethrow;
-    }
-  }
+  toggleRepeat() async => await SpotifySdkService.toggleRepeat();
 
   @override
   void whenPlayerStateChange(PlayerState newState) {
@@ -175,7 +128,7 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
         trackApp = tracksList.firstWhere((track) => track.id == newId);
       }
     } on Error {
-      TrackStatic.playTrack(trackApp, playlist);
+      SpotifySdkService.playTrackInPlaylist(trackApp, playlist);
     }
   }
 

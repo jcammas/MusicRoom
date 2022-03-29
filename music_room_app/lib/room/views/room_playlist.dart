@@ -6,7 +6,7 @@ import 'package:music_room_app/spotify_library/playlist/track_tile.dart';
 import 'package:provider/provider.dart';
 import '../../home/models/room.dart';
 import '../../services/database.dart';
-import '../../services/spotify.dart';
+import '../../services/spotify_web.dart';
 import '../../spotify_library/track/views/track_page.dart';
 import '../managers/room_scaffold_manager.dart';
 import '../managers/room_manager.dart';
@@ -17,7 +17,7 @@ class RoomPlaylistPage extends StatefulWidget {
   final RoomPlaylistManager manager;
 
   static Widget create({required BuildContext context, required Room room}) {
-    final Spotify spotify = Provider.of<Spotify>(context, listen: false);
+    final SpotifyWeb spotify = Provider.of<SpotifyWeb>(context, listen: false);
     final Database db = Provider.of<Database>(context, listen: false);
     return ChangeNotifierProvider<RoomPlaylistManager>(
       create: (_) => RoomPlaylistManager(db: db, room: room, spotify: spotify),
@@ -38,7 +38,7 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
         Provider.of<RoomScaffoldManager>(context, listen: false);
     scaffoldManager.setScaffold(
         title: manager.room.name,
-        funcText: manager.isOwner() ? 'End' : 'Quit',
+        funcText: manager.isMaster ? 'End' : 'Quit',
         topRightFn: manager.quitRoom);
   }
 

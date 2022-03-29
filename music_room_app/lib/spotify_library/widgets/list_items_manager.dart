@@ -6,7 +6,7 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/spotify_profile.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/database.dart';
-import 'package:music_room_app/services/spotify.dart';
+import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 
 abstract class ListItemsManager {
@@ -17,7 +17,7 @@ class LibraryManager with ChangeNotifier implements ListItemsManager {
   LibraryManager(
       {required this.spotify, required this.db, this.isLoading = false});
 
-  final Spotify spotify;
+  final SpotifyWeb spotify;
   final Database db;
   @override
   bool isLoading;
@@ -69,7 +69,7 @@ class PlaylistManager with ChangeNotifier implements ListItemsManager {
       required this.playlist,
       this.isLoading = false});
 
-  final Spotify spotify;
+  final SpotifyWeb spotify;
   final Database db;
   final Playlist playlist;
   @override

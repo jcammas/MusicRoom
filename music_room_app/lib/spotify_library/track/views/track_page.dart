@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/services/spotify.dart';
+import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/spotify_library/track/views/track_form.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_main_manager.dart';
 
@@ -25,7 +25,7 @@ class TrackPage extends StatelessWidget {
       Playlist playlist,
       TrackApp trackApp,
       List<TrackApp> tracksList,
-      Spotify spotify,
+      SpotifyWeb spotify,
       Database db,
       {Room? room}) async {
     TrackMainManager manager = TrackMainManager(

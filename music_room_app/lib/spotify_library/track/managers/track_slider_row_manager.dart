@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
-import 'package:spotify_sdk/spotify_sdk.dart';
-import '../library_static.dart';
+import '../../../services/spotify_sdk_service.dart';
 
 class TrackSliderRowManager with ChangeNotifier implements TrackManager {
   TrackSliderRowManager();
@@ -31,16 +29,8 @@ class TrackSliderRowManager with ChangeNotifier implements TrackManager {
     notifyListeners();
   }
 
-  Future<void> seekTo(int milliseconds) async {
-    try {
-      await SpotifySdk.seekTo(positionedMilliseconds: milliseconds);
-      position = Duration(milliseconds: milliseconds);
-    } on PlatformException catch (e) {
-      TrackStatic.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      TrackStatic.setStatus('not implemented');
-    }
-  }
+  Future<void> seekTo(int milliseconds) async =>
+      position = await SpotifySdkService.seekTo(milliseconds);
 
   @override
   void whenPlayerStateChange(PlayerState newState) {

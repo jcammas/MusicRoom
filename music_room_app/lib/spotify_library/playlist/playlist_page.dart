@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/database.dart';
-import 'package:music_room_app/services/spotify.dart';
+import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_manager.dart';
@@ -23,13 +23,13 @@ class PlaylistPage extends StatelessWidget {
       required this.manager})
       : super(key: key);
   final Database db;
-  final Spotify spotify;
+  final SpotifyWeb spotify;
   final Playlist playlist;
   final PlaylistManager manager;
 
   static Future<void> show(BuildContext context, Playlist playlist) async {
     final db = Provider.of<Database>(context, listen: false);
-    final spotify = Provider.of<Spotify>(context, listen: false);
+    final spotify = Provider.of<SpotifyWeb>(context, listen: false);
     PlaylistManager manager = PlaylistManager(
         spotify: spotify, db: db, playlist: playlist, isLoading: true);
     manager.fillIfEmpty(context);
