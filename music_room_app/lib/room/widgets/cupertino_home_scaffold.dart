@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:music_room_app/room/widgets/tab_item.dart';
+import '../../constant_colors.dart';
 
 class CupertinoHomeScaffold extends StatelessWidget {
   const CupertinoHomeScaffold({
@@ -20,7 +20,7 @@ class CupertinoHomeScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
-        activeColor: Theme.of(context).primaryColor,
+        activeColor: primaryColor,
         items: [
           _buildItem(TabItem.playlist),
           _buildItem(TabItem.guests),

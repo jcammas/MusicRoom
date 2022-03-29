@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
+import '../constant_colors.dart';
 import 'account_form.dart';
 
 class AccountScreen extends StatelessWidget {
@@ -13,7 +14,7 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(appText: 'My Account', context: context),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: backgroundColor,
       drawer: const MyDrawer(),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,

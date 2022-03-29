@@ -47,14 +47,3 @@ class CustomTextField extends StatelessWidget {
     );
   }
 }
-
-// decoration: kTextFieldDecoration.copyWith(
-// labelText: 'Email',
-// hintText: 'test@test.com',
-// errorText: model.showEmailError ? 'Email can\'t be empty' : null,
-// enabled: model.isLoading == false,
-// prefixIcon: const Icon(
-// Icons.email,
-// color: Theme.of(context).primaryColor,
-// ),
-// ),

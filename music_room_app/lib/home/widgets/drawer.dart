@@ -6,6 +6,7 @@ import 'package:music_room_app/landing.dart';
 import 'package:music_room_app/messenger/chats_page.dart';
 import 'package:music_room_app/spotify_library/library/library.dart';
 
+import '../../constant_colors.dart';
 import '../../room/room_screen.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -21,7 +22,7 @@ class MyDrawer extends StatelessWidget {
               child: Image.asset("assets/image/music.jpg"),
             ),
             decoration:
-                BoxDecoration(color: Theme.of(context).secondaryHeaderColor),
+              const BoxDecoration(color: secondaryHeaderColor),
           ),
           if (ModalRoute.of(context)!.settings.name != LandingScreen.routeName)
             const DrawerTile(

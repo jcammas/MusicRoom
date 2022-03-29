@@ -10,6 +10,8 @@ import 'package:music_room_app/widgets/search-bar.dart';
 import 'package:music_room_app/widgets/utils.dart';
 import 'package:provider/provider.dart';
 
+import '../constant_colors.dart';
+
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({Key? key}) : super(key: key);
 
@@ -24,7 +26,7 @@ class _FriendScreenState extends State<FriendsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(appText: 'Friends', context: context),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: backgroundColor,
       drawer: const MyDrawer(),
       body: SingleChildScrollView(
           child: Column(children: <Widget>[SearchSection(), FriendSection()])),
@@ -152,8 +154,8 @@ class _FriendCardState extends State<FriendCard> {
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColorLight,
           boxShadow: [
-            BoxShadow(
-                color: Theme.of(context).shadowColor,
+            const BoxShadow(
+                color: shadowColor,
                 offset: Offset(0, 3.0),
                 blurRadius: 6.0),
           ],

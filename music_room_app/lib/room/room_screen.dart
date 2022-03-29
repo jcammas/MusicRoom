@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:music_room_app/room/views/room_form.dart';
 import 'package:music_room_app/room/views/room_default.dart';
 import 'package:provider/provider.dart';
+import '../constant_colors.dart';
 import '../home/models/user.dart';
 import '../home/widgets/drawer.dart';
 import '../services/database.dart';
@@ -27,7 +28,7 @@ class RoomScreen extends StatelessWidget {
     final manager = Provider.of<RoomScaffoldManager>(context, listen: false);
     return Scaffold(
       appBar: roomAppBar(context: context),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: backgroundColor,
       drawer: const MyDrawer(),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,

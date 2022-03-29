@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:music_room_app/widgets/search-bar.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:provider/provider.dart';
+import '../../constant_colors.dart';
 import '../../home/models/room.dart';
 import '../../services/database.dart';
 import '../../widgets/show_exception_alert_dialog.dart';
@@ -91,7 +92,7 @@ class _JoinRoomFormState extends State<JoinRoomForm> {
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(
                         manager.isReady()
-                            ? Theme.of(context).primaryColor
+                            ? primaryColor
                             : const Color(0XFF434343),
                       ),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(

@@ -4,6 +4,7 @@ import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
 import 'package:music_room_app/spotify_library/playlist/track_tile.dart';
 import 'package:provider/provider.dart';
+import '../../constant_colors.dart';
 import '../../home/models/room.dart';
 import '../../services/database.dart';
 import '../../services/spotify_web.dart';
@@ -46,27 +47,40 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, updateScaffold);
-    return manager.isConnected ? StreamBuilder<List<TrackApp>>(
-      stream: manager.roomTracksStream(),
-      builder: (context, snapshot) {
-        return ListItemsBuilder<TrackApp>(
-          snapshot: snapshot,
-          manager: manager,
-          emptyScreen: const EmptyContent(),
-          itemBuilder: (context, track) => Dismissible(
-            key: Key('playlist-${track.id}'),
-            background: Container(color: Colors.red),
-            direction: DismissDirection.endToStart,
-            onDismissed: (direction) => manager.deleteTrack(context, track),
-            child: TrackTile(
-              track: track,
-              onTap: () => TrackPage.show(context, manager.sourcePlaylist,
-                  track, snapshot.data!, manager.spotify, manager.db,
-                  room: manager.room),
-            ),
-          ),
-        );
-      },
-    ) : ConnectSpotifyForm(refreshFunction: manager.connectSpotifySdk);
+    return manager.isConnected
+        ? StreamBuilder<List<TrackApp>>(
+            stream: manager.roomTracksStream(),
+            builder: (context, snapshot) {
+              return ListItemsBuilder<TrackApp>(
+                snapshot: snapshot,
+                manager: manager,
+                emptyScreen: const EmptyContent(),
+                itemBuilder: (context, track) => Dismissible(
+                  key: Key('playlist-${track.id}'),
+                  background: Container(color: Colors.red),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (direction) =>
+                      manager.deleteTrack(context, track),
+                  child: TrackTile(
+                    track: track,
+                    onTap: manager.isMaster
+                        ? () => TrackPage.show(context, manager.sourcePlaylist,
+                            track, snapshot.data!, manager.spotify, manager.db,
+                            room: manager.room)
+                        : () => {},
+                    icon: manager.currentTrack?.id == track.id
+                        ? const Icon(Icons.radio_button_checked,
+                            color: primaryColor)
+                        : manager.isMaster
+                            ? const Icon(Icons.chevron_right)
+                            : null,
+                    tileColor: manager.currentTrack?.id == track.id
+                    ? activeTileColor : null,
+                  ),
+                ),
+              );
+            },
+          )
+        : ConnectSpotifyForm(refreshFunction: manager.connectSpotifySdk);
   }
 }

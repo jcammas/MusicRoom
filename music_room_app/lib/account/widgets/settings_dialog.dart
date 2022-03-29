@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../constant_colors.dart';
 import '../account_manager.dart';
 import 'custom_settings_tile.dart';
 
@@ -82,9 +83,9 @@ Future<String?> showSettingsDialog(
                       const EdgeInsets.all(12)),
                   alignment: Alignment.center,
                 ),
-                child: Text(
+                child: const Text(
                   'Apply',
-                  style: TextStyle(color: Theme.of(context).primaryColor),
+                  style: TextStyle(color: primaryColor),
                 ),
               ),
             ],

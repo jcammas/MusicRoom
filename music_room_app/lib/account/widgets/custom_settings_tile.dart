@@ -5,6 +5,7 @@ import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/widgets/sign_in_type.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
+import '../../constant_colors.dart';
 import '../account_manager.dart';
 
 enum SettingType { name, email, oldPassword, newPassword, delete }
@@ -49,7 +50,7 @@ class CustomSettingsTile extends AbstractTile {
                 context,
                 title,
                 '',
-                Icon(Icons.lock, color: Theme.of(context).primaryColor),
+                const Icon(Icons.lock, color: primaryColor),
                 manager,
                 SettingType.oldPassword);
             if (manager.submitted) {
@@ -79,7 +80,7 @@ class CustomSettingsTile extends AbstractTile {
                 context,
                 title,
                 '',
-                Icon(Icons.lock, color: Theme.of(context).primaryColor),
+                const Icon(Icons.lock, color: primaryColor),
                 manager,
                 SettingType.oldPassword);
             if (manager.submitted) {
@@ -102,7 +103,7 @@ class CustomSettingsTile extends AbstractTile {
                 context,
                 title,
                 '',
-                Icon(Icons.lock, color: Theme.of(context).primaryColor),
+                const Icon(Icons.lock, color: primaryColor),
                 manager,
                 SettingType.oldPassword);
           }
@@ -124,7 +125,7 @@ class CustomSettingsTile extends AbstractTile {
 
   @override
   Widget build(BuildContext context) {
-    final Widget? leading = Icon(iconData, color: Theme.of(context).primaryColor);
+    final Widget? leading = Icon(iconData, color: primaryColor);
     return SettingsTile(
         title: title,
         subtitle: subtitle,

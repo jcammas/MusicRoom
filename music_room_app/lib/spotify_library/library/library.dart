@@ -9,6 +9,7 @@ import 'package:music_room_app/spotify_library/playlist/playlist_page.dart';
 import 'package:music_room_app/spotify_library/library/playlist_tile.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
+import '../../constant_colors.dart';
 import '../widgets/list_items_manager.dart';
 import '../widgets/list_items_builder.dart';
 
@@ -29,7 +30,7 @@ class LibraryScreen extends StatelessWidget {
         funcText: 'Refresh',
         topRight: manager.refreshItems,
       ),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: backgroundColor,
       drawer: const MyDrawer(),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light,

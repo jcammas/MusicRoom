@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../constant_colors.dart';
+
 class TitledSwitch extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -23,7 +25,7 @@ class TitledSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color color = themeColor ?? Theme.of(context).primaryColor;
+    Color color = themeColor ?? primaryColor;
     return Row(
       mainAxisAlignment: alignment,
       children: [

@@ -104,7 +104,7 @@ class Room implements DatabaseModel {
 
   static PlayerState? _playerStateFromJson(data) {
     try {
-      return PlayerState.fromJson(data['player_state']);
+      return PlayerState.fromJson(data);
     } catch (e) {
       return null;
     }

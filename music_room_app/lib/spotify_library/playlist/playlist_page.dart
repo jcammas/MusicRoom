@@ -14,6 +14,8 @@ import 'package:music_room_app/spotify_library/track/views/track_page.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 
+import '../../constant_colors.dart';
+
 class PlaylistPage extends StatelessWidget {
   const PlaylistPage(
       {Key? key,
@@ -55,7 +57,7 @@ class PlaylistPage extends StatelessWidget {
                   context: context,
                   funcText: 'Refresh',
                   topRight: manager.refreshItems),
-              backgroundColor: Theme.of(context).backgroundColor,
+              backgroundColor: backgroundColor,
               body: AnnotatedRegion<SystemUiOverlayStyle>(
                   value: SystemUiOverlayStyle.light,
                   child: _buildPage(context, playlist)));

@@ -201,8 +201,8 @@ class SpotifySdkService {
   }
 
   static TrackApp? loadOrUpdateTrackFromSdk(
-      TrackApp? trackApp, List<TrackApp> tracksList, String? newId) {
-    if (newId != null) {
+      TrackApp? trackApp, List<TrackApp>? tracksList, String? newId) {
+    if (newId != null && tracksList != null) {
       try {
         return tracksList.firstWhere((track) => track.id == newId);
       } catch (e) {

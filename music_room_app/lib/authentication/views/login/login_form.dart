@@ -8,6 +8,8 @@ import 'package:music_room_app/widgets/text_field_decoration.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:music_room_app/authentication/managers/login_manager.dart';
 
+import '../../../constant_colors.dart';
+
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key, required this.manager}) : super(key: key);
   final LoginManager manager;
@@ -128,17 +130,17 @@ class _LoginFormState extends State<LoginForm> {
         children: [
           Text(
             footText,
-            style: TextStyle(fontSize: 20, color: Theme.of(context).primaryColor),
+            style: const TextStyle(fontSize: 20, color: primaryColor),
           ),
           const SizedBox(width: 10),
           Hero(
             tag: '1',
             child: Text(
               footHeroText,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 21,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor),
+                  color: primaryColor),
             ),
           )
         ],
@@ -157,9 +159,9 @@ class _LoginFormState extends State<LoginForm> {
         labelText: 'Password',
         errorText: model.showPasswordError ? 'Password can\'t be empty' : null,
         enabled: model.isLoading == false,
-        prefixIcon: Icon(
+        prefixIcon: const Icon(
           Icons.lock,
-          color: Theme.of(context).primaryColor,
+          color: primaryColor,
         ),
       ),
       validator: (value) {
@@ -187,9 +189,9 @@ class _LoginFormState extends State<LoginForm> {
         hintText: 'test@test.com',
         errorText: model.showEmailError ? 'Email can\'t be empty' : null,
         enabled: model.isLoading == false,
-        prefixIcon: Icon(
+        prefixIcon: const Icon(
           Icons.email,
-          color: Theme.of(context).primaryColor,
+          color: primaryColor,
         ),
       ),
       validator: (value) {
@@ -207,8 +209,8 @@ class _LoginFormState extends State<LoginForm> {
   Text _buildTitle() {
     return Text(
       titleText,
-      style: TextStyle(
-          fontSize: 50, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w700),
+      style: const TextStyle(
+          fontSize: 50, color: primaryColor, fontWeight: FontWeight.w700),
     );
   }
 
@@ -223,7 +225,7 @@ class _LoginFormState extends State<LoginForm> {
       LoginButton(
         title: buttonText,
         onPressed: model.canSubmit ? _submit : null,
-        color: Theme.of(context).primaryColor
+        color: primaryColor
       ),
     ];
   }
@@ -240,7 +242,7 @@ class _LoginFormState extends State<LoginForm> {
       LoginButton(
         title: buttonText,
         onPressed: model.canSubmit ? _submit : null,
-        color: Theme.of(context).primaryColor
+        color: primaryColor
       ),
       const SizedBox(height: 20),
       _buildFootMessage(),
@@ -248,7 +250,7 @@ class _LoginFormState extends State<LoginForm> {
       TextButton(
         child: Text(
           forgotPassword,
-          style: TextStyle(fontSize: 20, color: Theme.of(context).primaryColor),
+          style: const TextStyle(fontSize: 20, color: primaryColor),
         ),
         onPressed: !model.isLoading ? _toggleResetPassword : null,
       ),

@@ -3,6 +3,7 @@ import 'package:music_room_app/room/views/choose_playlist_form.dart';
 import 'package:music_room_app/widgets/custom_text_field.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:provider/provider.dart';
+import '../../constant_colors.dart';
 import '../../home/models/playlist.dart';
 import '../../services/database.dart';
 import '../../services/spotify_web.dart';
@@ -96,7 +97,7 @@ class _CreateRoomFormState extends State<CreateRoomForm> {
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(
                       manager.isReady()
-                          ? Theme.of(context).primaryColor
+                          ? primaryColor
                           : const Color(0XFF434343),
                     ),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(

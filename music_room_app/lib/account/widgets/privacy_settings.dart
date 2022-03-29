@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/account/widgets/titled_switch.dart';
 
+import '../../constant_colors.dart';
+
 class PrivacySettingsForm extends StatefulWidget {
   @override
   State<PrivacySettingsForm> createState() => _PrivacySettingsFormState();
@@ -34,11 +36,11 @@ class _PrivacySettingsFormState extends State<PrivacySettingsForm> {
               IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: Icon(Icons.arrow_back)),
-              Text(
+              const Text(
                 "Account Privacy",
                 style: TextStyle(
                   fontSize: 20,
-                  color: Theme.of(context).primaryColor,
+                  color: primaryColor,
                   fontWeight: FontWeight.w900,
                   fontStyle: FontStyle.italic,
                 ),
@@ -74,11 +76,11 @@ class _PrivacySettingsFormState extends State<PrivacySettingsForm> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.05,
               ),
-              Text(
+              const Text(
                 "Only friends can see",
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
-                  color: Theme.of(context).primaryColor,
+                  color: primaryColor,
                   fontWeight: FontWeight.w900,
                   fontStyle: FontStyle.italic,
                 ),
@@ -126,7 +128,7 @@ class _PrivacySettingsFormState extends State<PrivacySettingsForm> {
               ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(
-                       Theme.of(context).primaryColor,
+                       primaryColor,
                     ),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
