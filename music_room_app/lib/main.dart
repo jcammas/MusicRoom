@@ -4,11 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:music_room_app/account/account.dart';
 import 'package:music_room_app/messenger/chats_page.dart';
 import 'package:music_room_app/friends/friends.dart';
-import 'package:music_room_app/room/roomScreen.dart';
+import 'package:music_room_app/room/room_screen.dart';
 import 'package:music_room_app/services/database.dart';
-import 'package:music_room_app/services/spotify.dart';
+import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/spotify_library/library/library.dart';
 import 'package:provider/provider.dart';
+import 'constant_colors.dart';
 import 'landing.dart';
 import 'services/auth.dart';
 import 'services/storage_service.dart';
@@ -20,12 +21,6 @@ Future<void> main() async {
     const MyApp(),
   );
 }
-
-const _primaryColor = const Color(0XFF072BB8);
-const _lightBlue = const Color(0xFFE1F5FE);
-const _backgroundWhite = const Color(0xFFEFEFF4);
-const _lightGrey = const Color(0xFF757575);
-const _lightDark = const Color(0x8A000000);
 
 Map<String, Widget Function(BuildContext)> routeMap = {
   '/': (_) => const LandingScreen(),
@@ -83,7 +78,7 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<AuthBase>(create: (context) => Auth()),
         Provider<Database>(create: (context) => FirestoreDatabase()),
-        Provider<Spotify>(create: (context) => SpotifyService()),
+        Provider<SpotifyWeb>(create: (context) => SpotifyWebService()),
         Provider<StorageService>(create: (context) => StorageService())
       ],
       child: MaterialApp(
@@ -91,21 +86,15 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           brightness: Brightness.light,
-
-          //Our 'signature' color for appBar, main buttons, etc.
-          primaryColor: _primaryColor,
-          secondaryHeaderColor: _lightBlue,
-
-          //Background color across the app
-          backgroundColor: _backgroundWhite,
-
-          //Shadow colors
-          shadowColor: _lightGrey,
+          primaryColor: primaryColor,
+          secondaryHeaderColor: secondaryHeaderColor,
+          backgroundColor: backgroundColor,
+          shadowColor: shadowColor,
 
           elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
                   shape: CircleBorder(),
-                  primary: _primaryColor,
+                  primary: primaryColor,
                   padding: EdgeInsets.all(10))),
 
           textButtonTheme: TextButtonThemeData(
@@ -114,7 +103,7 @@ class MyApp extends StatelessWidget {
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600,
                 ),
-                primary: _lightDark,
+                primary: lightDark,
                 padding: EdgeInsets.all(2.0),
                 alignment: Alignment.centerLeft,
                 maximumSize: Size(600, 100)),
@@ -135,7 +124,7 @@ class MyApp extends StatelessWidget {
                   color: Colors.white),
               headline5: TextStyle(
                   fontSize: 18.0,
-                  color: _lightDark,
+                  color: lightDark,
                   fontWeight: FontWeight.w600),
               headline6: TextStyle(
                 fontSize: 18.0,

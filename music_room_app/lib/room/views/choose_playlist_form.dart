@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
+import '../../constant_colors.dart';
 import '../../spotify_library/library/playlist_tile.dart';
 import '../../spotify_library/widgets/empty_content.dart';
 import '../managers/create_room_manager.dart';
@@ -31,7 +32,7 @@ class ChoosePlaylistForm extends StatelessWidget {
           context: context,
           funcText: '',
           topRight: (context) async {}),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: backgroundColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: _buildContents(context),
@@ -52,9 +53,9 @@ class ChoosePlaylistForm extends StatelessWidget {
               playlist: playlist,
               onTap: () => manager.selectPlaylist(context, playlist),
               icon: manager.playlistId == playlist.id
-                  ? Icon(
+                  ? const Icon(
                       Icons.check_circle,
-                      color: Theme.of(context).primaryColor,
+                      color: primaryColor,
                     )
                   : const Icon(Icons.circle_outlined),
             ),

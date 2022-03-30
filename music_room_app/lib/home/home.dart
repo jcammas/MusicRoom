@@ -3,6 +3,7 @@ import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:music_room_app/services/auth.dart';
+import '../constant_colors.dart';
 import 'models/user.dart';
 import 'widgets/drawer.dart';
 
@@ -40,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _setUpUser(context, auth);
     return Scaffold(
       appBar: customAppBar(appText: 'Music Room', context: context),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: backgroundColor,
       drawer: const MyDrawer(),
       body: const Center(),
     );

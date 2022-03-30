@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/room/managers/room_scaffold_manager.dart';
 import 'package:music_room_app/room/widgets/room_button.dart';
+import '../../constant_colors.dart';
 import 'create_room_form.dart';
 import 'join_room_form.dart';
 
@@ -26,7 +27,6 @@ class RoomDefault extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final double screenHeight = MediaQuery.of(context).size.height;
     Future.delayed(Duration.zero, scaffoldManager.resetScaffold);
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -35,14 +35,14 @@ class RoomDefault extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           RoomButton(
-            color: Theme.of(context).primaryColor,
+            color: primaryColor,
             text: 'Create',
             onPressed: () {
               showBottomForm(context, CreateRoomForm.create(context));
             },
           ),
           RoomButton(
-            color: Theme.of(context).primaryColor,
+            color: primaryColor,
             text: 'Join',
             onPressed: () {
               showBottomForm(context, JoinRoomForm.create(context));

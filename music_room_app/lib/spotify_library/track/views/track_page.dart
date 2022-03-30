@@ -4,31 +4,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/services/spotify.dart';
+import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/spotify_library/track/views/track_form.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_main_manager.dart';
+
+import '../../../home/models/room.dart';
+import '../../../services/database.dart';
 
 class TrackPage extends StatelessWidget {
   const TrackPage({Key? key, required this.manager}) : super(key: key);
 
   final TrackMainManager manager;
+
   Playlist get playlist => manager.playlist;
+
   BuildContext get context => manager.context;
 
-  static Future<void> show(BuildContext context, Playlist playlist,
-      TrackApp trackApp, List<TrackApp> tracksList, Spotify spotify) async {
+  static Future<void> show(
+      BuildContext context,
+      Playlist playlist,
+      TrackApp trackApp,
+      List<TrackApp> tracksList,
+      SpotifyWeb spotify,
+      Database db,
+      {Room? room}) async {
     TrackMainManager manager = TrackMainManager(
         context: context,
         trackApp: trackApp,
         playlist: playlist,
         tracksList: tracksList,
-        spotify: spotify);
+        db: db,
+        spotify: spotify,
+        room: room);
     await manager.initManager();
-    await Navigator.of(context).push(
+    await Navigator.of(context, rootNavigator: true).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
         builder: (context) => TrackPage(manager: manager),
-          ),
+      ),
     );
   }
 
@@ -85,7 +98,7 @@ class TrackPage extends StatelessWidget {
             color: Colors.white,
             size: 24,
           ),
-          onPressed: Navigator.of(context).pop,
+          onPressed: Navigator.of(context, rootNavigator: true).pop,
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(),
         ),

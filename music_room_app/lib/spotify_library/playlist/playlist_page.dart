@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/database.dart';
-import 'package:music_room_app/services/spotify.dart';
+import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_manager.dart';
@@ -13,6 +13,9 @@ import 'package:music_room_app/spotify_library/playlist/track_tile.dart';
 import 'package:music_room_app/spotify_library/track/views/track_page.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
+
+import '../../constant_colors.dart';
+import '../../widgets/show_alert_dialog.dart';
 
 class PlaylistPage extends StatelessWidget {
   const PlaylistPage(
@@ -23,13 +26,13 @@ class PlaylistPage extends StatelessWidget {
       required this.manager})
       : super(key: key);
   final Database db;
-  final Spotify spotify;
+  final SpotifyWeb spotify;
   final Playlist playlist;
   final PlaylistManager manager;
 
   static Future<void> show(BuildContext context, Playlist playlist) async {
     final db = Provider.of<Database>(context, listen: false);
-    final spotify = Provider.of<Spotify>(context, listen: false);
+    final spotify = Provider.of<SpotifyWeb>(context, listen: false);
     PlaylistManager manager = PlaylistManager(
         spotify: spotify, db: db, playlist: playlist, isLoading: true);
     manager.fillIfEmpty(context);
@@ -55,7 +58,7 @@ class PlaylistPage extends StatelessWidget {
                   context: context,
                   funcText: 'Refresh',
                   topRight: manager.refreshItems),
-              backgroundColor: Theme.of(context).backgroundColor,
+              backgroundColor: backgroundColor,
               body: AnnotatedRegion<SystemUiOverlayStyle>(
                   value: SystemUiOverlayStyle.light,
                   child: _buildPage(context, playlist)));
@@ -67,6 +70,19 @@ class PlaylistPage extends StatelessWidget {
       return _buildContents(context, playlist);
     } else {
       return const Center(child: CircularProgressIndicator());
+    }
+  }
+
+  void showTrackPage(
+      BuildContext context, Playlist playlist, TrackApp track, List<TrackApp> tracksList) async {
+    if (await manager.checkIfRoomActive()) {
+      await showAlertDialog(context,
+          title: 'Can\'t access track',
+          content: const Text(
+              'You have an active Room. Quit it to play songs on your library.'),
+          defaultActionText: 'Ok');
+    } else {
+      TrackPage.show(context, playlist, track, tracksList, spotify, db);
     }
   }
 
@@ -82,14 +98,14 @@ class PlaylistPage extends StatelessWidget {
               manager: manager,
               emptyScreen: const EmptyContent(),
               itemBuilder: (context, track) => Dismissible(
-                key: Key('playlist-${track.id}'),
+                key: Key('track-${track.id}'),
                 background: Container(color: Colors.red),
                 direction: DismissDirection.endToStart,
                 onDismissed: (direction) => manager.deleteItem(context, track),
                 child: TrackTile(
                   track: track,
-                  onTap: () => TrackPage.show(
-                      context, playlist, track, snapshot.data!, spotify),
+                  onTap: () => showTrackPage(
+                      context, playlist, track, snapshot.data!),
                 ),
               ),
             ),

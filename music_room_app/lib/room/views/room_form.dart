@@ -34,8 +34,10 @@ class _RoomFormState extends State<RoomForm> {
 
   Map<TabItem, WidgetBuilder> get widgetBuilders {
     return {
-      TabItem.playlist: (_) => RoomPlaylistPage.create(db: db, room: room!),
-      TabItem.guests: (_) => RoomGuestsPage.create(db: db, room: room!),
+      TabItem.playlist: (context) =>
+          RoomPlaylistPage.create(context: context, room: room!),
+      TabItem.guests: (_) =>
+          RoomGuestsPage.create(context: context, room: room!),
       TabItem.chat: (_) => RoomChatPage(),
     };
   }
@@ -49,8 +51,12 @@ class _RoomFormState extends State<RoomForm> {
   }
 
   void getRoom() async {
-    room = await db.getRoomById(roomId);
-    if (room!.name == Room.emptyRoomName) db.updateUserRoom(null);
+    try {
+      room = await db.getRoomById(roomId);
+      if (room!.name == Room.emptyRoomName) db.updateUserRoom(null);
+    } catch(e) {
+      room = Room.emptyRoom('noId');
+    }
     if (mounted)
       setState(() {
         _isLoading = false;
@@ -62,9 +68,7 @@ class _RoomFormState extends State<RoomForm> {
     getRoom();
     return _isLoading
         ? Center(child: CircularProgressIndicator())
-        : room!.name == Room.emptyRoomName
-            ? Center(child: CircularProgressIndicator())
-            : WillPopScope(
+        : WillPopScope(
                 onWillPop: () async =>
                     !await navigatorKeys[_currentTab]!.currentState!.maybePop(),
                 child: CupertinoHomeScaffold(

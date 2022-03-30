@@ -3,12 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
 import 'package:music_room_app/services/database.dart';
-import 'package:music_room_app/services/spotify.dart';
-import 'package:music_room_app/spotify_library/library/empty_library.dart';
+import 'package:music_room_app/services/spotify_web.dart';
+import 'package:music_room_app/widgets/connect_spotify_form.dart';
 import 'package:music_room_app/spotify_library/playlist/playlist_page.dart';
 import 'package:music_room_app/spotify_library/library/playlist_tile.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
+import '../../constant_colors.dart';
 import '../widgets/list_items_manager.dart';
 import '../widgets/list_items_builder.dart';
 
@@ -20,7 +21,7 @@ class LibraryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
-    final spotify = Provider.of<Spotify>(context, listen: false);
+    final spotify = Provider.of<SpotifyWeb>(context, listen: false);
     LibraryManager manager = LibraryManager(spotify: spotify, db: db);
     return Scaffold(
       appBar: customAppBar(
@@ -29,7 +30,7 @@ class LibraryScreen extends StatelessWidget {
         funcText: 'Refresh',
         topRight: manager.refreshItems,
       ),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: backgroundColor,
       drawer: const MyDrawer(),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light,
@@ -48,7 +49,7 @@ class LibraryScreen extends StatelessWidget {
             builder: (_, __, ___) => ListItemsBuilder<Playlist>(
               manager: manager,
               snapshot: snapshot,
-              emptyScreen: EmptyLibrary(refreshFunction: manager.refreshItems),
+              emptyScreen: ConnectSpotifyForm(refreshFunction: manager.refreshItems),
               itemBuilder: (context, playlist) => Dismissible(
                 key: Key('playlist-${playlist.id}'),
                 background: Container(color: Colors.red),

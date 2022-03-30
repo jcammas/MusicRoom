@@ -13,7 +13,10 @@ Future<dynamic> showAlertDialog(
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title),
+        title: Text(title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                color: Colors.black87, fontWeight: FontWeight.bold)),
         content: content,
         actions: <Widget>[
           if (cancelActionText != null)
@@ -32,7 +35,10 @@ Future<dynamic> showAlertDialog(
     return showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: Text(title),
+        title: Text(title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                color: Colors.black87, fontWeight: FontWeight.bold)),
         content: content,
         actions: <Widget>[
           if (cancelActionText != null)

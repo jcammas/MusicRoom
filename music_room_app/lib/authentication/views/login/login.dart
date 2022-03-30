@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
+import '../../../constant_colors.dart';
 import 'login_form.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -10,7 +11,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customSignInAppBar(appText: 'Music Room', context: context),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: backgroundColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: SingleChildScrollView(

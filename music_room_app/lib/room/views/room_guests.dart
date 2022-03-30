@@ -13,7 +13,8 @@ class RoomGuestsPage extends StatefulWidget {
 
   final RoomGuestsManager manager;
 
-  static Widget create({required Database db, required Room room}) {
+  static Widget create({required BuildContext context, required Room room}) {
+    final Database db = Provider.of<Database>(context, listen: false);
     return ChangeNotifierProvider<RoomGuestsManager>(
       create: (_) => RoomGuestsManager(db: db, room: room),
       child: Consumer<RoomGuestsManager>(

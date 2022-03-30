@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:music_room_app/home/models/database_model.dart';
 
+import '../constant_colors.dart';
+
 class SearchBar extends StatelessWidget {
   const SearchBar({
     required this.getItemList,
@@ -26,8 +28,8 @@ class SearchBar extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
-                BoxShadow(
-                    color: Theme.of(context).shadowColor,
+                const BoxShadow(
+                    color: shadowColor,
                     offset: Offset(0, 3.0),
                     blurRadius: 4.0),
               ]),
@@ -61,8 +63,8 @@ class SearchBar extends StatelessWidget {
             height: 50,
             width: 50,
             decoration: BoxDecoration(boxShadow: [
-              BoxShadow(
-                  color: Theme.of(context).shadowColor,
+              const BoxShadow(
+                  color: shadowColor,
                   offset: Offset(0, 3.0),
                   blurRadius: 4.0),
             ], borderRadius: BorderRadius.all(Radius.circular(25))),

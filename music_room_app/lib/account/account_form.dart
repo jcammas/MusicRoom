@@ -7,6 +7,7 @@ import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/auth.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
+import '../constant_colors.dart';
 import '../services/storage_service.dart';
 import 'account_manager.dart';
 
@@ -114,9 +115,9 @@ class _AccountFormState extends State<AccountForm> {
                             iconData: Icons.lock),
                         SettingsTile(
                           title: 'Privacy Settings',
-                          leading: Icon(
+                          leading: const Icon(
                             Icons.privacy_tip,
-                            color: Theme.of(context).primaryColor,
+                            color: primaryColor,
                           ),
                           onPressed: (BuildContext context) {
                             showPrivacySettings(context);

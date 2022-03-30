@@ -39,6 +39,7 @@ class TrackApp implements DatabaseModel {
   int? indexSpotify;
   int? indexApp;
 
+
   @override
   get docId => DBPath.track(id);
   @override

@@ -2,6 +2,7 @@ import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/api_path.dart';
 import 'package:music_room_app/widgets/utils.dart';
+import 'package:spotify_sdk/models/player_state.dart';
 import 'database_model.dart';
 
 enum SystemType { public, friends, guests }
@@ -13,9 +14,10 @@ class Room implements DatabaseModel {
     required this.sourcePlaylist,
     required this.ownerId,
     required this.tracksList,
+    this.playerState,
     this.voteSystem = SystemType.public,
     this.privacySystem = SystemType.public,
-  }){
+  }) {
     this.roomSearch = setSearchParams(name);
   }
 
@@ -27,13 +29,14 @@ class Room implements DatabaseModel {
   String name;
   SystemType voteSystem;
   SystemType privacySystem;
+  PlayerState? playerState;
 
   String get id => 'Room_of_' + ownerId;
   static String emptyRoomName = 'Room is empty';
 
-
   @override
   String get docId => DBPath.room(id);
+
   @override
   get wrappedCollectionsIds => [DBPath.roomTracks(id)];
 
@@ -66,13 +69,14 @@ class Room implements DatabaseModel {
 
   factory Room.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
-      final List<dynamic> dataGuests = data['guests'] ?? [id];
+      final String uid = getOwnerFromId(id);
+      final List<dynamic> dataGuests = data['guests'] ?? [uid];
       final List<String> guests = dataGuests.cast();
       final Map<dynamic, dynamic> playlistData = data['source_playlist'];
       final Playlist sourcePlaylist =
           Playlist.fromMap(playlistData.cast(), playlistData['id']);
       final String name = data['name'] ?? sourcePlaylist.name;
-      final String owner = data['owner_id'] ?? getOwnerFromId(id);
+      final String owner = data['owner_id'] ?? uid;
       final SystemType voteSystem = toSystemType(data['vote_system']);
       final SystemType privacySystem = toSystemType(data['privacy_system']);
       List<TrackApp> tracksList = [];
@@ -81,24 +85,39 @@ class Room implements DatabaseModel {
         tracksListData.updateAll((id, track) => TrackApp.fromMap(track, id));
         tracksList = tracksListData.values.toList().cast();
       }
+      final PlayerState? playerState = data['player_state'] == null
+          ? null
+          : _playerStateFromJson(data['player_state']);
       return Room(
-        name: name,
-        guests: guests,
-        sourcePlaylist: sourcePlaylist,
-        tracksList: tracksList,
-        ownerId: owner,
-        voteSystem: voteSystem,
-        privacySystem: privacySystem,
-      );
+          name: name,
+          guests: guests,
+          sourcePlaylist: sourcePlaylist,
+          tracksList: tracksList,
+          ownerId: owner,
+          voteSystem: voteSystem,
+          privacySystem: privacySystem,
+          playerState: playerState);
     } else {
-      return Room(
-        name: emptyRoomName,
-        guests: [id],
-        sourcePlaylist: Playlist.fromMap(null, 'N/A'),
-        ownerId: getOwnerFromId(id),
-        tracksList: [],
-      );
+      return emptyRoom(getOwnerFromId(id));
     }
+  }
+
+  static PlayerState? _playerStateFromJson(data) {
+    try {
+      return PlayerState.fromJson(data);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Room emptyRoom(String uid) {
+    return Room(
+      name: emptyRoomName,
+      guests: [uid],
+      sourcePlaylist: Playlist.fromMap(null, 'N/A'),
+      ownerId: uid,
+      tracksList: [],
+    );
   }
 
   @override
@@ -111,6 +130,7 @@ class Room implements DatabaseModel {
       'privacy_system': fromSystemType(privacySystem),
       'vote_system': fromSystemType(voteSystem),
       'room_search': roomSearch,
+      'player_state': playerState?.toJson(),
     };
   }
 }

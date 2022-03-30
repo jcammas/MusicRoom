@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:spotify_sdk/models/player_state.dart';
 import '../../home/models/playlist.dart';
 import '../../home/models/room.dart';
 import '../../home/models/track.dart';
 import '../../services/database.dart';
-import '../../services/spotify.dart';
+import '../../services/spotify_web.dart';
 import '../../spotify_library/widgets/list_items_manager.dart';
 
 class CreateRoomManager with ChangeNotifier implements ListItemsManager {
@@ -11,7 +12,7 @@ class CreateRoomManager with ChangeNotifier implements ListItemsManager {
       {required this.db, required this.spotify, this.isLoading = false});
 
   final Database db;
-  final Spotify spotify;
+  final SpotifyWeb spotify;
   Playlist? selectedPlaylist;
   String? name;
   @override

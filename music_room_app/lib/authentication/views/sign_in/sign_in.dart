@@ -6,6 +6,7 @@ import 'package:music_room_app/authentication/views/login/login.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 import 'package:music_room_app/authentication/managers/sign_in_manager.dart';
 import 'package:music_room_app/services/auth.dart';
+import '../../../constant_colors.dart';
 import '../widgets/sign_in_button.dart';
 import '../widgets/social_sign_in_button.dart';
 
@@ -78,7 +79,7 @@ class SignInScreen extends StatelessWidget {
     return Scaffold(
       appBar: customSignInAppBar(appText: 'Music Room', context: context),
       body: _buildContent(context),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: backgroundColor,
     );
   }
 
@@ -128,12 +129,12 @@ class SignInScreen extends StatelessWidget {
         child: CircularProgressIndicator(),
       );
     }
-    return Text(
+    return const Text(
       'Sign in',
       textAlign: TextAlign.center,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 50,
-        color: Theme.of(context).primaryColor,
+        color: primaryColor,
         fontWeight: FontWeight.w700,
       ),
     );

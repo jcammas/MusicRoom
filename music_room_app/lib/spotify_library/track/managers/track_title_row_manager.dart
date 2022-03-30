@@ -3,7 +3,7 @@ import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
-import '../library_static.dart';
+import '../../../services/spotify_sdk_service.dart';
 
 class TrackTitleRowManager with ChangeNotifier implements TrackManager {
   TrackTitleRowManager({required this.trackApp, required this.tracksList});
@@ -40,7 +40,8 @@ class TrackTitleRowManager with ChangeNotifier implements TrackManager {
     if (trackSdk != null) {
       String? newId = trackSdkId;
       if (trackApp.id != newId) {
-        trackApp = TrackStatic.updateTrackFromSdk(trackApp, tracksList, newId);
+        trackApp =
+            SpotifySdkService.findNewTrackApp(trackApp, tracksList, newId);
         notifyListeners();
       }
     }

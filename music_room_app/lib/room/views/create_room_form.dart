@@ -3,9 +3,10 @@ import 'package:music_room_app/room/views/choose_playlist_form.dart';
 import 'package:music_room_app/widgets/custom_text_field.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:provider/provider.dart';
+import '../../constant_colors.dart';
 import '../../home/models/playlist.dart';
 import '../../services/database.dart';
-import '../../services/spotify.dart';
+import '../../services/spotify_web.dart';
 import '../../widgets/show_exception_alert_dialog.dart';
 import '../managers/create_room_manager.dart';
 
@@ -19,7 +20,7 @@ class CreateRoomForm extends StatefulWidget {
 
   static Widget create(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
-    final spotify = Provider.of<Spotify>(context, listen: false);
+    final spotify = Provider.of<SpotifyWeb>(context, listen: false);
     return ChangeNotifierProvider<CreateRoomManager>(
       create: (_) => CreateRoomManager(db: db, spotify: spotify),
       child: Consumer<CreateRoomManager>(
@@ -96,7 +97,7 @@ class _CreateRoomFormState extends State<CreateRoomForm> {
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(
                       manager.isReady()
-                          ? Theme.of(context).primaryColor
+                          ? primaryColor
                           : const Color(0XFF434343),
                     ),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(

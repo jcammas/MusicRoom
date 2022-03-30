@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../constant_colors.dart';
 import '../../home/models/room.dart';
 import '../../home/models/user.dart';
 
@@ -44,9 +45,9 @@ class RoomTile extends StatelessWidget {
           padding: EdgeInsets.only(left: 30),
           child: Text(room.name,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
-      trailing: Icon(
+      trailing: const Icon(
         Icons.check_circle,
-        color: Theme.of(context).primaryColor,
+        color: primaryColor,
       ),
       leading: room.sourcePlaylist.returnImage(),
       onTap: onTap,
