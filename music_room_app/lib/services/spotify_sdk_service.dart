@@ -140,8 +140,7 @@ class SpotifySdkService {
       TrackApp trackApp, Playlist playlist) async {
     trackApp.indexSpotify == null
         ? await playTrackBySpotifyUri('spotify:track:' + trackApp.id)
-        : await skipToIndex(
-            'spotify:playlist:' + playlist.id, trackApp.indexSpotify!);
+        : await skipToIndex(playlist.id, trackApp.indexSpotify!);
   }
 
   static Future<void> playTrack(TrackApp trackApp) async =>
@@ -190,7 +189,7 @@ class SpotifySdkService {
     }
   }
 
-  static TrackApp findNewTrackAppOrSame(
+  static TrackApp findNewTrackApp(
       TrackApp trackApp, List<TrackApp> tracksList, String? newId) {
     if (newId != null) {
       return tracksList.firstWhere((track) => track.id == newId,
@@ -199,22 +198,10 @@ class SpotifySdkService {
     return trackApp;
   }
 
-  static TrackApp? findNewTrackAppOrNull(
-      List<TrackApp>? tracksList, String? newId) {
-    if (newId != null && tracksList != null) {
-      try {
-        return tracksList.firstWhere((track) => track.id == newId);
-      } catch (e) {
-        return null;
-      }
-    }
-    return null;
-  }
-
   static Future<Duration> seekTo(int? milliseconds) async {
     milliseconds = milliseconds ?? 0;
     try {
-      await SpotifySdk.seekTo(positionedMilliseconds: milliseconds);
+    await SpotifySdk.seekTo(positionedMilliseconds: milliseconds);
     } on PlatformException catch (e) {
       SpotifySdkService.setStatus(e.code, message: e.message);
     } on MissingPluginException {

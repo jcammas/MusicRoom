@@ -51,17 +51,19 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
         ? StreamBuilder<List<TrackApp>>(
             stream: manager.roomTracksStream(),
             builder: (context, snapshot) {
-              manager.tracksList = snapshot.data;
+              manager.tracksList = snapshot.data ?? List.empty();
               return ListItemsBuilder<TrackApp>(
                 snapshot: snapshot,
                 manager: manager,
-                emptyScreen: const EmptyContent(),
+                emptyScreen: const EmptyContent(message: 'No tracks in this playlist'),
                 itemBuilder: (context, track) => Dismissible(
-                  key: Key('playlist-${track.id}'),
+                  key: Key('track-${track.id}'),
                   background: Container(color: Colors.red),
                   direction: DismissDirection.endToStart,
-                  onDismissed: (direction) =>
-                      manager.deleteTrack(context, track),
+                  onDismissed: (direction) {
+                    snapshot.data?.remove(track);
+                    manager.deleteTrack(context, track);
+                  },
                   child: TrackTile(
                     track: track,
                     onTap: manager.isMaster
@@ -69,13 +71,13 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
                             track, snapshot.data!, manager.spotify, manager.db,
                             room: manager.room)
                         : () => {},
-                    icon: manager.currentTrack?.id == track.id
+                    icon: manager.currentTrack.id == track.id
                         ? const Icon(Icons.radio_button_checked,
                             color: primaryColor)
                         : manager.isMaster
                             ? const Icon(Icons.chevron_right)
                             : null,
-                    tileColor: manager.currentTrack?.id == track.id
+                    tileColor: manager.currentTrack.id == track.id
                     ? activeTileColor : null,
                   ),
                 ),

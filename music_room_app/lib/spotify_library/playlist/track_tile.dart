@@ -32,6 +32,7 @@ class TrackTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      key: key,
       title: Text(track.name),
       trailing: icon,
       leading: _returnImage(track),

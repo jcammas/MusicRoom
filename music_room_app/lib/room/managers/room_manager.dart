@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:music_room_app/home/models/database_model.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
@@ -65,8 +66,8 @@ class RoomPlaylistManager extends RoomManager {
   }
 
   final SpotifyWeb spotify;
-  List<TrackApp>? tracksList;
-  TrackApp? currentTrack;
+  List<TrackApp> tracksList = [];
+  TrackApp currentTrack = TrackApp(name: 'default', id: 'NA', votes: 0);
   String? token;
   StreamSubscription<Room>? roomSubscription;
   StreamSubscription<ConnectionStatus>? connStatusSubscription;
@@ -93,7 +94,7 @@ class RoomPlaylistManager extends RoomManager {
         onError: (error) => updateConnected(false));
     isConnected = await SpotifySdkService.checkConnection();
     if (isConnected) {
-      SpotifySdkService.playTrackBySpotifyUri(room.playerState?.track?.uri);
+      await SpotifySdkService.playTrackBySpotifyUri(room.playerState?.track?.uri);
       SpotifySdkService.seekTo(room.playerState?.track?.duration);
       SpotifySdkService.togglePlay(room.playerState?.isPaused);
     }
@@ -107,39 +108,46 @@ class RoomPlaylistManager extends RoomManager {
   }
 
   void whenPlayerStateChange(PlayerState newState) {
-    currentTrack = SpotifySdkService.findNewTrackAppOrNull(
-        tracksList, getTrackSdkId(newState.track));
+    String? newId = getTrackSdkId(newState.track);
+    if (currentTrack.id != newId) {
+      currentTrack = SpotifySdkService.findNewTrackApp(
+          currentTrack, tracksList, newId);
+    }
     position = Duration(milliseconds: newState.playbackPosition);
     if (isPaused != newState.isPaused) {
       timer != null ? timer!.cancel() : null;
       newState.isPaused == false ? initTimer() : null;
       isPaused = newState.isPaused;
     }
+    notifyListeners();
   }
 
   Future<void> whenRoomChange(Room newRoom) async {
     PlayerState? newPlayerState = newRoom.playerState;
     if (newPlayerState != null && !isMaster) {
       remoteControlSdk(newPlayerState);
+    } else if (newPlayerState != null && isMaster) {
+      String? newId = getTrackSdkId(newPlayerState.track);
+      if (currentTrack.id != newId) {
+        currentTrack = SpotifySdkService.findNewTrackApp(
+            currentTrack, tracksList, newId);
+      }
     }
     room = newRoom;
     notifyListeners();
   }
 
-  Future<void> remoteControlSdk(
-      PlayerState newPlayerState) async {
-    TrackApp? newTrack = SpotifySdkService.findNewTrackAppOrNull(
-        tracksList, getTrackSdkId(newPlayerState.track));
-    if (currentTrack?.id != newTrack?.id && newTrack != null) {
-      await SpotifySdkService.playTrack(newTrack);
-    }
-    int diff = newPlayerState.playbackPosition - position.inMilliseconds;
-    if (diff > 200 || diff < -200) {
-      await SpotifySdkService.seekTo(newPlayerState.playbackPosition);
-    }
-    if (newPlayerState.isPaused != isPaused) {
-      await SpotifySdkService.togglePlay(newPlayerState.isPaused);
-    }
+  void remoteControlSdk(PlayerState newPlayerState) {
+      String? newId = getTrackSdkId(newPlayerState.track);
+      if (currentTrack.id != newId) {
+        TrackApp newTrack = SpotifySdkService.findNewTrackApp(
+            currentTrack, tracksList, newId);
+        SpotifySdkService.playTrack(newTrack);
+      }
+      SpotifySdkService.seekTo(newPlayerState.playbackPosition);
+      if (newPlayerState.isPaused != isPaused) {
+        SpotifySdkService.togglePlay(newPlayerState.isPaused);
+      }
   }
 
   Future<void> connectSpotifySdk(BuildContext context) async {
@@ -167,12 +175,12 @@ class RoomPlaylistManager extends RoomManager {
 
   void updatePositionOneSecond(Timer timer) {
     position += const Duration(seconds: 1);
-    notifyListeners();
   }
 
-  Future<void> deleteTrack(BuildContext context, TrackApp item) async {
+  Future<void> deleteTrack(BuildContext context, DatabaseModel item) async {
     try {
       await db.deleteInObject(room, item);
+      refreshTracksList();
     } on FirebaseException catch (e) {
       showExceptionAlertDialog(
         context,

@@ -33,7 +33,7 @@ class TrackImageManager with ChangeNotifier implements TrackManager {
     if (trackSdk != null) {
       String? newId = trackSdkId;
       if (trackApp.id != newId) {
-        trackApp = SpotifySdkService.findNewTrackAppOrSame(trackApp, tracksList, newId);
+        trackApp = SpotifySdkService.findNewTrackApp(trackApp, tracksList, newId);
         notifyListeners();
       }
     }

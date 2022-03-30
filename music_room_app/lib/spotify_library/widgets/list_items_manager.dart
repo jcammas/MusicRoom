@@ -9,6 +9,8 @@ import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/widgets/show_exception_alert_dialog.dart';
 
+import '../../home/models/user.dart';
+
 abstract class ListItemsManager {
   bool get isLoading;
 }
@@ -122,5 +124,10 @@ class PlaylistManager with ChangeNotifier implements ListItemsManager {
   void pageIsLoading(bool isLoading) {
     this.isLoading = isLoading;
     notifyListeners();
+  }
+
+  Future<bool> checkIfRoomActive() async {
+    UserApp me = await db.getUser();
+    return me.roomId != null;
   }
 }

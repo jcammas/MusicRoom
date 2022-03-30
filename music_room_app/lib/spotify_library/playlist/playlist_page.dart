@@ -15,6 +15,7 @@ import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 
 import '../../constant_colors.dart';
+import '../../widgets/show_alert_dialog.dart';
 
 class PlaylistPage extends StatelessWidget {
   const PlaylistPage(
@@ -72,6 +73,19 @@ class PlaylistPage extends StatelessWidget {
     }
   }
 
+  void showTrackPage(
+      BuildContext context, Playlist playlist, TrackApp track, List<TrackApp> tracksList) async {
+    if (await manager.checkIfRoomActive()) {
+      await showAlertDialog(context,
+          title: 'Can\'t access track',
+          content: const Text(
+              'You have an active Room. Quit it to play songs on your library.'),
+          defaultActionText: 'Ok');
+    } else {
+      TrackPage.show(context, playlist, track, tracksList, spotify, db);
+    }
+  }
+
   Widget _buildContents(BuildContext context, Playlist playlist) {
     return StreamBuilder<List<TrackApp>>(
       stream: db.userPlaylistTracksStream(playlist),
@@ -84,14 +98,14 @@ class PlaylistPage extends StatelessWidget {
               manager: manager,
               emptyScreen: const EmptyContent(),
               itemBuilder: (context, track) => Dismissible(
-                key: Key('playlist-${track.id}'),
+                key: Key('track-${track.id}'),
                 background: Container(color: Colors.red),
                 direction: DismissDirection.endToStart,
                 onDismissed: (direction) => manager.deleteItem(context, track),
                 child: TrackTile(
                   track: track,
-                  onTap: () => TrackPage.show(
-                      context, playlist, track, snapshot.data!, spotify, db),
+                  onTap: () => showTrackPage(
+                      context, playlist, track, snapshot.data!),
                 ),
               ),
             ),
