@@ -44,6 +44,25 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
         topRightFn: manager.quitRoom);
   }
 
+  Widget roomTrackTile(TrackApp track, List<TrackApp> tracksList){
+    return TrackTile(
+      track: track,
+      onTap: manager.isMaster
+          ? () => TrackPage.show(context, manager.sourcePlaylist,
+          track, tracksList, manager.spotify, manager.db,
+          room: manager.room)
+          : () => {},
+      icon: manager.currentTrack.id == track.id
+          ? const Icon(Icons.radio_button_checked,
+          color: primaryColor)
+          : manager.isMaster
+          ? const Icon(Icons.chevron_right)
+          : null,
+      tileColor: manager.currentTrack.id == track.id
+          ? activeTileColor : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, updateScaffold);
@@ -56,7 +75,7 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
                 snapshot: snapshot,
                 manager: manager,
                 emptyScreen: const EmptyContent(message: 'No tracks in this playlist'),
-                itemBuilder: (context, track) => Dismissible(
+                itemBuilder: (context, track) => manager.isMaster ? Dismissible(
                   key: Key('track-${track.id}'),
                   background: Container(color: Colors.red),
                   direction: DismissDirection.endToStart,
@@ -64,23 +83,8 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
                     snapshot.data?.remove(track);
                     manager.deleteTrack(context, track);
                   },
-                  child: TrackTile(
-                    track: track,
-                    onTap: manager.isMaster
-                        ? () => TrackPage.show(context, manager.sourcePlaylist,
-                            track, snapshot.data!, manager.spotify, manager.db,
-                            room: manager.room)
-                        : () => {},
-                    icon: manager.currentTrack.id == track.id
-                        ? const Icon(Icons.radio_button_checked,
-                            color: primaryColor)
-                        : manager.isMaster
-                            ? const Icon(Icons.chevron_right)
-                            : null,
-                    tileColor: manager.currentTrack.id == track.id
-                    ? activeTileColor : null,
-                  ),
-                ),
+                  child: roomTrackTile(track, snapshot.data!)
+                ) : roomTrackTile(track, snapshot.data!),
               );
             },
           )
