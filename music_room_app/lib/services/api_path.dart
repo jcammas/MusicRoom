@@ -1,6 +1,8 @@
 class DBPath {
   static String users() => 'user_info/';
 
+  static String relationLinks() => 'relation_links/';
+
   static String playlists() => 'playlists/';
 
   static String tracks() => 'tracks_list/';
@@ -16,6 +18,8 @@ class DBPath {
   static String messages() => 'messages/';
 
   static String user(String uid) => users() + uid;
+
+  static String relationLink(String uid) => relationLinks() + uid;
 
   static String playlist(String playlistId) => playlists() + playlistId;
 

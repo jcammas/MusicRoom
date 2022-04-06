@@ -1,4 +1,5 @@
 import 'package:music_room_app/home/models/database_model.dart';
+import 'package:music_room_app/home/models/friend-link.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/home/models/user.dart';
@@ -58,9 +59,14 @@ abstract class Database {
 
   Future<UserApp> getUserById(String uid, {String field = ""});
 
-  Future<List<UserApp>> getUsers({String nameQuery = ""});
+  Future<List<UserApp>> getUsers({String nameQuery = "", List<String>? ids});
+
+  Future<List<UserApp>> getUsersByIds(
+      {required List<String> ids, String nameQuery = ""});
 
   Future<List<Room>> getRooms({String nameQuery = ""});
+
+  Stream<List<FriendLink>> getFriends();
 
   Future<List<TrackApp>> getPlaylistTracks(Playlist playlist);
 
@@ -98,7 +104,6 @@ abstract class Database {
 }
 
 class FirestoreDatabase implements Database {
-
   late String _uid;
 
   final _service = FirestoreService.instance;
@@ -284,13 +289,31 @@ class FirestoreDatabase implements Database {
       );
 
   @override
-  Future<List<UserApp>> getUsers({String nameQuery = ""}) async =>
+  Future<List<UserApp>> getUsers(
+          {String nameQuery = "", List<String>? ids}) async =>
+      await _service.getCollectionList(
+          path: DBPath.users(),
+          builder: (data, documentId) => UserApp.fromMap(data, documentId),
+          queryBuilder: (query) {
+            if (nameQuery != "")
+              query.where("user_search", arrayContains: nameQuery);
+            if (ids != null && ids.length > 0) {
+              query.where('uid', whereIn: ids);
+            }
+            return query;
+          });
+
+  @override
+  Future<List<UserApp>> getUsersByIds(
+          {required List<String> ids, String nameQuery = ""}) async =>
       await _service.getCollectionList(
         path: DBPath.users(),
         builder: (data, documentId) => UserApp.fromMap(data, documentId),
         queryBuilder: (query) => nameQuery != ""
-            ? query.where("user_search", arrayContains: nameQuery)
-            : query,
+            ? query
+                .where('uid', whereIn: ids)
+                .where("user_search", arrayContains: nameQuery)
+            : query.where('uid', whereIn: ids),
       );
 
   @override
@@ -302,6 +325,23 @@ class FirestoreDatabase implements Database {
             ? query.where("room_search", arrayContains: nameQuery)
             : query,
       );
+
+  // @override
+  // Future<List<FriendLink>> getFriends() async =>
+  //     await _service.getCollectionList(
+  //         path: DBPath.relationLinks(),
+  //         builder: (data, documentId) => FriendLink.fromMap(data, documentId),
+  //         queryBuilder: (query) => query
+  //             .where("linkedFrom", isEqualTo: uid)
+  //             .where("status", isEqualTo: "accepted"));
+
+  @override
+  Stream<List<FriendLink>> getFriends() => _service.collectionStream(
+      path: DBPath.relationLinks(),
+      builder: (data, documentId) => FriendLink.fromMap(data, documentId),
+      queryBuilder: (query) => query
+          .where("linkedFrom", isEqualTo: uid)
+          .where("status", isEqualTo: "accepted"));
 
   @override
   Future<List<TrackApp>> getPlaylistTracks(Playlist playlist) async =>
@@ -380,19 +420,17 @@ class FirestoreDatabase implements Database {
   Stream<List<TrackApp>> userPlaylistTracksStream(Playlist playlist,
           {UserApp? user}) =>
       _service.collectionStream(
-        path: DBPath.userPlaylistTracks(
-            user == null ? _uid : user.uid, playlist.id),
-        builder: (data, documentID) => TrackApp.fromMap(data, documentID),
-          sort: (lhs, rhs) => lhs.indexApp.compareTo(rhs.indexApp)
-      );
+          path: DBPath.userPlaylistTracks(
+              user == null ? _uid : user.uid, playlist.id),
+          builder: (data, documentID) => TrackApp.fromMap(data, documentID),
+          sort: (lhs, rhs) => lhs.indexApp.compareTo(rhs.indexApp));
 
   @override
   Stream<List<TrackApp>> roomTracksStream(Room room) =>
       _service.collectionStream(
-        path: DBPath.roomTracks(room.id),
-        builder: (data, documentID) => TrackApp.fromMap(data, documentID),
-        sort: (lhs, rhs) => lhs.indexApp.compareTo(rhs.indexApp)
-      );
+          path: DBPath.roomTracks(room.id),
+          builder: (data, documentID) => TrackApp.fromMap(data, documentID),
+          sort: (lhs, rhs) => lhs.indexApp.compareTo(rhs.indexApp));
 
   @override
   Stream<List<Message>> chatMessagesStream(UserApp interlocutor,

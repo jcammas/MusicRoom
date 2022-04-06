@@ -52,6 +52,7 @@ dependencies:
   marquee: ^2.2.1
   image_picker: ^0.8.4+11
   flutter_typeahead: ^3.2.4
+  dropdown_button2: ^1.4.0
 
 dev_dependencies:
   flutter_test:

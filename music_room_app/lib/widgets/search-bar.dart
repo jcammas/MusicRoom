@@ -11,8 +11,7 @@ class SearchBar extends StatelessWidget {
   });
 
   final Future<List<DatabaseModel>> Function(String pattern) getItemList;
-  final void Function(DatabaseModel selected)?
-      onSelected;
+  final void Function(DatabaseModel selected)? onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -58,20 +57,20 @@ class SearchBar extends StatelessWidget {
             },
           ),
         )),
-        SizedBox(width: 10),
-        Container(
-            height: 50,
-            width: 50,
-            decoration: BoxDecoration(boxShadow: [
-              const BoxShadow(
-                  color: shadowColor,
-                  offset: Offset(0, 3.0),
-                  blurRadius: 4.0),
-            ], borderRadius: BorderRadius.all(Radius.circular(25))),
-            child: ElevatedButton(
-              onPressed: () {},
-              child: Icon(Icons.search),
-            )),
+        // SizedBox(width: 10),
+        // Container(
+        //     height: 50,
+        //     width: 50,
+        //     decoration: BoxDecoration(boxShadow: [
+        //       const BoxShadow(
+        //           color: shadowColor,
+        //           offset: Offset(0, 3.0),
+        //           blurRadius: 4.0),
+        //     ], borderRadius: BorderRadius.all(Radius.circular(25))),
+        //     child: ElevatedButton(
+        //       onPressed: () {},
+        //       child: Icon(Icons.search),
+        //     )),
       ],
     );
   }
