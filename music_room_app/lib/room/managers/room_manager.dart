@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/database_model.dart';
@@ -95,7 +96,8 @@ class RoomPlaylistManager extends RoomManager {
         onError: (error) => updateConnected(false));
     isConnected = await SpotifySdkService.checkConnection();
     if (isConnected) {
-      await SpotifySdkService.playTrackBySpotifyUri(room.playerState?.track?.uri);
+      await SpotifySdkService.playTrackBySpotifyUri(
+          room.playerState?.track?.uri);
       SpotifySdkService.seekTo(room.playerState?.track?.duration);
       SpotifySdkService.togglePlay(room.playerState?.isPaused);
     }
@@ -111,8 +113,8 @@ class RoomPlaylistManager extends RoomManager {
   void whenPlayerStateChange(PlayerState newState) {
     String? newId = getTrackSdkId(newState.track);
     if (currentTrack.id != newId) {
-      currentTrack = SpotifySdkService.findNewTrackApp(
-          currentTrack, tracksList, newId);
+      currentTrack =
+          SpotifySdkService.findNewTrackApp(currentTrack, tracksList, newId);
     }
     position = Duration(milliseconds: newState.playbackPosition);
     if (isPaused != newState.isPaused) {
@@ -130,8 +132,8 @@ class RoomPlaylistManager extends RoomManager {
     } else if (newPlayerState != null && isMaster) {
       String? newId = getTrackSdkId(newPlayerState.track);
       if (currentTrack.id != newId) {
-        currentTrack = SpotifySdkService.findNewTrackApp(
-            currentTrack, tracksList, newId);
+        currentTrack =
+            SpotifySdkService.findNewTrackApp(currentTrack, tracksList, newId);
       }
     }
     room = newRoom;
@@ -139,16 +141,16 @@ class RoomPlaylistManager extends RoomManager {
   }
 
   void remoteControlSdk(PlayerState newPlayerState) {
-      String? newId = getTrackSdkId(newPlayerState.track);
-      if (currentTrack.id != newId) {
-        TrackApp newTrack = SpotifySdkService.findNewTrackApp(
-            currentTrack, tracksList, newId);
-        SpotifySdkService.playTrack(newTrack);
-      }
-      SpotifySdkService.seekTo(newPlayerState.playbackPosition);
-      if (newPlayerState.isPaused != isPaused) {
-        SpotifySdkService.togglePlay(newPlayerState.isPaused);
-      }
+    String? newId = getTrackSdkId(newPlayerState.track);
+    if (currentTrack.id != newId) {
+      TrackApp newTrack =
+          SpotifySdkService.findNewTrackApp(currentTrack, tracksList, newId);
+      SpotifySdkService.playTrack(newTrack);
+    }
+    SpotifySdkService.seekTo(newPlayerState.playbackPosition);
+    if (newPlayerState.isPaused != isPaused) {
+      SpotifySdkService.togglePlay(newPlayerState.isPaused);
+    }
   }
 
   Future<void> connectSpotifySdk(BuildContext context) async {
@@ -191,8 +193,13 @@ class RoomPlaylistManager extends RoomManager {
     }
   }
 
+  int maxIndexInTrackList() =>
+      tracksList.map((track) => track.indexApp ?? 0).toList().reduce(max);
+
   Future<void> addTrack(BuildContext context, TrackApp track) async {
     try {
+      track.indexSpotify = -1;
+      track.indexApp = maxIndexInTrackList() + 1;
       await db.setInObject(room, track);
       refreshTracksList();
     } on FirebaseException catch (e) {

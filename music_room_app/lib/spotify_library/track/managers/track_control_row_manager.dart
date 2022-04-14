@@ -61,7 +61,11 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
     if (isShuffling || repeatMode != player_options.RepeatMode.off) {
       await SpotifySdkService.skipNext();
     } else {
-      await SpotifySdkService.skipToIndex(playlist.id, _findNextSpotifyIndex());
+      int nextIndex = _findNextSpotifyIndex();
+      if (nextIndex >= 0) {
+        await SpotifySdkService.skipToIndex(
+            playlist.id, _findNextSpotifyIndex());
+      }
     }
   }
 
@@ -86,8 +90,11 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
       await SpotifySdkService.skipPrevious();
     } else {
       if (position < const Duration(seconds: 4)) {
-        await SpotifySdkService.skipToIndex(
-            playlist.id, _findPreviousSpotifyIndex());
+        int previousIndex = _findPreviousSpotifyIndex();
+        if (previousIndex >= 0) {
+          await SpotifySdkService.skipToIndex(
+              playlist.id, _findPreviousSpotifyIndex());
+        }
       } else {
         SpotifySdkService.playTrackInPlaylist(trackApp, playlist);
       }

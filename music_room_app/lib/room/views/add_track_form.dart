@@ -78,7 +78,7 @@ class _AddTrackFormState extends State<AddTrackForm> {
               leading: track == null
                   ? Padding(padding: EdgeInsets.only(left: width * 0.17))
                   : track!.returnImage(),
-              onTap: () => ChoosePlaylistForm.show(context, widget.manager),
+              onTap: () => ChoosePlaylistForm.show(context, manager),
             ),
             SizedBox(
               height: height * 0.05,

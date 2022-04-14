@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/track.dart';
+import 'package:music_room_app/room/views/add_track_form.dart';
+import 'package:music_room_app/room/views/room_default.dart';
 import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
 import 'package:music_room_app/spotify_library/playlist/track_tile.dart';
@@ -73,7 +75,8 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
               const EmptyContent(message: 'No tracks in this playlist'),
           bottomAddTile: ListTile(
             title: Icon(Icons.add),
-            onTap: () => {},
+            onTap: () =>
+                showBottomForm(context, AddTrackForm.create(context, manager)),
           ),
           itemBuilder: (context, track) => manager.isMaster
               ? Dismissible(

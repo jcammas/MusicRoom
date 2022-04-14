@@ -15,6 +15,7 @@ class ChooseFormManager with ChangeNotifier implements ListItemsManager {
   Playlist? selectedPlaylist;
   @override
   bool isLoading;
+  bool circleIcon = true;
 
   String? get playlistId =>
       selectedPlaylist == null ? null : selectedPlaylist!.id;
@@ -84,11 +85,13 @@ class AddTrackManager extends ChooseFormManager {
   TrackApp? selectedTrack;
   RoomPlaylistManager roomManager;
   String? get trackId => selectedTrack == null ? null : selectedTrack!.id;
+  @override
+  bool circleIcon = false;
 
   @override
   void selectPlaylist(BuildContext context, Playlist playlist) {
     selectedPlaylist = playlist;
-    ChoosePlaylistForm.show(context, this);
+    ChooseTrackForm.show(context, this);
   }
 
   bool isReady() => selectedTrack != null;
@@ -104,10 +107,11 @@ class AddTrackManager extends ChooseFormManager {
   }
 
   Future<bool> addTrack(BuildContext context) async {
-    if (selectedTrack == null) return false;
+    TrackApp? track = selectedTrack;
+    if (track == null) return false;
     try {
       pageIsLoading(true);
-      await roomManager.addTrack(context, selectedTrack!);
+      await roomManager.addTrack(context, track);
       pageIsLoading(false);
       return true;
     } catch (e) {

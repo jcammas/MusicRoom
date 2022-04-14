@@ -55,11 +55,13 @@ class ChoosePlaylistForm extends StatelessWidget {
               playlist: playlist,
               onTap: () => manager.selectPlaylist(context, playlist),
               icon: manager.playlistId == playlist.id
-                  ? const  Icon(
+                  ? const Icon(
                       Icons.check_circle,
                       color: primaryColor,
                     )
-                  : const Icon(Icons.circle_outlined),
+                  : manager.circleIcon
+                      ? const Icon(Icons.circle_outlined)
+                      : const Icon(Icons.chevron_right_outlined),
             ),
           );
         });
@@ -103,16 +105,16 @@ class ChooseTrackForm extends StatelessWidget {
           return ListItemsBuilder<TrackApp>(
             manager: manager,
             snapshot: snapshot,
-            emptyScreen: EmptyContent(
-                message: 'Go to Library and load this playlist !'),
+            emptyScreen:
+                EmptyContent(message: 'Go to Library and load this playlist !'),
             itemBuilder: (context, track) => TrackTile(
               track: track,
               onTap: () => manager.selectTrack(context, track),
               icon: manager.trackId == track.id
-                  ? const  Icon(
-                Icons.check_circle,
-                color: primaryColor,
-              )
+                  ? const Icon(
+                      Icons.check_circle,
+                      color: primaryColor,
+                    )
                   : const Icon(Icons.circle_outlined),
             ),
           );
