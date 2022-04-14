@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
@@ -41,20 +42,19 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   }
 
   int _findNextSpotifyIndex() {
-    int? indexSpotify;
-    if (trackApp.indexApp != null) {
-      if (trackApp.indexApp! + 1 == tracksList.length) {
-        indexSpotify =
-            tracksList.firstWhere((track) => track.indexApp == 0).indexSpotify;
-      } else {
-        indexSpotify = tracksList
-            .firstWhere((track) => track.indexApp == trackApp.indexApp! + 1)
-            .indexSpotify;
+    int currentIndex = trackApp.indexApp ?? -1;
+    Map<int, int?> indexMap = Map.fromIterable(tracksList,
+        key: (track) => track.indexApp ?? 0,
+        value: (track) => track.indexSpotify);
+    int maxIndex = indexMap.keys.reduce(max);
+    int minIndex;
+    while (++currentIndex <= maxIndex) {
+      if (indexMap.containsKey(currentIndex)) {
+        return indexMap[currentIndex] ?? 0;
       }
-      return indexSpotify ?? 0;
-    } else {
-      return 0;
     }
+    minIndex = indexMap.keys.reduce(min);
+    return indexMap[minIndex] ?? 0;
   }
 
   Future<void> skipNext() async {
@@ -66,21 +66,19 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   }
 
   int _findPreviousSpotifyIndex() {
-    int? indexSpotify;
-    if (trackApp.indexApp != null) {
-      if (trackApp.indexApp! == 0) {
-        indexSpotify = tracksList
-            .firstWhere((track) => track.indexApp! + 1 == tracksList.length)
-            .indexSpotify;
-      } else {
-        indexSpotify = tracksList
-            .firstWhere((track) => track.indexApp == trackApp.indexApp! - 1)
-            .indexSpotify;
+    int currentIndex = trackApp.indexApp ?? 0;
+    Map<int, int?> indexMap = Map.fromIterable(tracksList,
+        key: (track) => track.indexApp ?? 0,
+        value: (track) => track.indexSpotify);
+    int minIndex = indexMap.keys.reduce(min);
+    int maxIndex;
+    while (--currentIndex >= minIndex) {
+      if (indexMap.containsKey(currentIndex)) {
+        return indexMap[currentIndex] ?? 0;
       }
-      return indexSpotify ?? 0;
-    } else {
-      return 0;
     }
+    maxIndex = indexMap.keys.reduce(max);
+    return indexMap[maxIndex] ?? 0;
   }
 
   Future<void> skipPrevious() async {
