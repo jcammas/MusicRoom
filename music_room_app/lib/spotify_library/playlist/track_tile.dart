@@ -15,27 +15,13 @@ class TrackTile extends StatelessWidget {
   final Color? tileColor;
   static const double imageSize = 55.0;
 
-  Widget _returnImage(TrackApp track) {
-    if (track.album != null) {
-      if (track.album!['images'] != null) {
-        if (track.album!['images'].isNotEmpty) {
-          if (track.album!['images'].first['url'] != null) {
-            return Image.network(track.album!['images'].first['url'],
-                width: imageSize, height: imageSize);
-          }
-        }
-      }
-    }
-    return const Padding(padding: EdgeInsets.only(left: imageSize));
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListTile(
       key: key,
       title: Text(track.name),
       trailing: icon,
-      leading: _returnImage(track),
+      leading: track.returnImage(),
       tileColor: tileColor,
       onTap: onTap,
     );

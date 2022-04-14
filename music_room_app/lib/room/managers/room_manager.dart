@@ -191,9 +191,9 @@ class RoomPlaylistManager extends RoomManager {
     }
   }
 
-  Future<void> addTrack(BuildContext context, DatabaseModel item) async {
+  Future<void> addTrack(BuildContext context, TrackApp track) async {
     try {
-      await db.setInObject(room, item);
+      await db.setInObject(room, track);
       refreshTracksList();
     } on FirebaseException catch (e) {
       showExceptionAlertDialog(

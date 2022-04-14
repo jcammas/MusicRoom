@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:music_room_app/services/api_path.dart';
 import 'database_model.dart';
 
@@ -38,12 +39,27 @@ class TrackApp implements DatabaseModel {
   int? trackNumber;
   int? indexSpotify;
   int? indexApp;
+  static const double imageSize = 55.0;
 
 
   @override
   get docId => DBPath.track(id);
   @override
   get wrappedCollectionsIds => [];
+
+  Widget returnImage() {
+    if (this.album != null) {
+      if (this.album!['images'] != null) {
+        if (this.album!['images'].isNotEmpty) {
+          if (this.album!['images'].first['url'] != null) {
+            return Image.network(this.album!['images'].first['url'],
+                width: imageSize, height: imageSize);
+          }
+        }
+      }
+    }
+    return const Padding(padding: EdgeInsets.only(left: imageSize));
+  }
 
   factory TrackApp.fromMap(Map<String, dynamic>? data, String id) {
     if (data != null) {
