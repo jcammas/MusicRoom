@@ -10,12 +10,14 @@ class ListItemsBuilder<T> extends StatelessWidget {
       required this.snapshot,
       required this.itemBuilder,
       required this.emptyScreen,
-      required this.manager})
+      required this.manager,
+      this.bottomAddTile})
       : super(key: key);
   final AsyncSnapshot<List<T>> snapshot;
   final ItemWidgetBuilder itemBuilder;
   final ListItemsManager manager;
   final StatelessWidget emptyScreen;
+  final Widget? bottomAddTile;
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +39,16 @@ class ListItemsBuilder<T> extends StatelessWidget {
   }
 
   Widget _buildList(List<T> items) {
+    int itemCount = bottomAddTile == null ? items.length + 2 : items.length + 3;
     return ListView.separated(
-      itemCount: items.length + 2,
+      itemCount: itemCount,
       separatorBuilder: (context, index) => const Divider(height: 0.5),
       itemBuilder: (context, index) {
-        if (index == 0 || index == items.length + 1) {
+        if (index == 0 || index == itemCount - 1) {
           return Container();
+        }
+        if (bottomAddTile != null && index == itemCount - 2) {
+          return bottomAddTile!;
         }
         return itemBuilder(context, items[index - 1]);
       },

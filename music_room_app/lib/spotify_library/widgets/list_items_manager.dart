@@ -92,11 +92,11 @@ class PlaylistManager with ChangeNotifier implements ListItemsManager {
   Future<void> refreshItems(BuildContext context) async {
     try {
       pageIsLoading(true);
-      List<TrackApp> trackList = await spotify.getPlaylistTracks(playlist.id);
-      await db.setListInObjectInUser(playlist, trackList);
+      List<TrackApp> tracksList = await spotify.getPlaylistTracks(playlist.id);
+      await db.setListInObjectInUser(playlist, tracksList);
       pageIsLoading(false);
-      await db.setList(trackList, mergeOption: true);
-      await db.setListInObject(playlist, trackList, mergeOption: true);
+      await db.setList(tracksList, mergeOption: true);
+      await db.setListInObject(playlist, tracksList, mergeOption: true);
     } on PlatformException catch (e) {
       pageIsLoading(false);
       showExceptionAlertDialog(context,

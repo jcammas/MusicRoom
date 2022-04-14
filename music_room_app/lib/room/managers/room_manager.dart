@@ -20,6 +20,7 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
   Room room;
   bool isLoading = false;
   bool isConnected = false;
+  String opeFailed = 'Operation failed';
 
   RoomManager({required this.db, required this.room}) {
     isMaster = db.uid == room.ownerId;
@@ -39,7 +40,7 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
     } on FirebaseException catch (e) {
       showExceptionAlertDialog(
         context,
-        title: 'Operation failed',
+        title: opeFailed,
         exception: e,
       );
     }
@@ -160,7 +161,7 @@ class RoomPlaylistManager extends RoomManager {
       updateWith(isLoading: false, isConnected: false);
       showExceptionAlertDialog(
         context,
-        title: 'Operation failed',
+        title: opeFailed,
         exception: e,
       );
     }
@@ -184,7 +185,20 @@ class RoomPlaylistManager extends RoomManager {
     } on FirebaseException catch (e) {
       showExceptionAlertDialog(
         context,
-        title: 'Operation failed',
+        title: opeFailed,
+        exception: e,
+      );
+    }
+  }
+
+  Future<void> addTrack(BuildContext context, DatabaseModel item) async {
+    try {
+      await db.setInObject(room, item);
+      refreshTracksList();
+    } on FirebaseException catch (e) {
+      showExceptionAlertDialog(
+        context,
+        title: opeFailed,
         exception: e,
       );
     }
