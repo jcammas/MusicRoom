@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
+import 'package:music_room_app/services/spotify_service_subscriber.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
-import '../../../services/spotify_sdk_service.dart';
+import '../../../services/spotify_sdk_static.dart';
 
 class TrackImageManager with ChangeNotifier implements TrackManager {
   TrackImageManager({required this.trackApp, required this.tracksList});
@@ -33,7 +33,7 @@ class TrackImageManager with ChangeNotifier implements TrackManager {
     if (trackSdk != null) {
       String? newId = trackSdkId;
       if (trackApp.id != newId) {
-        trackApp = SpotifySdkService.findNewTrackApp(trackApp, tracksList, newId);
+        trackApp = SpotifySdkStatic.findNewTrackApp(trackApp, tracksList, newId);
         notifyListeners();
       }
     }

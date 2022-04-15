@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/services/auth.dart';
+import 'package:music_room_app/services/spotify_sdk_service.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:provider/provider.dart';
-
 import '../room/managers/room_scaffold_manager.dart';
 
 Future<void> _confirmSignOut(BuildContext context) async {
   final auth = Provider.of<AuthBase>(context, listen: false);
-
+  final spotify = Provider.of<SpotifySdkService>(context, listen: false);
   final didRequestSignOut = await showAlertDialog(
     context,
     title: 'Logout',
@@ -16,6 +16,7 @@ Future<void> _confirmSignOut(BuildContext context) async {
     defaultActionText: 'Logout',
   );
   if (didRequestSignOut == true) {
+    spotify.disconnect();
     auth.signOut();
     String? currentRoute = ModalRoute
         .of(context)

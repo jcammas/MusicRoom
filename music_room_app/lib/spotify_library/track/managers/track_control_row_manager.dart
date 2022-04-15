@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/services/spotify_sdk_service.dart';
-import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
+import 'package:music_room_app/services/spotify_sdk_static.dart';
+import 'package:music_room_app/services/spotify_service_subscriber.dart';
 import 'package:spotify_sdk/models/player_options.dart' as player_options;
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
@@ -21,6 +21,7 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   bool isPaused = true;
   bool isShuffling = false;
   bool playback = false;
+  bool isStarting = true;
   Track? trackSdk;
   Timer? timer;
   Duration position = const Duration(milliseconds: 0);
@@ -41,29 +42,28 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
     notifyListeners();
   }
 
-  int _findNextSpotifyIndex() {
+  int _findNextTrack() {
     int currentIndex = trackApp.indexApp ?? -1;
-    Map<int, int?> indexMap = Map.fromIterable(tracksList,
-        key: (track) => track.indexApp ?? 0,
-        value: (track) => track.indexSpotify);
-    int maxIndex = indexMap.keys.reduce(max);
+    List<int> indexes = tracksList.map((track) => track.indexApp ?? 0).toList();
+    int maxIndex = indexes.reduce(max);
     int minIndex;
     while (++currentIndex <= maxIndex) {
-      if (indexMap.containsKey(currentIndex)) {
-        return indexMap[currentIndex] ?? 0;
+      if (indexes.contains(currentIndex)) {
+        return indexes[currentIndex] ?? 0;
       }
     }
-    minIndex = indexMap.keys.reduce(min);
-    return indexMap[minIndex] ?? 0;
+    minIndex = indexes.keys.reduce(min);
+    return indexes[minIndex] ?? 0;
   }
 
   Future<void> skipNext() async {
-    if (isShuffling || repeatMode != player_options.RepeatMode.off) {
-      await SpotifySdkService.skipNext();
+    isStarting = true;
+    if (repeatMode != player_options.RepeatMode.off) {
+      await SpotifySdkStatic.playTrack(trackApp);
     } else {
-      int nextIndex = _findNextSpotifyIndex();
+      int nextIndex = _findNextTrack();
       if (nextIndex >= 0) {
-        await SpotifySdkService.skipToIndex(
+        await SpotifySdkStatic.skipToIndex(
             playlist.id, _findNextSpotifyIndex());
       }
     }
@@ -86,26 +86,27 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   }
 
   Future<void> skipPrevious() async {
+    isStarting = true;
     if (isShuffling || repeatMode != player_options.RepeatMode.off) {
-      await SpotifySdkService.skipPrevious();
+      await SpotifySdkStatic.skipPrevious();
     } else {
       if (position < const Duration(seconds: 4)) {
         int previousIndex = _findPreviousSpotifyIndex();
         if (previousIndex >= 0) {
-          await SpotifySdkService.skipToIndex(
+          await SpotifySdkStatic.skipToIndex(
               playlist.id, _findPreviousSpotifyIndex());
         }
       } else {
-        SpotifySdkService.playTrackInPlaylist(trackApp, playlist);
+        SpotifySdkStatic.playTrackInPlaylist(trackApp, playlist);
       }
     }
   }
 
-  toggleShuffle() async => await SpotifySdkService.toggleShuffle();
+  toggleShuffle() async => isShuffling = !isShuffling;
 
-  togglePlay() async => await SpotifySdkService.togglePlay(!isPaused);
+  togglePlay() async => await SpotifySdkStatic.togglePlay(!isPaused);
 
-  toggleRepeat() async => await SpotifySdkService.toggleRepeat();
+  toggleRepeat() async => await SpotifySdkStatic.toggleRepeat();
 
   @override
   void whenPlayerStateChange(PlayerState newState) {
@@ -133,7 +134,7 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
         trackApp = tracksList.firstWhere((track) => track.id == newId);
       }
     } on Error {
-      SpotifySdkService.playTrackInPlaylist(trackApp, playlist);
+      SpotifySdkStatic.playTrack(trackApp);
     }
   }
 

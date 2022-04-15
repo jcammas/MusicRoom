@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
+import 'package:music_room_app/services/spotify_service_subscriber.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
-import '../../../services/spotify_sdk_service.dart';
+import '../../../services/spotify_sdk_static.dart';
 
 class TrackTitleRowManager with ChangeNotifier implements TrackManager {
   TrackTitleRowManager({required this.trackApp, required this.tracksList});
@@ -41,7 +41,7 @@ class TrackTitleRowManager with ChangeNotifier implements TrackManager {
       String? newId = trackSdkId;
       if (trackApp.id != newId) {
         trackApp =
-            SpotifySdkService.findNewTrackApp(trackApp, tracksList, newId);
+            SpotifySdkStatic.findNewTrackApp(trackApp, tracksList, newId);
         notifyListeners();
       }
     }

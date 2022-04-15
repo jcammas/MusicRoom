@@ -19,7 +19,7 @@ class LibraryManager with ChangeNotifier implements ListItemsManager {
   LibraryManager(
       {required this.spotify, required this.db, this.isLoading = false});
 
-  final SpotifyWeb spotify;
+  final SpotifyWebService spotify;
   final Database db;
   @override
   bool isLoading;
@@ -71,7 +71,7 @@ class PlaylistManager with ChangeNotifier implements ListItemsManager {
       required this.playlist,
       this.isLoading = false});
 
-  final SpotifyWeb spotify;
+  final SpotifyWebService spotify;
   final Database db;
   final Playlist playlist;
   @override

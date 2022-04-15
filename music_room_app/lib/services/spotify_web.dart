@@ -10,17 +10,7 @@ import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/spotify_constants.dart';
 import 'package:music_room_app/widgets/logger.dart';
 
-abstract class SpotifyWeb {
-  Future<String?> getAccessToken();
-
-  Future<SpotifyProfile> getCurrentUserProfile();
-
-  Future<List<Playlist>> getCurrentUserPlaylists();
-
-  Future<List<TrackApp>> getPlaylistTracks(String playlistId);
-}
-
-class SpotifyWebService implements SpotifyWeb {
+class SpotifyWebService {
   final FlutterAppAuth appAuth = FlutterAppAuth();
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   String? refreshToken;
@@ -142,7 +132,6 @@ class SpotifyWebService implements SpotifyWeb {
     }
   }
 
-  @override
   Future<String?> getAccessToken() async {
     try {
       await _refreshTokens();
@@ -152,7 +141,6 @@ class SpotifyWebService implements SpotifyWeb {
     }
   }
 
-  @override
   Future<SpotifyProfile> getCurrentUserProfile() async {
     try {
       await _refreshTokens();
@@ -200,7 +188,6 @@ class SpotifyWebService implements SpotifyWeb {
     }
   }
 
-  @override
   Future<List<Playlist>> getCurrentUserPlaylists() async {
     try {
       await _refreshTokens();
@@ -255,7 +242,6 @@ class SpotifyWebService implements SpotifyWeb {
     }
   }
 
-  @override
   Future<List<TrackApp>> getPlaylistTracks(String playlistId) async {
     try {
       await _refreshTokens();

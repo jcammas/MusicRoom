@@ -11,7 +11,7 @@ import '../../home/models/room.dart';
 import '../../home/models/track.dart';
 import '../../services/database.dart';
 import '../../services/spotify_web.dart';
-import '../../services/spotify_sdk_service.dart';
+import '../../services/spotify_sdk_static.dart';
 import '../../spotify_library/widgets/list_items_manager.dart';
 import '../../widgets/show_exception_alert_dialog.dart';
 
@@ -67,7 +67,7 @@ class RoomPlaylistManager extends RoomManager {
     refreshTracksList();
   }
 
-  final SpotifyWeb spotify;
+  final SpotifyWebService spotify;
   List<TrackApp> tracksList = [];
   TrackApp currentTrack = TrackApp(name: 'default', id: 'NA', votes: 0);
   String? token;
@@ -91,15 +91,15 @@ class RoomPlaylistManager extends RoomManager {
   roomStream() => db.roomStream(room);
 
   Future<void> initPlaylistManager() async {
-    connStatusSubscription = SpotifySdkService.subscribeConnectionStatus(
+    connStatusSubscription = SpotifySdkStatic.subscribeConnectionStatus(
         onData: whenConnStatusChange,
         onError: (error) => updateConnected(false));
-    isConnected = await SpotifySdkService.checkConnection();
+    isConnected = await SpotifySdkStatic.checkConnection();
     if (isConnected) {
-      await SpotifySdkService.playTrackBySpotifyUri(
+      await SpotifySdkStatic.playTrackBySpotifyUri(
           room.playerState?.track?.uri);
-      SpotifySdkService.seekTo(room.playerState?.track?.duration);
-      SpotifySdkService.togglePlay(room.playerState?.isPaused);
+      SpotifySdkStatic.seekTo(room.playerState?.track?.duration);
+      SpotifySdkStatic.togglePlay(room.playerState?.isPaused);
     }
     roomSubscription = roomStream().listen(whenRoomChange);
   }
@@ -107,14 +107,14 @@ class RoomPlaylistManager extends RoomManager {
   void whenConnStatusChange(ConnectionStatus newStatus) {
     updateConnected(newStatus.connected);
     playerStateSubscription =
-        SpotifySdkService.subscribePlayerState(onData: whenPlayerStateChange);
+        SpotifySdkStatic.subscribePlayerState(onData: whenPlayerStateChange);
   }
 
   void whenPlayerStateChange(PlayerState newState) {
     String? newId = getTrackSdkId(newState.track);
     if (currentTrack.id != newId) {
       currentTrack =
-          SpotifySdkService.findNewTrackApp(currentTrack, tracksList, newId);
+          SpotifySdkStatic.findNewTrackApp(currentTrack, tracksList, newId);
     }
     position = Duration(milliseconds: newState.playbackPosition);
     if (isPaused != newState.isPaused) {
@@ -133,7 +133,7 @@ class RoomPlaylistManager extends RoomManager {
       String? newId = getTrackSdkId(newPlayerState.track);
       if (currentTrack.id != newId) {
         currentTrack =
-            SpotifySdkService.findNewTrackApp(currentTrack, tracksList, newId);
+            SpotifySdkStatic.findNewTrackApp(currentTrack, tracksList, newId);
       }
     }
     room = newRoom;
@@ -144,12 +144,12 @@ class RoomPlaylistManager extends RoomManager {
     String? newId = getTrackSdkId(newPlayerState.track);
     if (currentTrack.id != newId) {
       TrackApp newTrack =
-          SpotifySdkService.findNewTrackApp(currentTrack, tracksList, newId);
-      SpotifySdkService.playTrack(newTrack);
+          SpotifySdkStatic.findNewTrackApp(currentTrack, tracksList, newId);
+      SpotifySdkStatic.playTrack(newTrack);
     }
-    SpotifySdkService.seekTo(newPlayerState.playbackPosition);
+    SpotifySdkStatic.seekTo(newPlayerState.playbackPosition);
     if (newPlayerState.isPaused != isPaused) {
-      SpotifySdkService.togglePlay(newPlayerState.isPaused);
+      SpotifySdkStatic.togglePlay(newPlayerState.isPaused);
     }
   }
 
@@ -157,7 +157,7 @@ class RoomPlaylistManager extends RoomManager {
     try {
       updateLoading(true);
       token = await spotify.getAccessToken();
-      token = await SpotifySdkService.connectSpotifySdk(token);
+      token = await SpotifySdkStatic.connectSpotifySdk(token);
       updateWith(isLoading: false, isConnected: true);
     } on Exception catch (e) {
       updateWith(isLoading: false, isConnected: false);

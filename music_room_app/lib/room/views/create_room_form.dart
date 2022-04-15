@@ -20,7 +20,7 @@ class CreateRoomForm extends StatefulWidget {
 
   static Widget create(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
-    final spotify = Provider.of<SpotifyWeb>(context, listen: false);
+    final spotify = Provider.of<SpotifyWebService>(context, listen: false);
     return ChangeNotifierProvider<CreateRoomManager>(
       create: (_) => CreateRoomManager(db: db, spotify: spotify),
       child: Consumer<CreateRoomManager>(

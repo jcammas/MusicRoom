@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/database.dart';
+import 'package:music_room_app/services/spotify_sdk_service.dart';
 import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
@@ -26,21 +27,22 @@ class PlaylistPage extends StatelessWidget {
       required this.manager})
       : super(key: key);
   final Database db;
-  final SpotifyWeb spotify;
+  final SpotifySdkService spotify;
   final Playlist playlist;
   final PlaylistManager manager;
 
   static Future<void> show(BuildContext context, Playlist playlist) async {
     final db = Provider.of<Database>(context, listen: false);
-    final spotify = Provider.of<SpotifyWeb>(context, listen: false);
+    final spotifyWeb = Provider.of<SpotifyWebService>(context, listen: false);
+    final spotifySdk = Provider.of<SpotifySdkService>(context, listen: false);
     PlaylistManager manager = PlaylistManager(
-        spotify: spotify, db: db, playlist: playlist, isLoading: true);
+        spotify: spotifyWeb, db: db, playlist: playlist, isLoading: true);
     manager.fillIfEmpty(context);
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
         builder: (context) => PlaylistPage(
-            db: db, spotify: spotify, playlist: playlist, manager: manager),
+            db: db, spotify: spotifySdk, playlist: playlist, manager: manager),
       ),
     );
   }

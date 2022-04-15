@@ -1,248 +1,117 @@
 import 'dart:async';
-import 'package:flutter/services.dart';
-import 'package:music_room_app/home/models/playlist.dart';
-import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/services/spotify_constants.dart';
-import 'package:music_room_app/widgets/logger.dart';
+import 'package:music_room_app/services/spotify_sdk_static.dart';
+import 'package:music_room_app/services/spotify_service_subscriber.dart';
+import 'package:music_room_app/services/spotify_web.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/player_state.dart';
-import 'package:spotify_sdk/spotify_sdk.dart';
+import '../home/models/room.dart';
+import '../home/models/track.dart';
+import 'database.dart';
 
 class SpotifySdkService {
-  static final _logger = LoggerApp.logger;
+  SpotifySdkService({required this.db, required this.spotifyWeb});
 
-  static Future<bool> _connectToSpotifyRemote({String? token}) async =>
-      SpotifySdk.connectToSpotifyRemote(
-          clientId: spotifyClientId,
-          redirectUrl: spotifyRedirectUri,
-          accessToken: token);
+  List<TrackApp>? _currentTracksList;
+  TrackApp? _currentTrack;
+  Room? _currentRoom;
+  StreamSubscription<ConnectionStatus>? connStatusSubscription;
+  StreamSubscription<PlayerState>? playerStateSubscription;
+  SpotifyServiceSubscriber? _subscriber;
+  bool isConnected = false;
+  bool isStarting = true;
+  SpotifyWebService spotifyWeb;
+  Database db;
+  String? token;
 
-  static Future<bool> checkConnection() async {
-    try {
-      return await _connectToSpotifyRemote();
-    } on PlatformException {
-      setStatus('not connected');
-      return false;
-    } on MissingPluginException {
-      setStatus('not implemented');
-      return false;
-    }
+  set currentTracksList(List<TrackApp> ls) => _currentTracksList = ls;
+
+  set currentRoom(Room room) => _currentRoom = room;
+
+  set subscriber(SpotifyServiceSubscriber subscriber) {
+    _subscriber = subscriber;
+    _currentTracksList = subscriber.tracksList;
+    _currentTrack = subscriber.trackApp;
   }
 
-  static Future<String> _getTokenWithSdk() async {
-    try {
-      String token = await SpotifySdk.getAuthenticationToken(
-          clientId: spotifyClientId,
-          redirectUrl: spotifyRedirectUri,
-          scope: spotifyScopes.toString());
-      setStatus('Got a token: $token');
-      return token;
-    } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
-      rethrow;
-    } on MissingPluginException {
-      setStatus('not implemented on this platform');
-      rethrow;
-    } catch (e) {
-      rethrow;
-    }
-  }
+  void disposeSubscriber(SpotifyServiceSubscriber subscriber) =>
+      _subscriber = null;
 
-  static Future<void> _connectSpotifySdk(String? token) async {
+  Future<bool> init() async {
     try {
-      bool result = await _connectToSpotifyRemote(token: token);
-      if (result) {
-        setStatus('connection to spotify successful');
-      } else {
-        throw PlatformException(
-            code: 'connection failed',
-            message: 'Could not connect to your app Spotify');
+      if (!isConnected) {
+        connStatusSubscription = SpotifySdkStatic.subscribeConnectionStatus(
+            onData: whenConnStatusChange,
+            onError: (error) => isConnected = false);
+        isConnected = await SpotifySdkStatic.checkConnection();
       }
-    } on MissingPluginException {
-      setStatus('not implemented on this platform');
-      rethrow;
+    } finally {
+      return isConnected;
+    }
+  }
+
+  Future<void> connectSpotifySdk() async {
+    try {
+      token = await spotifyWeb.getAccessToken();
+      token = await SpotifySdkStatic.connectSpotifySdk(token);
+      isConnected = true;
     } catch (e) {
-      setStatus('connection to spotify failed');
+      isConnected = false;
       rethrow;
     }
   }
 
-  static Future<String?> connectSpotifySdk(String? token) async {
-    try {
-      await _connectSpotifySdk(token);
-      return token;
-    } on PlatformException {
-      try {
-        token = await _getTokenWithSdk();
-        await _connectSpotifySdk(token);
-        return token;
-      } catch (e) {
-        rethrow;
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  static Future<void> disconnect() async {
-    try {
-      await SpotifySdk.disconnect();
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented');
-    }
-  }
-
-  static StreamSubscription<ConnectionStatus>? subscribeConnectionStatus(
-      {required void onData(ConnectionStatus event),
-      required void onError(Object error)}) {
-    try {
-      return SpotifySdk.subscribeConnectionStatus()
-          .listen(onData, onError: onError);
-    } on PlatformException {
-      return null;
-    } on MissingPluginException {
-      return null;
-    }
-  }
-
-  static StreamSubscription<PlayerState>? subscribePlayerState(
-      {required void onData(PlayerState event),
-      void Function(Object error)? onError}) {
-    try {
-      return SpotifySdk.subscribePlayerState().listen(onData, onError: onError);
-    } on PlatformException {
-      return null;
-    } on MissingPluginException {
-      return null;
-    }
-  }
-
-  static Future<String> getTokenWithSdk() async {
-    try {
-      String token = await SpotifySdk.getAuthenticationToken(
-          clientId: spotifyClientId,
-          redirectUrl: spotifyRedirectUri,
-          scope: spotifyScopes.toString());
-      SpotifySdkService.setStatus('Got a token: $token');
-      return token;
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-      rethrow;
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented on this platform');
-      rethrow;
-    }
-  }
-
-  static Future<void> playTrackInPlaylist(
-      TrackApp trackApp, Playlist playlist) async {
-    trackApp.indexSpotify == null
-        ? await playTrackBySpotifyUri('spotify:track:' + trackApp.id)
-        : await skipToIndex(playlist.id, trackApp.indexSpotify!);
-  }
-
-  static Future<void> playTrack(TrackApp trackApp) async =>
-      await playTrackBySpotifyUri('spotify:track:' + trackApp.id);
-
-  static Future<void> playTrackBySpotifyUri(String? spotifyUri) async {
-    if (spotifyUri != null) {
-      try {
-        await SpotifySdk.play(spotifyUri: spotifyUri);
-      } on PlatformException catch (e) {
-        SpotifySdkService.setStatus(e.code, message: e.message);
-      } on MissingPluginException {
-        SpotifySdkService.setStatus('not implemented');
+  TrackApp? findNextTrack() {
+    final currentTrack = _currentTrack;
+    final tracksList = _currentTracksList;
+    if (currentTrack == null || tracksList == null) return null;
+    int currentIndex = currentTrack.indexApp ?? -1;
+    List<int> indexes = tracksList.map((track) => track.indexApp ?? 0).toList();
+    int maxIndex = indexes.reduce(max);
+    int minIndex;
+    while (++currentIndex <= maxIndex) {
+      if (indexes.contains(currentIndex)) {
+        return indexes[currentIndex] ?? 0;
       }
     }
+    minIndex = indexes.keys.reduce(min);
+    return indexes[minIndex] ?? 0;
   }
 
-  static togglePlay(bool? pause) async {
-    try {
-      pause = pause ?? false;
-      pause ? await SpotifySdk.pause() : await SpotifySdk.resume();
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented');
+  void whenPlayerStateChange(PlayerState newState) {
+    if (isStarting) {
+      isStarting = newState.playbackPosition > 0 ? false : true;
+    } else if (newState.playbackPosition == 0){
+      isStarting = true;
+      final nextTrack = findNextTrack();
+      if (nextTrack != null) {
+        SpotifySdkStatic.playTrack(nextTrack);
+      }
+    }
+    Room? room = _currentRoom;
+    SpotifyServiceSubscriber? subscriber = _subscriber;
+    if (room != null) db.updateRoomPlayerState(room, newState);
+    if (subscriber != null) {
+      subscriber.whenPlayerStateChange(newState);
     }
   }
 
-  static Future<void> toggleShuffle() async {
-    try {
-      await SpotifySdk.toggleShuffle();
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented');
+  void whenConnStatusChange(ConnectionStatus newStatus) {
+    isConnected = newStatus.connected;
+    SpotifyServiceSubscriber? subscriber = _subscriber;
+    playerStateSubscription =
+        SpotifySdkStatic.subscribePlayerState(onData: whenPlayerStateChange);
+    if (subscriber != null) {
+      subscriber.whenConnStatusChange(newStatus);
     }
   }
 
-  static Future<void> toggleRepeat() async {
-    try {
-      await SpotifySdk.toggleRepeat();
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented');
+  void disconnect() {
+    SpotifySdkStatic.disconnect();
+    if (connStatusSubscription != null) {
+      connStatusSubscription!.cancel();
     }
-  }
-
-  static TrackApp findNewTrackApp(
-      TrackApp trackApp, List<TrackApp> tracksList, String? newId) {
-    if (newId != null) {
-      return tracksList.firstWhere((track) => track.id == newId,
-          orElse: () => trackApp);
+    if (playerStateSubscription != null) {
+      playerStateSubscription!.cancel();
     }
-    return trackApp;
-  }
-
-  static Future<Duration> seekTo(int? milliseconds) async {
-    milliseconds = milliseconds ?? 0;
-    try {
-    await SpotifySdk.seekTo(positionedMilliseconds: milliseconds);
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented');
-    }
-    return Duration(milliseconds: milliseconds);
-  }
-
-  static Future<void> skipNext() async {
-    try {
-      await SpotifySdk.skipNext();
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented');
-    }
-  }
-
-  static Future<void> skipPrevious() async {
-    try {
-      await SpotifySdk.skipPrevious();
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented');
-    }
-  }
-
-  static Future<void> skipToIndex(String playlistId, int nextIndex) async {
-    try {
-      await SpotifySdk.skipToIndex(
-          spotifyUri: 'spotify:playlist:' + playlistId, trackIndex: nextIndex);
-    } on PlatformException catch (e) {
-      SpotifySdkService.setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      SpotifySdkService.setStatus('not implemented');
-    }
-  }
-
-  static void setStatus(String code, {String? message}) {
-    var text = message ?? '';
-    _logger.i('$code$text');
   }
 }

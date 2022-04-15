@@ -98,7 +98,6 @@ abstract class Database {
 }
 
 class FirestoreDatabase implements Database {
-  FirestoreDatabase();
 
   late String _uid;
 

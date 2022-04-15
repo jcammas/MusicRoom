@@ -39,7 +39,7 @@ class CreateRoomManager extends ChooseFormManager {
       {required Database db, required this.spotify, bool isLoading = false})
       : super(db: db, isLoading: isLoading);
 
-  final SpotifyWeb spotify;
+  final SpotifyWebService spotify;
   String? name;
 
   void updateName(String name) {

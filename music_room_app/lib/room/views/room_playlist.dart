@@ -21,7 +21,7 @@ class RoomPlaylistPage extends StatefulWidget {
   final RoomPlaylistManager manager;
 
   static Widget create({required BuildContext context, required Room room}) {
-    final SpotifyWeb spotify = Provider.of<SpotifyWeb>(context, listen: false);
+    final SpotifyWebService spotify = Provider.of<SpotifyWebService>(context, listen: false);
     final Database db = Provider.of<Database>(context, listen: false);
     return ChangeNotifierProvider<RoomPlaylistManager>(
       create: (_) => RoomPlaylistManager(db: db, room: room, spotify: spotify),
