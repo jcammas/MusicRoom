@@ -35,8 +35,8 @@ class TrackTitleRowManager with ChangeNotifier implements TrackManager {
 
   @override
   void whenPlayerStateChange(PlayerState newState) {
-    if (trackApp.id != spotify.currentTrack?.id) {
-      trackApp = spotify.currentTrack ?? trackApp;
+    if (trackApp.id != spotify.getIdFromUri(newState.track?.uri)) {
+      trackApp = spotify.getNewTrackApp(newState.track)?? trackApp;
       notifyListeners();
     }
   }

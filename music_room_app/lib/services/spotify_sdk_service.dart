@@ -50,7 +50,7 @@ class SpotifySdkService {
     SpotifySdkStatic.togglePlay(currentRoom?.playerState?.isPaused);
   }
 
-  String? _getIdFromUri(String? uri) {
+  String? getIdFromUri(String? uri) {
     if (uri == null) return null;
     List split = uri.split(':');
     if (split.length != 3) return null;
@@ -136,20 +136,21 @@ class SpotifySdkService {
     return null;
   }
 
-  TrackApp? updateCurrentTrack(Track? track) {
-    String? newId = _getIdFromUri(track?.uri);
-    if (newId != _currentTrack?.id) {
+  TrackApp? getNewTrackApp(Track? track) {
+    String? newId = getIdFromUri(track?.uri);
       try {
-        _currentTrack =
-            _currentTracksList?.where((track) => track.id == newId).first;
-      } on StateError {}
-    }
+        return _currentTracksList?.where((track) => track.id == newId).first;
+      } on StateError {
+        SpotifySdkStatic.setStatus("could not get currentTrack in SpotifySdkService");
+      }
     return _currentTrack;
   }
 
   void whenPlayerStateChange(PlayerState newState) {
-    updateCurrentTrack(newState.track);
     Track? newTrack = newState.track;
+    if (newTrack != null && getIdFromUri(newTrack.uri) != _currentTrack?.id) {
+      _currentTrack = getNewTrackApp(newTrack);
+    }
     if (isStarting) {
       isStarting = 10 * newState.playbackPosition >
               (newTrack == null ? 0 : newTrack.duration) * 9

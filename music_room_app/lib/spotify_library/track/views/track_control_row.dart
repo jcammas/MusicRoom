@@ -39,6 +39,7 @@ class _TrackControlRowState extends State<TrackControlRow> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
+          SizedBox(),
           GestureDetector(
             onTap: manager.skipPrevious,
             child: const Icon(
@@ -72,6 +73,7 @@ class _TrackControlRowState extends State<TrackControlRow> {
               size: 40,
             ),
           ),
+          SizedBox(),
         ],
       ),
     );

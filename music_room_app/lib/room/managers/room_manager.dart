@@ -60,6 +60,9 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
   }
 }
 
+
+
+
 class RoomPlaylistManager extends RoomManager
     implements SpotifyServiceSubscriber {
   RoomPlaylistManager(
@@ -82,10 +85,13 @@ class RoomPlaylistManager extends RoomManager
   Duration position = const Duration(milliseconds: 0);
   Timer? timer;
 
-  Future<void> refreshTracksList() async {
-    tracksList = await db.getRoomTracks(room);
-    spotify.currentTracksList = this.tracksList;
+  void updateTracksList(List<TrackApp>? ls) {
+    tracksList = ls?? List.empty();
+    spotify.currentTracksList = ls?? List.empty();
   }
+
+  Future<void> refreshTracksList() async =>
+    updateTracksList(await db.getRoomTracks(room));
 
   Playlist get sourcePlaylist => room.sourcePlaylist;
 
@@ -119,11 +125,10 @@ class RoomPlaylistManager extends RoomManager
 
   Future<void> whenRoomChange(Room newRoom) async {
     spotify.currentRoom = newRoom;
-    spotify.currentTracksList = newRoom.tracksList;
     PlayerState? newPlayerState = newRoom.playerState;
     if (newPlayerState != null) {
       TrackApp newTrack =
-            spotify.updateCurrentTrack(newPlayerState.track) ?? trackApp;
+            spotify.getNewTrackApp(newPlayerState.track) ?? trackApp;
       if (isMaster) {
         trackApp = newTrack;
       } else if (trackApp.id != newTrack.id) {

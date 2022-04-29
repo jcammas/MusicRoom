@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import '../../constant_colors.dart';
 import '../../home/models/room.dart';
 import '../../services/database.dart';
-import '../../services/spotify_web.dart';
 import '../../spotify_library/track/views/track_page.dart';
 import '../../widgets/connect_spotify_form.dart';
 import '../managers/room_scaffold_manager.dart';
@@ -68,7 +67,7 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
     return StreamBuilder<List<TrackApp>>(
       stream: manager.roomTracksStream(),
       builder: (context, snapshot) {
-        manager.tracksList = snapshot.data ?? List.empty();
+        manager.updateTracksList(snapshot.data);
         return ListItemsBuilder<TrackApp>(
           snapshot: snapshot,
           manager: manager,
