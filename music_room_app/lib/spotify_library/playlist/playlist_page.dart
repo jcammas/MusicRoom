@@ -35,8 +35,9 @@ class PlaylistPage extends StatelessWidget {
     final db = Provider.of<Database>(context, listen: false);
     final spotifyWeb = Provider.of<SpotifyWebService>(context, listen: false);
     final spotifySdk = Provider.of<SpotifySdkService>(context, listen: false);
-    spotifySdk.currentTracksList = playlist.tracksList.values.toList();
-    spotifySdk.currentRoom = null;
+    if (spotifySdk.currentRoom == null) {
+      spotifySdk.currentTracksList = playlist.tracksList.values.toList();
+    }
     PlaylistManager manager = PlaylistManager(
         spotify: spotifyWeb, db: db, playlist: playlist, isLoading: true);
     manager.fillIfEmpty(context);
@@ -55,9 +56,11 @@ class PlaylistPage extends StatelessWidget {
         stream: db.userPlaylistStream(playlist),
         builder: (context, snapshot) {
           final playlist = snapshot.data;
-          spotify.currentTracksList = playlist == null
-              ? List.empty()
-              : playlist.tracksList.values.toList();
+          if (spotify.currentRoom == null) {
+            spotify.currentTracksList = playlist == null
+                ? List.empty()
+                : playlist.tracksList.values.toList();
+          }
           final pName = playlist?.name ?? '';
           return Scaffold(
               appBar: customAppBar(

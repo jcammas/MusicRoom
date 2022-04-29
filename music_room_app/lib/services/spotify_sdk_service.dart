@@ -17,7 +17,7 @@ class SpotifySdkService {
 
   List<TrackApp>? _currentTracksList;
   TrackApp? _currentTrack;
-  Room? _currentRoom;
+  Room? currentRoom;
   StreamSubscription<ConnectionStatus>? connStatusSubscription;
   StreamSubscription<PlayerState>? playerStateSubscription;
   List<SpotifyServiceSubscriber> _subscribers = List.empty(growable: true);
@@ -29,18 +29,25 @@ class SpotifySdkService {
 
   set currentTracksList(List<TrackApp> ls) => _currentTracksList = ls;
 
-  set currentRoom(Room? room) => _currentRoom = room;
-
   TrackApp? get currentTrack => _currentTrack;
 
-  Future<void> playTrack(TrackApp trackApp) async =>
-      await SpotifySdkStatic.playTrack(trackApp);
+  Future<void> playTrack(TrackApp trackApp) async {
+    isStarting = true;
+    await SpotifySdkStatic.playTrack(trackApp);
+  }
+
+  Future<void> togglePlay(bool? pause) async =>
+      await SpotifySdkStatic.togglePlay(pause);
+
+  Future<Duration> seekTo(int? milliseconds) async =>
+      await SpotifySdkStatic.seekTo(milliseconds);
 
   Future<void> playRoomCurrentTrack() async {
+    isStarting = true;
     await SpotifySdkStatic.playTrackBySpotifyUri(
-        _currentRoom?.playerState?.track?.uri);
-    SpotifySdkStatic.seekTo(_currentRoom?.playerState?.track?.duration);
-    SpotifySdkStatic.togglePlay(_currentRoom?.playerState?.isPaused);
+        currentRoom?.playerState?.track?.uri);
+    SpotifySdkStatic.seekTo(currentRoom?.playerState?.track?.duration);
+    SpotifySdkStatic.togglePlay(currentRoom?.playerState?.isPaused);
   }
 
   String? _getIdFromUri(String? uri) {
@@ -133,19 +140,21 @@ class SpotifySdkService {
     String? newId = _getIdFromUri(track?.uri);
     if (newId != _currentTrack?.id) {
       try {
-        _currentTrack = _currentTracksList
-            ?.where((track) => track.id == newId)
-            .first;
-      } on StateError {
-      }
+        _currentTrack =
+            _currentTracksList?.where((track) => track.id == newId).first;
+      } on StateError {}
     }
     return _currentTrack;
   }
 
   void whenPlayerStateChange(PlayerState newState) {
     updateCurrentTrack(newState.track);
+    Track? newTrack = newState.track;
     if (isStarting) {
-      isStarting = newState.playbackPosition > 0 ? false : true;
+      isStarting = 10 * newState.playbackPosition >
+              (newTrack == null ? 0 : newTrack.duration) * 9
+          ? false
+          : true;
     } else if (newState.playbackPosition == 0) {
       isStarting = true;
       final nextTrack = findNextTrack();
@@ -153,7 +162,7 @@ class SpotifySdkService {
         SpotifySdkStatic.playTrack(nextTrack);
       }
     }
-    Room? room = _currentRoom;
+    Room? room = currentRoom;
     if (room != null) db.updateRoomPlayerState(room, newState);
     for (SpotifyServiceSubscriber subscriber in _subscribers) {
       subscriber.whenPlayerStateChange(newState);
@@ -180,10 +189,9 @@ class SpotifySdkService {
   }
 
   void cleanRoom() {
-    _currentRoom = null;
+    currentRoom = null;
     _currentTracksList = null;
   }
-
 }
 
 class SpotifySdkStatic {
@@ -274,7 +282,7 @@ class SpotifySdkStatic {
 
   static StreamSubscription<ConnectionStatus>? subscribeConnectionStatus(
       {required void onData(ConnectionStatus event),
-        required void onError(Object error)}) {
+      required void onError(Object error)}) {
     try {
       return SpotifySdk.subscribeConnectionStatus()
           .listen(onData, onError: onError);
@@ -287,7 +295,7 @@ class SpotifySdkStatic {
 
   static StreamSubscription<PlayerState>? subscribePlayerState(
       {required void onData(PlayerState event),
-        void Function(Object error)? onError}) {
+      void Function(Object error)? onError}) {
     try {
       return SpotifySdk.subscribePlayerState().listen(onData, onError: onError);
     } on PlatformException {
@@ -367,4 +375,3 @@ class SpotifySdkStatic {
     _logger.i('$code$text');
   }
 }
-

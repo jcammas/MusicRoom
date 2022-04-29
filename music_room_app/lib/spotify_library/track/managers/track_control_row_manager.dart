@@ -44,7 +44,7 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
     isStarting = true;
       TrackApp? nextTrack = spotify.findNextTrack();
       if (nextTrack != null) {
-        await SpotifySdkStatic.playTrack(nextTrack);
+        await spotify.playTrack(nextTrack);
       }
   }
 
@@ -53,14 +53,14 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
       if (position < const Duration(seconds: 4)) {
         TrackApp? previousTrack = spotify.findPreviousTrack();
         if (previousTrack != null) {
-          await SpotifySdkStatic.playTrack(previousTrack);
+          await spotify.playTrack(previousTrack);
         }
       } else {
-        await SpotifySdkStatic.playTrack(trackApp);
+        await spotify.playTrack(trackApp);
       }
   }
 
-  togglePlay() async => await SpotifySdkStatic.togglePlay(!isPaused);
+  togglePlay() async => await spotify.togglePlay(!isPaused);
 
   @override
   void whenPlayerStateChange(PlayerState newState) {
@@ -80,7 +80,7 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
         trackApp = tracksList.firstWhere((track) => track.id == newId);
       }
     } on Error {
-      SpotifySdkStatic.playTrack(trackApp);
+      spotify.playTrack(trackApp);
     }
   }
 
