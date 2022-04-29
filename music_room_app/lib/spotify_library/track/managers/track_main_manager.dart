@@ -11,7 +11,6 @@ import 'package:music_room_app/spotify_library/track/managers/track_slider_row_m
 import 'package:music_room_app/spotify_library/track/managers/track_title_row_manager.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/player_state.dart';
-import 'package:music_room_app/services/spotify_sdk_static.dart';
 import '../../../home/models/room.dart';
 
 class TrackMainManager with ChangeNotifier implements SpotifyServiceSubscriber {
@@ -41,18 +40,18 @@ class TrackMainManager with ChangeNotifier implements SpotifyServiceSubscriber {
   late TrackTitleRowManager titleRowManager;
 
   Future<void> initManager() async {
-    spotify.subscriber = this;
+    spotify.addSubscriber(this);
     isConnected = await spotify.init();
     if (isConnected) {
-      SpotifySdkStatic.playTrack(trackApp);
+      spotify.playTrack(trackApp);
     }
   }
 
   void _initManagers() {
     imageManager =
-        TrackImageManager(trackApp: trackApp, tracksList: tracksList);
+        TrackImageManager(trackApp: trackApp, tracksList: tracksList, spotify: spotify);
     titleRowManager =
-        TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList);
+        TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList, spotify: spotify);
     controlRowManager = TrackControlRowManager(
         trackApp: trackApp, playlist: playlist, tracksList: tracksList, spotify: spotify);
     sliderRowManager = TrackSliderRowManager();
@@ -68,7 +67,7 @@ class TrackMainManager with ChangeNotifier implements SpotifyServiceSubscriber {
     try {
       updateLoading(true);
       await spotify.connectSpotifySdk();
-      await SpotifySdkStatic.playTrack(trackApp);
+      await spotify.playTrack(trackApp);
       updateWith(isLoading: false, isConnected: true);
     } catch (e) {
       updateWith(isLoading: false, isConnected: false);

@@ -6,12 +6,11 @@ import 'package:music_room_app/home/models/database_model.dart';
 import 'package:music_room_app/services/spotify_sdk_service.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/player_state.dart';
-import 'package:spotify_sdk/models/track.dart';
 import '../../home/models/playlist.dart';
 import '../../home/models/room.dart';
 import '../../home/models/track.dart';
 import '../../services/database.dart';
-import '../../services/spotify_sdk_static.dart';
+import '../../services/spotify_service_subscriber.dart';
 import '../../spotify_library/widgets/list_items_manager.dart';
 import '../../widgets/show_exception_alert_dialog.dart';
 
@@ -30,7 +29,7 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
 
   Future<void> quitRoom(BuildContext context) async {
     updateLoading(true);
-    spotify.currentRoom = null;
+    spotify.cleanRoom();
     await db.updateUserRoom(null);
     await deleteGuest(context, db.uid);
     isMaster ? await db.delete(room) : null;
@@ -61,17 +60,20 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
   }
 }
 
-class RoomPlaylistManager extends RoomManager {
+class RoomPlaylistManager extends RoomManager
+    implements SpotifyServiceSubscriber {
   RoomPlaylistManager(
-      {required Database db, required Room room, required SpotifySdkService spotify})
+      {required Database db,
+      required Room room,
+      required SpotifySdkService spotify})
       : super(db: db, room: room, spotify: spotify) {
     initPlaylistManager();
     refreshTracksList();
-    spotify.currentRoom = room;
   }
 
   List<TrackApp> tracksList = [];
-  TrackApp currentTrack = TrackApp(name: 'default', id: 'NA', votes: 0, indexApp: 0);
+  TrackApp trackApp =
+      TrackApp(name: 'default', id: 'NA', votes: 0, indexApp: 0);
   String? token;
   StreamSubscription<Room>? roomSubscription;
   StreamSubscription<ConnectionStatus>? connStatusSubscription;
@@ -79,9 +81,6 @@ class RoomPlaylistManager extends RoomManager {
   bool isPaused = true;
   Duration position = const Duration(milliseconds: 0);
   Timer? timer;
-
-  String? getTrackSdkId(Track? trackSdk) =>
-      trackSdk == null ? null : trackSdk.uri.split(':')[2];
 
   Future<void> refreshTracksList() async {
     tracksList = await db.getRoomTracks(room);
@@ -95,31 +94,20 @@ class RoomPlaylistManager extends RoomManager {
   roomStream() => db.roomStream(room);
 
   Future<void> initPlaylistManager() async {
-    connStatusSubscription = SpotifySdkStatic.subscribeConnectionStatus(
-        onData: whenConnStatusChange,
-        onError: (error) => updateConnected(false));
-    isConnected = await SpotifySdkStatic.checkConnection();
+    spotify.addSubscriber(this);
+    spotify.currentRoom = room;
+    updateConnected(await spotify.init());
     if (isConnected) {
-      await SpotifySdkStatic.playTrackBySpotifyUri(
-          room.playerState?.track?.uri);
-      SpotifySdkStatic.seekTo(room.playerState?.track?.duration);
-      SpotifySdkStatic.togglePlay(room.playerState?.isPaused);
+      await spotify.playRoomCurrentTrack();
     }
     roomSubscription = roomStream().listen(whenRoomChange);
   }
 
-  void whenConnStatusChange(ConnectionStatus newStatus) {
-    updateConnected(newStatus.connected);
-    playerStateSubscription =
-        SpotifySdkStatic.subscribePlayerState(onData: whenPlayerStateChange);
-  }
+  void whenConnStatusChange(ConnectionStatus newStatus) =>
+      updateConnected(newStatus.connected);
 
   void whenPlayerStateChange(PlayerState newState) {
-    String? newId = getTrackSdkId(newState.track);
-    if (currentTrack.id != newId) {
-      currentTrack =
-          SpotifySdkStatic.findNewTrackApp(currentTrack, tracksList, newId);
-    }
+    trackApp = spotify.currentTrack ?? trackApp;
     position = Duration(milliseconds: newState.playbackPosition);
     if (isPaused != newState.isPaused) {
       timer != null ? timer!.cancel() : null;
@@ -130,31 +118,20 @@ class RoomPlaylistManager extends RoomManager {
   }
 
   Future<void> whenRoomChange(Room newRoom) async {
+    spotify.currentRoom = newRoom;
+    spotify.currentTracksList = newRoom.tracksList;
     PlayerState? newPlayerState = newRoom.playerState;
-    if (newPlayerState != null && !isMaster) {
-      remoteControlSdk(newPlayerState);
-    } else if (newPlayerState != null && isMaster) {
-      String? newId = getTrackSdkId(newPlayerState.track);
-      if (currentTrack.id != newId) {
-        currentTrack =
-            SpotifySdkStatic.findNewTrackApp(currentTrack, tracksList, newId);
+    if (newPlayerState != null) {
+      TrackApp newTrack =
+            spotify.updateCurrentTrack(newPlayerState.track) ?? trackApp;
+      if (isMaster) {
+        trackApp = newTrack;
+      } else if (trackApp.id != newTrack.id) {
+          spotify.playRoomCurrentTrack();
+        }
       }
-    }
     room = newRoom;
     notifyListeners();
-  }
-
-  void remoteControlSdk(PlayerState newPlayerState) {
-    String? newId = getTrackSdkId(newPlayerState.track);
-    if (currentTrack.id != newId) {
-      TrackApp newTrack =
-          SpotifySdkStatic.findNewTrackApp(currentTrack, tracksList, newId);
-      SpotifySdkStatic.playTrack(newTrack);
-    }
-    SpotifySdkStatic.seekTo(newPlayerState.playbackPosition);
-    if (newPlayerState.isPaused != isPaused) {
-      SpotifySdkStatic.togglePlay(newPlayerState.isPaused);
-    }
   }
 
   Future<void> connectSpotifySdk(BuildContext context) async {
@@ -216,7 +193,10 @@ class RoomPlaylistManager extends RoomManager {
 }
 
 class RoomGuestsManager extends RoomManager {
-  RoomGuestsManager({required Database db, required Room room, required SpotifySdkService spotify})
+  RoomGuestsManager(
+      {required Database db,
+      required Room room,
+      required SpotifySdkService spotify})
       : super(db: db, room: room, spotify: spotify);
 
   roomGuestsStream() => db.usersStream(ids: room.guests);

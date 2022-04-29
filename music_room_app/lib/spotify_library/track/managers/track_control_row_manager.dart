@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/services/spotify_sdk_service.dart';
-import 'package:music_room_app/services/spotify_sdk_static.dart';
 import 'package:music_room_app/services/spotify_service_subscriber.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';

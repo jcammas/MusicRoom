@@ -55,12 +55,12 @@ class _RoomPlaylistPageState extends State<RoomPlaylistPage> {
               tracksList, manager.spotify, manager.db,
               room: manager.room)
           : () => {},
-      icon: manager.currentTrack.id == track.id
+      icon: manager.trackApp.id == track.id
           ? const Icon(Icons.radio_button_checked, color: primaryColor)
           : manager.isMaster
               ? const Icon(Icons.chevron_right)
               : null,
-      tileColor: manager.currentTrack.id == track.id ? activeTileColor : null,
+      tileColor: manager.trackApp.id == track.id ? activeTileColor : null,
     );
   }
 

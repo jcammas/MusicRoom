@@ -22,14 +22,14 @@ class TrackPage extends StatelessWidget {
   static Future<void> show(
       BuildContext context,
       Playlist playlist,
-      TrackApp trackApp,
+      TrackApp currentTrack,
       List<TrackApp> tracksList,
       SpotifySdkService spotify,
       Database db,
       {Room? room}) async {
     TrackMainManager manager = TrackMainManager(
         context: context,
-        trackApp: trackApp,
+        trackApp: currentTrack,
         playlist: playlist,
         tracksList: tracksList,
         spotify: spotify,
