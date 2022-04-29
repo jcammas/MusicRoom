@@ -25,7 +25,7 @@ class SpotifySdkService {
 
   set currentTracksList(List<TrackApp> ls) => _currentTracksList = ls;
 
-  set currentRoom(Room room) => _currentRoom = room;
+  set currentRoom(Room? room) => _currentRoom = room;
 
   set subscriber(SpotifyServiceSubscriber subscriber) {
     _subscriber = subscriber;
@@ -60,27 +60,56 @@ class SpotifySdkService {
     }
   }
 
+  List<TrackApp>? indexedTracksList() {
+    List<TrackApp>? ls = _currentTracksList;
+    if (ls == null) return null;
+    int i = 0;
+    int len = ls.length;
+    while (++i < len) {
+      if (ls[i - 1].indexApp > ls[i].indexApp) {
+        ls.sort((t1, t2) => t1.indexApp.compareTo(t2.indexApp));
+        break;
+      };
+    }
+    i = -1;
+    while (++i < len) {
+      ls[i].indexApp = i;
+    }
+    return ls;
+  }
+
   TrackApp? findNextTrack() {
     final currentTrack = _currentTrack;
-    final tracksList = _currentTracksList;
+    final tracksList = indexedTracksList();
     if (currentTrack == null || tracksList == null) return null;
-    int currentIndex = currentTrack.indexApp ?? -1;
-    List<int> indexes = tracksList.map((track) => track.indexApp ?? 0).toList();
-    int maxIndex = indexes.reduce(max);
-    int minIndex;
-    while (++currentIndex <= maxIndex) {
-      if (indexes.contains(currentIndex)) {
-        return indexes[currentIndex] ?? 0;
+    final len = tracksList.length;
+    int i = -1;
+    while (++i < len) {
+      if (tracksList[i].id == currentTrack.id) {
+        return i == len - 1 ? tracksList[0] : tracksList[i + 1];
       }
     }
-    minIndex = indexes.keys.reduce(min);
-    return indexes[minIndex] ?? 0;
+    return null;
+  }
+
+  TrackApp? findPreviousTrack() {
+    final currentTrack = _currentTrack;
+    final tracksList = indexedTracksList();
+    if (currentTrack == null || tracksList == null) return null;
+    final len = tracksList.length;
+    int i = -1;
+    while (++i < len) {
+      if (tracksList[i].id == currentTrack.id) {
+        return i == 0 ? tracksList[len - 1] : tracksList[i - 1];
+      }
+    }
+    return null;
   }
 
   void whenPlayerStateChange(PlayerState newState) {
     if (isStarting) {
       isStarting = newState.playbackPosition > 0 ? false : true;
-    } else if (newState.playbackPosition == 0){
+    } else if (newState.playbackPosition == 0) {
       isStarting = true;
       final nextTrack = findNextTrack();
       if (nextTrack != null) {

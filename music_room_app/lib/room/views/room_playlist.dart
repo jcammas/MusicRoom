@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/room/views/add_track_form.dart';
 import 'package:music_room_app/room/views/room_default.dart';
+import 'package:music_room_app/services/spotify_sdk_service.dart';
 import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
 import 'package:music_room_app/spotify_library/playlist/track_tile.dart';
@@ -21,7 +22,7 @@ class RoomPlaylistPage extends StatefulWidget {
   final RoomPlaylistManager manager;
 
   static Widget create({required BuildContext context, required Room room}) {
-    final SpotifyWebService spotify = Provider.of<SpotifyWebService>(context, listen: false);
+    final SpotifySdkService spotify = Provider.of<SpotifySdkService>(context, listen: false);
     final Database db = Provider.of<Database>(context, listen: false);
     return ChangeNotifierProvider<RoomPlaylistManager>(
       create: (_) => RoomPlaylistManager(db: db, room: room, spotify: spotify),

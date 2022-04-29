@@ -3,24 +3,25 @@ import 'package:music_room_app/services/api_path.dart';
 import 'database_model.dart';
 
 class TrackApp implements DatabaseModel {
-  TrackApp(
-      {required this.name,
-      required this.id,
-      required this.votes,
-      this.album,
-      this.artists,
-      this.discNumber,
-      this.durationMs,
-      this.explicit,
-      this.externalIds,
-      this.type,
-      this.isPlayable,
-      this.isLocal,
-      this.restrictions,
-      this.popularity,
-      this.trackNumber,
-      this.indexSpotify,
-      this.indexApp});
+  TrackApp({
+    required this.name,
+    required this.id,
+    required this.votes,
+    required this.indexApp,
+    this.album,
+    this.artists,
+    this.discNumber,
+    this.durationMs,
+    this.explicit,
+    this.externalIds,
+    this.type,
+    this.isPlayable,
+    this.isLocal,
+    this.restrictions,
+    this.popularity,
+    this.trackNumber,
+    this.indexSpotify,
+  });
 
   final String id;
   String name;
@@ -38,12 +39,12 @@ class TrackApp implements DatabaseModel {
   int? popularity;
   int? trackNumber;
   int? indexSpotify;
-  int? indexApp;
+  int indexApp;
   static const double imageSize = 55.0;
-
 
   @override
   get docId => DBPath.track(id);
+
   @override
   get wrappedCollectionsIds => [];
 
@@ -78,7 +79,7 @@ class TrackApp implements DatabaseModel {
       final int? popularity = data['popularity'];
       final int? trackNumber = data['track_number'];
       final int? indexSpotify = data['index_spotify'];
-      final int? indexApp = data['index_app'];
+      final int indexApp = data['index_app'] ?? 0;
       return TrackApp(
         id: id,
         name: name,
@@ -99,7 +100,7 @@ class TrackApp implements DatabaseModel {
         indexApp: indexApp,
       );
     } else {
-      return TrackApp(id: 'N/A', name: 'N/A', votes: 0);
+      return TrackApp(id: 'N/A', name: 'N/A', votes: 0, indexApp: 0);
     }
   }
 

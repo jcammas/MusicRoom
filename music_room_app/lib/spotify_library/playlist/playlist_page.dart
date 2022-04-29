@@ -35,6 +35,8 @@ class PlaylistPage extends StatelessWidget {
     final db = Provider.of<Database>(context, listen: false);
     final spotifyWeb = Provider.of<SpotifyWebService>(context, listen: false);
     final spotifySdk = Provider.of<SpotifySdkService>(context, listen: false);
+    spotifySdk.currentTracksList = playlist.tracksList.values.toList();
+    spotifySdk.currentRoom = null;
     PlaylistManager manager = PlaylistManager(
         spotify: spotifyWeb, db: db, playlist: playlist, isLoading: true);
     manager.fillIfEmpty(context);
@@ -53,6 +55,9 @@ class PlaylistPage extends StatelessWidget {
         stream: db.userPlaylistStream(playlist),
         builder: (context, snapshot) {
           final playlist = snapshot.data;
+          spotify.currentTracksList = playlist == null
+              ? List.empty()
+              : playlist.tracksList.values.toList();
           final pName = playlist?.name ?? '';
           return Scaffold(
               appBar: customAppBar(
@@ -75,8 +80,8 @@ class PlaylistPage extends StatelessWidget {
     }
   }
 
-  void showTrackPage(
-      BuildContext context, Playlist playlist, TrackApp track, List<TrackApp> tracksList) async {
+  void showTrackPage(BuildContext context, Playlist playlist, TrackApp track,
+      List<TrackApp> tracksList) async {
     if (await manager.checkIfRoomActive()) {
       await showAlertDialog(context,
           title: 'Can\'t access track',
@@ -106,8 +111,8 @@ class PlaylistPage extends StatelessWidget {
                 onDismissed: (direction) => manager.deleteItem(context, track),
                 child: TrackTile(
                   track: track,
-                  onTap: () => showTrackPage(
-                      context, playlist, track, snapshot.data!),
+                  onTap: () =>
+                      showTrackPage(context, playlist, track, snapshot.data!),
                 ),
               ),
             ),

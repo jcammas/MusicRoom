@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/database_model.dart';
+import 'package:music_room_app/services/spotify_sdk_service.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
@@ -10,25 +11,26 @@ import '../../home/models/playlist.dart';
 import '../../home/models/room.dart';
 import '../../home/models/track.dart';
 import '../../services/database.dart';
-import '../../services/spotify_web.dart';
 import '../../services/spotify_sdk_static.dart';
 import '../../spotify_library/widgets/list_items_manager.dart';
 import '../../widgets/show_exception_alert_dialog.dart';
 
 class RoomManager with ChangeNotifier implements ListItemsManager {
   final Database db;
+  final SpotifySdkService spotify;
   late bool isMaster;
   Room room;
   bool isLoading = false;
   bool isConnected = false;
   String opeFailed = 'Operation failed';
 
-  RoomManager({required this.db, required this.room}) {
+  RoomManager({required this.db, required this.room, required this.spotify}) {
     isMaster = db.uid == room.ownerId;
   }
 
   Future<void> quitRoom(BuildContext context) async {
     updateLoading(true);
+    spotify.currentRoom = null;
     await db.updateUserRoom(null);
     await deleteGuest(context, db.uid);
     isMaster ? await db.delete(room) : null;
@@ -61,15 +63,15 @@ class RoomManager with ChangeNotifier implements ListItemsManager {
 
 class RoomPlaylistManager extends RoomManager {
   RoomPlaylistManager(
-      {required Database db, required Room room, required this.spotify})
-      : super(db: db, room: room) {
+      {required Database db, required Room room, required SpotifySdkService spotify})
+      : super(db: db, room: room, spotify: spotify) {
     initPlaylistManager();
     refreshTracksList();
+    spotify.currentRoom = room;
   }
 
-  final SpotifyWebService spotify;
   List<TrackApp> tracksList = [];
-  TrackApp currentTrack = TrackApp(name: 'default', id: 'NA', votes: 0);
+  TrackApp currentTrack = TrackApp(name: 'default', id: 'NA', votes: 0, indexApp: 0);
   String? token;
   StreamSubscription<Room>? roomSubscription;
   StreamSubscription<ConnectionStatus>? connStatusSubscription;
@@ -81,8 +83,10 @@ class RoomPlaylistManager extends RoomManager {
   String? getTrackSdkId(Track? trackSdk) =>
       trackSdk == null ? null : trackSdk.uri.split(':')[2];
 
-  Future<void> refreshTracksList() async =>
-      tracksList = await db.getRoomTracks(room);
+  Future<void> refreshTracksList() async {
+    tracksList = await db.getRoomTracks(room);
+    spotify.currentTracksList = this.tracksList;
+  }
 
   Playlist get sourcePlaylist => room.sourcePlaylist;
 
@@ -156,8 +160,7 @@ class RoomPlaylistManager extends RoomManager {
   Future<void> connectSpotifySdk(BuildContext context) async {
     try {
       updateLoading(true);
-      token = await spotify.getAccessToken();
-      token = await SpotifySdkStatic.connectSpotifySdk(token);
+      await spotify.connectSpotifySdk();
       updateWith(isLoading: false, isConnected: true);
     } on Exception catch (e) {
       updateWith(isLoading: false, isConnected: false);
@@ -194,7 +197,7 @@ class RoomPlaylistManager extends RoomManager {
   }
 
   int maxIndexInTrackList() =>
-      tracksList.map((track) => track.indexApp ?? 0).toList().reduce(max);
+      tracksList.map((track) => track.indexApp).toList().reduce(max);
 
   Future<void> addTrack(BuildContext context, TrackApp track) async {
     try {
@@ -213,8 +216,8 @@ class RoomPlaylistManager extends RoomManager {
 }
 
 class RoomGuestsManager extends RoomManager {
-  RoomGuestsManager({required Database db, required Room room})
-      : super(db: db, room: room);
+  RoomGuestsManager({required Database db, required Room room, required SpotifySdkService spotify})
+      : super(db: db, room: room, spotify: spotify);
 
   roomGuestsStream() => db.usersStream(ids: room.guests);
 }

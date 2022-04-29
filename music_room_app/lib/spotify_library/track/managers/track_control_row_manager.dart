@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
+import 'package:music_room_app/services/spotify_sdk_service.dart';
 import 'package:music_room_app/services/spotify_sdk_static.dart';
 import 'package:music_room_app/services/spotify_service_subscriber.dart';
-import 'package:spotify_sdk/models/player_options.dart' as player_options;
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
 
@@ -13,19 +12,19 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
   TrackControlRowManager(
       {required this.trackApp,
       required this.playlist,
-      required this.tracksList});
+      required this.tracksList,
+      required this.spotify});
 
   final List<TrackApp> tracksList;
+  final SpotifySdkService spotify;
   TrackApp trackApp;
   Playlist playlist;
   bool isPaused = true;
-  bool isShuffling = false;
   bool playback = false;
   bool isStarting = true;
   Track? trackSdk;
   Timer? timer;
   Duration position = const Duration(milliseconds: 0);
-  player_options.RepeatMode repeatMode = player_options.RepeatMode.off;
 
   String? get trackSdkId =>
       trackSdk == null ? null : trackSdk!.uri.split(':')[2];
@@ -42,71 +41,27 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
     notifyListeners();
   }
 
-  int _findNextTrack() {
-    int currentIndex = trackApp.indexApp ?? -1;
-    List<int> indexes = tracksList.map((track) => track.indexApp ?? 0).toList();
-    int maxIndex = indexes.reduce(max);
-    int minIndex;
-    while (++currentIndex <= maxIndex) {
-      if (indexes.contains(currentIndex)) {
-        return indexes[currentIndex] ?? 0;
-      }
-    }
-    minIndex = indexes.keys.reduce(min);
-    return indexes[minIndex] ?? 0;
-  }
-
   Future<void> skipNext() async {
     isStarting = true;
-    if (repeatMode != player_options.RepeatMode.off) {
-      await SpotifySdkStatic.playTrack(trackApp);
-    } else {
-      int nextIndex = _findNextTrack();
-      if (nextIndex >= 0) {
-        await SpotifySdkStatic.skipToIndex(
-            playlist.id, _findNextSpotifyIndex());
+      TrackApp? nextTrack = spotify.findNextTrack();
+      if (nextTrack != null) {
+        await SpotifySdkStatic.playTrack(nextTrack);
       }
-    }
-  }
-
-  int _findPreviousSpotifyIndex() {
-    int currentIndex = trackApp.indexApp ?? 0;
-    Map<int, int?> indexMap = Map.fromIterable(tracksList,
-        key: (track) => track.indexApp ?? 0,
-        value: (track) => track.indexSpotify);
-    int minIndex = indexMap.keys.reduce(min);
-    int maxIndex;
-    while (--currentIndex >= minIndex) {
-      if (indexMap.containsKey(currentIndex)) {
-        return indexMap[currentIndex] ?? 0;
-      }
-    }
-    maxIndex = indexMap.keys.reduce(max);
-    return indexMap[maxIndex] ?? 0;
   }
 
   Future<void> skipPrevious() async {
     isStarting = true;
-    if (isShuffling || repeatMode != player_options.RepeatMode.off) {
-      await SpotifySdkStatic.skipPrevious();
-    } else {
       if (position < const Duration(seconds: 4)) {
-        int previousIndex = _findPreviousSpotifyIndex();
-        if (previousIndex >= 0) {
-          await SpotifySdkStatic.skipToIndex(
-              playlist.id, _findPreviousSpotifyIndex());
+        TrackApp? previousTrack = spotify.findPreviousTrack();
+        if (previousTrack != null) {
+          await SpotifySdkStatic.playTrack(previousTrack);
         }
       } else {
-        SpotifySdkStatic.playTrackInPlaylist(trackApp, playlist);
+        await SpotifySdkStatic.playTrack(trackApp);
       }
-    }
   }
 
-  toggleShuffle() async => isShuffling = !isShuffling;
-
   togglePlay() async => await SpotifySdkStatic.togglePlay(!isPaused);
-
-  toggleRepeat() async => await SpotifySdkStatic.toggleRepeat();
 
   @override
   void whenPlayerStateChange(PlayerState newState) {
@@ -117,14 +72,6 @@ class TrackControlRowManager with ChangeNotifier implements TrackManager {
       timer != null ? timer!.cancel() : null;
       newState.isPaused == false ? initTimer() : null;
       isPaused = newState.isPaused;
-      notify = true;
-    }
-    if (isShuffling != newState.playbackOptions.isShuffling) {
-      isShuffling = newState.playbackOptions.isShuffling;
-      notify = true;
-    }
-    if (repeatMode != newState.playbackOptions.repeatMode) {
-      repeatMode = newState.playbackOptions.repeatMode;
       notify = true;
     }
     notify ? notifyListeners() : null;

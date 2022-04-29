@@ -54,7 +54,7 @@ class TrackMainManager with ChangeNotifier implements SpotifyServiceSubscriber {
     titleRowManager =
         TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList);
     controlRowManager = TrackControlRowManager(
-        trackApp: trackApp, playlist: playlist, tracksList: tracksList);
+        trackApp: trackApp, playlist: playlist, tracksList: tracksList, spotify: spotify);
     sliderRowManager = TrackSliderRowManager();
     managers = [
       imageManager,
