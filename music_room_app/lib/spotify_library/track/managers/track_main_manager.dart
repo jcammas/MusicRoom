@@ -3,26 +3,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/services/spotify_web.dart';
+import 'package:music_room_app/services/spotify_sdk_service.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_control_row_manager.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_image_manager.dart';
-import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
+import 'package:music_room_app/services/spotify_service_subscriber.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_slider_row_manager.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_title_row_manager.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/player_state.dart';
-import 'package:music_room_app/services/spotify_sdk_service.dart';
 import '../../../home/models/room.dart';
-import '../../../services/database.dart';
 
-class TrackMainManager with ChangeNotifier implements TrackManager {
+class TrackMainManager with ChangeNotifier implements SpotifyServiceSubscriber {
   TrackMainManager({
     required this.context,
     required this.playlist,
     required this.trackApp,
     required this.tracksList,
     required this.spotify,
-    required this.db,
     this.room,
   }) {
     _initManagers();
@@ -32,13 +29,9 @@ class TrackMainManager with ChangeNotifier implements TrackManager {
   final Playlist playlist;
   final List<TrackApp> tracksList;
   TrackApp trackApp;
-  String? token;
   bool isConnected = false;
   bool isLoading = false;
-  StreamSubscription<ConnectionStatus>? connStatusSubscription;
-  StreamSubscription<PlayerState>? playerStateSubscription;
-  SpotifyWeb spotify;
-  Database db;
+  SpotifySdkService spotify;
   Room? room;
   late List<TrackManager> managers;
   late TrackImageManager imageManager;
@@ -47,22 +40,21 @@ class TrackMainManager with ChangeNotifier implements TrackManager {
   late TrackTitleRowManager titleRowManager;
 
   Future<void> initManager() async {
-    connStatusSubscription = SpotifySdkService.subscribeConnectionStatus(
-        onData: whenConnStatusChange, onError: (error) => isConnected = false);
-    isConnected = await SpotifySdkService.checkConnection();
+    spotify.addSubscriber(this);
+    isConnected = await spotify.init();
     if (isConnected) {
-      SpotifySdkService.playTrackInPlaylist(trackApp, playlist);
+      spotify.playTrack(trackApp);
     }
   }
 
   void _initManagers() {
     imageManager =
-        TrackImageManager(trackApp: trackApp, tracksList: tracksList);
+        TrackImageManager(trackApp: trackApp, tracksList: tracksList, spotify: spotify);
     titleRowManager =
-        TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList);
+        TrackTitleRowManager(trackApp: trackApp, tracksList: tracksList, spotify: spotify);
     controlRowManager = TrackControlRowManager(
-        trackApp: trackApp, playlist: playlist, tracksList: tracksList);
-    sliderRowManager = TrackSliderRowManager();
+        trackApp: trackApp, playlist: playlist, tracksList: tracksList, spotify: spotify);
+    sliderRowManager = TrackSliderRowManager(spotify: spotify);
     managers = [
       imageManager,
       titleRowManager,
@@ -74,9 +66,8 @@ class TrackMainManager with ChangeNotifier implements TrackManager {
   Future<void> connectSpotifySdk() async {
     try {
       updateLoading(true);
-      token = await spotify.getAccessToken();
-      token = await SpotifySdkService.connectSpotifySdk(token);
-      await SpotifySdkService.playTrackInPlaylist(trackApp, playlist);
+      await spotify.connectSpotifySdk();
+      await spotify.playTrack(trackApp);
       updateWith(isLoading: false, isConnected: true);
     } catch (e) {
       updateWith(isLoading: false, isConnected: false);
@@ -85,7 +76,6 @@ class TrackMainManager with ChangeNotifier implements TrackManager {
   }
 
   void whenPlayerStateChange(PlayerState newState) {
-    if (room != null) db.updateRoomPlayerState(room!, newState);
     for (TrackManager manager in managers) {
       manager.whenPlayerStateChange(newState);
     }
@@ -96,8 +86,6 @@ class TrackMainManager with ChangeNotifier implements TrackManager {
       Navigator.of(context).pop();
     }
     updateConnected(newStatus.connected);
-    playerStateSubscription =
-        SpotifySdkService.subscribePlayerState(onData: whenPlayerStateChange);
   }
 
   void updateConnected(bool isConnected) =>
@@ -113,14 +101,7 @@ class TrackMainManager with ChangeNotifier implements TrackManager {
 
   @override
   void dispose() {
-    SpotifySdkService.disconnect();
-    if (connStatusSubscription != null) {
-      connStatusSubscription!.cancel();
-    }
-    if (playerStateSubscription != null) {
-      playerStateSubscription!.cancel();
-    }
+    spotify.disposeSubscriber(this);
     super.dispose();
   }
-
 }

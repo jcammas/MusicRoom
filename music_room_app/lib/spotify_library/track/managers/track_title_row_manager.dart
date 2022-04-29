@@ -1,20 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:music_room_app/home/models/track.dart';
-import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
+import 'package:music_room_app/services/spotify_sdk_service.dart';
+import 'package:music_room_app/services/spotify_service_subscriber.dart';
 import 'package:spotify_sdk/models/player_state.dart';
-import 'package:spotify_sdk/models/track.dart';
-import '../../../services/spotify_sdk_service.dart';
 
 class TrackTitleRowManager with ChangeNotifier implements TrackManager {
-  TrackTitleRowManager({required this.trackApp, required this.tracksList});
+  TrackTitleRowManager(
+      {required this.trackApp,
+      required this.tracksList,
+      required this.spotify});
 
   final List<TrackApp> tracksList;
   TrackApp trackApp;
-  Track? trackSdk;
+  SpotifySdkService spotify;
   bool isAdded = false;
-
-  String? get trackSdkId =>
-      trackSdk == null ? null : trackSdk!.uri.split(':')[2];
 
   toggleAdded() => updateAdded(isAdded == true ? false : true);
 
@@ -36,14 +35,9 @@ class TrackTitleRowManager with ChangeNotifier implements TrackManager {
 
   @override
   void whenPlayerStateChange(PlayerState newState) {
-    trackSdk = newState.track;
-    if (trackSdk != null) {
-      String? newId = trackSdkId;
-      if (trackApp.id != newId) {
-        trackApp =
-            SpotifySdkService.findNewTrackApp(trackApp, tracksList, newId);
-        notifyListeners();
-      }
+    if (trackApp.id != spotify.getIdFromUri(newState.track?.uri)) {
+      trackApp = spotify.getNewTrackApp(newState.track)?? trackApp;
+      notifyListeners();
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/room/widgets/tiles.dart';
+import 'package:music_room_app/services/spotify_sdk_service.dart';
 import 'package:music_room_app/spotify_library/widgets/empty_content.dart';
 import 'package:music_room_app/spotify_library/widgets/list_items_builder.dart';
 import 'package:provider/provider.dart';
@@ -15,8 +16,9 @@ class RoomGuestsPage extends StatefulWidget {
 
   static Widget create({required BuildContext context, required Room room}) {
     final Database db = Provider.of<Database>(context, listen: false);
+    final SpotifySdkService spotify = Provider.of<SpotifySdkService>(context, listen: false);
     return ChangeNotifierProvider<RoomGuestsManager>(
-      create: (_) => RoomGuestsManager(db: db, room: room),
+      create: (_) => RoomGuestsManager(db: db, room: room, spotify: spotify),
       child: Consumer<RoomGuestsManager>(
           builder: (_, manager, __) => RoomGuestsPage(manager: manager)),
     );

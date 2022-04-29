@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:music_room_app/home/models/playlist.dart';
 import 'package:music_room_app/home/models/track.dart';
 import 'package:music_room_app/spotify_library/track/managers/track_control_row_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:spotify_sdk/models/player_options.dart';
 
 class TrackControlRow extends StatefulWidget {
   const TrackControlRow({Key? key, required this.manager}) : super(key: key);
@@ -41,13 +39,7 @@ class _TrackControlRowState extends State<TrackControlRow> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          GestureDetector(
-            onTap: manager.toggleShuffle,
-            child: Icon(
-              LineIcons.random,
-              color: manager.isShuffling ? Colors.green : Colors.grey.shade400,
-            ),
-          ),
+          SizedBox(),
           GestureDetector(
             onTap: manager.skipPrevious,
             child: const Icon(
@@ -81,19 +73,7 @@ class _TrackControlRowState extends State<TrackControlRow> {
               size: 40,
             ),
           ),
-          GestureDetector(
-            onTap: manager.toggleRepeat,
-            child: Icon(
-              manager.repeatMode == RepeatMode.off
-                  ? Icons.repeat_outlined
-                  : manager.repeatMode == RepeatMode.track
-                      ? Icons.repeat_one_on_outlined
-                      : Icons.repeat_on_outlined,
-              color: manager.repeatMode == RepeatMode.off
-                  ? Colors.grey.shade400
-                  : Colors.green,
-            ),
-          ),
+          SizedBox(),
         ],
       ),
     );

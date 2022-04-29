@@ -1,21 +1,18 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
-import 'package:music_room_app/spotify_library/track/managers/track_manager.dart';
+import 'package:music_room_app/services/spotify_service_subscriber.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/track.dart';
 import '../../../services/spotify_sdk_service.dart';
 
 class TrackSliderRowManager with ChangeNotifier implements TrackManager {
-  TrackSliderRowManager();
+  TrackSliderRowManager({required this.spotify});
 
   bool isPaused = true;
   Duration duration = const Duration(milliseconds: 0);
   Duration position = const Duration(milliseconds: 0);
-  Track? trackSdk;
   Timer? timer;
-
-  String? get trackSdkId =>
-      trackSdk == null ? null : trackSdk!.uri.split(':')[2];
+  SpotifySdkService spotify;
 
   initTimer() {
     if (timer != null) {
@@ -30,13 +27,15 @@ class TrackSliderRowManager with ChangeNotifier implements TrackManager {
   }
 
   Future<void> seekTo(int milliseconds) async =>
-      position = await SpotifySdkService.seekTo(milliseconds);
+      position = await spotify.seekTo(milliseconds);
 
   @override
   void whenPlayerStateChange(PlayerState newState) {
-    trackSdk = newState.track;
-    position = Duration(milliseconds: newState.playbackPosition);
-    duration = Duration(milliseconds: trackSdk!.duration);
+    Track? trackSdk = newState.track;
+    if (trackSdk != null) {
+      position = Duration(milliseconds: newState.playbackPosition);
+      duration = Duration(milliseconds: trackSdk.duration);
+    }
     if (isPaused != newState.isPaused) {
       timer != null ? timer!.cancel() : null;
       newState.isPaused == false ? initTimer() : null;

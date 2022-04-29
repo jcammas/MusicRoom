@@ -21,7 +21,7 @@ class LibraryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
-    final spotify = Provider.of<SpotifyWeb>(context, listen: false);
+    final spotify = Provider.of<SpotifyWebService>(context, listen: false);
     LibraryManager manager = LibraryManager(spotify: spotify, db: db);
     return Scaffold(
       appBar: customAppBar(

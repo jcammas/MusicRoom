@@ -6,6 +6,7 @@ import 'package:music_room_app/messenger/chats_page.dart';
 import 'package:music_room_app/friends/friends.dart';
 import 'package:music_room_app/room/room_screen.dart';
 import 'package:music_room_app/services/database.dart';
+import 'package:music_room_app/services/spotify_sdk_service.dart';
 import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/spotify_library/library/library.dart';
 import 'package:provider/provider.dart';
@@ -78,66 +79,73 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<AuthBase>(create: (context) => Auth()),
         Provider<Database>(create: (context) => FirestoreDatabase()),
-        Provider<SpotifyWeb>(create: (context) => SpotifyWebService()),
+        Provider<SpotifyWebService>(create: (context) => SpotifyWebService()),
         Provider<StorageService>(create: (context) => StorageService())
       ],
-      child: MaterialApp(
-        title: 'Music Room',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          brightness: Brightness.light,
-          primaryColor: primaryColor,
-          secondaryHeaderColor: secondaryHeaderColor,
-          backgroundColor: backgroundColor,
-          shadowColor: shadowColor,
+      child: Provider<SpotifySdkService>(
+        create: (BuildContext context) {
+          Database db = Provider.of<Database>(context, listen: false);
+          SpotifyWebService spotify = Provider.of<SpotifyWebService>(context, listen: false);
+          return SpotifySdkService(db: db, spotifyWeb: spotify);
+        },
+        child: MaterialApp(
+          title: 'Music Room',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            brightness: Brightness.light,
+            primaryColor: primaryColor,
+            secondaryHeaderColor: secondaryHeaderColor,
+            backgroundColor: backgroundColor,
+            shadowColor: shadowColor,
 
-          elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                  shape: CircleBorder(),
-                  primary: primaryColor,
-                  padding: EdgeInsets.all(10))),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    primary: primaryColor,
+                    padding: EdgeInsets.all(10))),
 
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-                textStyle: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w600,
-                ),
-                primary: lightDark,
-                padding: EdgeInsets.all(2.0),
-                alignment: Alignment.centerLeft,
-                maximumSize: Size(600, 100)),
-          ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                  textStyle: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  primary: lightDark,
+                  padding: EdgeInsets.all(2.0),
+                  alignment: Alignment.centerLeft,
+                  maximumSize: Size(600, 100)),
+            ),
 
-          // Define the default font family (Left some examples to try which one suits us best).
-          // fontFamily: GoogleFonts.openSans().fontFamily,
-          // fontFamily: GoogleFonts.playfairDisplay().fontFamily,
-          fontFamily: GoogleFonts.roboto().fontFamily,
-          // fontFamily: GoogleFonts.montserrat().fontFamily,
+            // Define the default font family (Left some examples to try which one suits us best).
+            // fontFamily: GoogleFonts.openSans().fontFamily,
+            // fontFamily: GoogleFonts.playfairDisplay().fontFamily,
+            fontFamily: GoogleFonts.roboto().fontFamily,
+            // fontFamily: GoogleFonts.montserrat().fontFamily,
 
-          // Define the default `TextTheme`. Use this to specify the default
-          // text styling for headlines, titles, bodies of text, and more.
-          textTheme: const TextTheme(
-              headline1: TextStyle(
-                  fontSize: 26.0,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white),
-              headline5: TextStyle(
+            // Define the default `TextTheme`. Use this to specify the default
+            // text styling for headlines, titles, bodies of text, and more.
+            textTheme: const TextTheme(
+                headline1: TextStyle(
+                    fontSize: 26.0,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white),
+                headline5: TextStyle(
+                    fontSize: 18.0,
+                    color: lightDark,
+                    fontWeight: FontWeight.w600),
+                headline6: TextStyle(
                   fontSize: 18.0,
-                  color: lightDark,
-                  fontWeight: FontWeight.w600),
-              headline6: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-              ),
-              overline: TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black)),
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+                overline: TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black)),
+          ),
+          initialRoute: "/",
+          routes: routeMap,
         ),
-        initialRoute: "/",
-        routes: routeMap,
       ),
     );
   }

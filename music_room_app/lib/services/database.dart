@@ -98,7 +98,6 @@ abstract class Database {
 }
 
 class FirestoreDatabase implements Database {
-  FirestoreDatabase();
 
   late String _uid;
 
@@ -384,11 +383,7 @@ class FirestoreDatabase implements Database {
         path: DBPath.userPlaylistTracks(
             user == null ? _uid : user.uid, playlist.id),
         builder: (data, documentID) => TrackApp.fromMap(data, documentID),
-        sort: (lhs, rhs) => lhs.indexApp != null
-            ? rhs.indexApp != null
-                ? lhs.indexApp!.compareTo(rhs.indexApp!)
-                : 0
-            : 0,
+          sort: (lhs, rhs) => lhs.indexApp.compareTo(rhs.indexApp)
       );
 
   @override
@@ -396,11 +391,7 @@ class FirestoreDatabase implements Database {
       _service.collectionStream(
         path: DBPath.roomTracks(room.id),
         builder: (data, documentID) => TrackApp.fromMap(data, documentID),
-        sort: (lhs, rhs) => lhs.indexApp != null
-            ? rhs.indexApp != null
-                ? lhs.indexApp!.compareTo(rhs.indexApp!)
-                : 0
-            : 0,
+        sort: (lhs, rhs) => lhs.indexApp.compareTo(rhs.indexApp)
       );
 
   @override

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/room/views/choose_playlist_form.dart';
+import 'package:music_room_app/room/views/choose_forms.dart';
 import 'package:music_room_app/widgets/custom_text_field.dart';
 import 'package:music_room_app/widgets/show_alert_dialog.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +8,7 @@ import '../../home/models/playlist.dart';
 import '../../services/database.dart';
 import '../../services/spotify_web.dart';
 import '../../widgets/show_exception_alert_dialog.dart';
-import '../managers/create_room_manager.dart';
+import '../managers/choose_form_manager.dart';
 
 class CreateRoomForm extends StatefulWidget {
   CreateRoomForm({required this.manager});
@@ -20,7 +20,7 @@ class CreateRoomForm extends StatefulWidget {
 
   static Widget create(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
-    final spotify = Provider.of<SpotifyWeb>(context, listen: false);
+    final spotify = Provider.of<SpotifyWebService>(context, listen: false);
     return ChangeNotifierProvider<CreateRoomManager>(
       create: (_) => CreateRoomManager(db: db, spotify: spotify),
       child: Consumer<CreateRoomManager>(
