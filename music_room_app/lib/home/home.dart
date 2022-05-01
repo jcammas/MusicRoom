@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:music_room_app/account/account.dart';
+import 'package:music_room_app/friends/friends.dart';
+import 'package:music_room_app/home/widgets/info_card.dart';
+import 'package:music_room_app/messenger/chats_page.dart';
 import 'package:music_room_app/services/database.dart';
+import 'package:music_room_app/spotify_library/library/library.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:music_room_app/services/auth.dart';
 import '../constant_colors.dart';
+import '../room/room_screen.dart';
 import 'models/user.dart';
 import 'widgets/drawer.dart';
 
@@ -43,7 +49,55 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: customAppBar(appText: 'Music Room', context: context),
       backgroundColor: backgroundColor,
       drawer: const MyDrawer(),
-      body: const Center(),
+      body: SingleChildScrollView(
+        child: Wrap(
+          spacing: 10,
+          alignment: WrapAlignment.center,
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 25.0, bottom: 25.0),
+                child: Text(
+                  "Welcome Home ${auth.currentUser!.displayName}",
+                  style: TextStyle(
+                    color: Color(0XFF434343),
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+            InfoCard(
+              cardName: "Room",
+              icon: Icons.add_business_outlined,
+              route: RoomScreen.routeName,
+            ),
+            InfoCard(
+              cardName: "Library",
+              icon: Icons.music_note_outlined,
+              route: LibraryScreen.routeName,
+            ),
+            InfoCard(
+              cardName: "Friends",
+              icon: Icons.accessibility_new_outlined,
+              route: FriendsScreen.routeName,
+            ),
+            InfoCard(
+              cardName: "Messenger",
+              icon: Icons.chat,
+              route: ChatsPage.routeName,
+            ),
+            InfoCard(
+              cardName: "${auth.currentUser!.displayName}",
+              icon: Icons.account_circle_outlined,
+              route: AccountScreen.routeName,
+            ),
+            SizedBox(
+              height: 25,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
