@@ -13,7 +13,6 @@ class UserApp implements DatabaseModel {
       {required this.name,
       required this.email,
       required this.uid,
-      required this.friends,
       this.playlists,
       this.spotifyProfile,
       this.roomId,
@@ -28,7 +27,6 @@ class UserApp implements DatabaseModel {
   String? roomId;
   String avatarUrl;
   SpotifyProfile? spotifyProfile;
-  List<String> friends = [];
   Map<String, Playlist>? playlists;
   String? defaultRoomPrivacySettings;
   String? defaultRoomVoteSystem;
@@ -58,8 +56,6 @@ class UserApp implements DatabaseModel {
     if (data != null) {
       final String userName = data['name'] ?? 'N/A';
       final String email = data['email'] ?? 'N/A';
-      final List<String> friends = new List<String>.from(data['friends'] ?? []);
-      if (data['friends'] != null) {}
       SpotifyProfile? spotifyProfile;
       if (data['spotify_profile'] != null) {
         spotifyProfile = SpotifyProfile.fromMap(data['spotify_profile']);
@@ -78,16 +74,11 @@ class UserApp implements DatabaseModel {
           email: email,
           avatarUrl: avatarUrl,
           playlists: playlists,
-          friends: friends,
           spotifyProfile: spotifyProfile,
           roomId: roomId);
     } else {
       return UserApp(
-          uid: uid,
-          name: "N/A",
-          email: "N/A",
-          avatarUrl: defaultAvatarUrl,
-          friends: []);
+          uid: uid, name: "N/A", email: "N/A", avatarUrl: defaultAvatarUrl);
     }
   }
 
@@ -99,7 +90,6 @@ class UserApp implements DatabaseModel {
       'user_search': userSearch,
       'email': email,
       'image_url': avatarUrl,
-      'friends': friends,
       'room_id': roomId
     };
   }

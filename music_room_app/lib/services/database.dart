@@ -66,8 +66,6 @@ abstract class Database {
 
   Future<List<Room>> getRooms({String nameQuery = ""});
 
-  Stream<List<FriendLink>> getFriends();
-
   Future<List<TrackApp>> getPlaylistTracks(Playlist playlist);
 
   Future<List<TrackApp>> getRoomTracks(Room room);
@@ -75,6 +73,8 @@ abstract class Database {
   Future<bool> userExists({UserApp? user});
 
   Future<bool> userPlaylistHasTracks(Playlist playlist, {UserApp? user});
+
+  Stream<List<FriendLink>> getFriendLinks();
 
   Stream<UserApp> userStream({UserApp? user});
 
@@ -326,23 +326,6 @@ class FirestoreDatabase implements Database {
             : query,
       );
 
-  // @override
-  // Future<List<FriendLink>> getFriends() async =>
-  //     await _service.getCollectionList(
-  //         path: DBPath.relationLinks(),
-  //         builder: (data, documentId) => FriendLink.fromMap(data, documentId),
-  //         queryBuilder: (query) => query
-  //             .where("linkedFrom", isEqualTo: uid)
-  //             .where("status", isEqualTo: "accepted"));
-
-  @override
-  Stream<List<FriendLink>> getFriends() => _service.collectionStream(
-      path: DBPath.relationLinks(),
-      builder: (data, documentId) => FriendLink.fromMap(data, documentId),
-      queryBuilder: (query) => query
-          .where("linkedFrom", isEqualTo: uid)
-          .where("status", isEqualTo: "accepted"));
-
   @override
   Future<List<TrackApp>> getPlaylistTracks(Playlist playlist) async =>
       await _service.getCollectionList(
@@ -367,6 +350,14 @@ class FirestoreDatabase implements Database {
       await _service.collectionIsNotEmpty(
           path: DBPath.userPlaylistTracks(
               user == null ? _uid : user.uid, playlist.id));
+
+  @override
+  Stream<List<FriendLink>> getFriendLinks() => _service.collectionStream(
+      path: DBPath.relationLinks(),
+      builder: (data, documentId) => FriendLink.fromMap(data, documentId),
+      queryBuilder: (query) => query
+          .where("users", arrayContains: uid)
+          .where("status", isEqualTo: "accepted"));
 
   @override
   Stream<UserApp> userStream({UserApp? user}) => _service.documentStream(

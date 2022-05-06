@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:music_room_app/friends/services/search-friend-manager.dart';
+import 'package:music_room_app/friends/services/friend-links-manager.dart';
 import 'package:music_room_app/home/models/database_model.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/widgets/search-bar.dart';
@@ -7,22 +7,21 @@ import 'package:music_room_app/widgets/utils.dart';
 import 'package:provider/provider.dart';
 
 class SearchSection extends StatefulWidget {
-  SearchSection({required this.searchManager});
-  final SearchFriendManager searchManager;
+  SearchSection({required this.friendLinksManager});
+  final FriendLinksManager friendLinksManager;
 
   @override
   State<SearchSection> createState() => _SearchSectionState();
 
   static Widget create(BuildContext context) {
     var db = Provider.of<Database>(context, listen: false);
-    // return ChangeNotifierProvider<SearchFriendManager>(
-    //   create: (context) => SearchFriendManager(db: db),
-    //   child: Consumer<SearchFriendManager>(
-    //     builder: (_, searchManager, __) =>
-    //         SearchSection(searchManager: searchManager),
-    //   ),
-    // );
-    return SearchSection(searchManager: SearchFriendManager(db: db));
+    return ChangeNotifierProvider<FriendLinksManager>(
+      create: (context) => FriendLinksManager(db: db),
+      child: Consumer<FriendLinksManager>(
+        builder: (_, friendLinksManager, __) =>
+            SearchSection(friendLinksManager: friendLinksManager),
+      ),
+    );
   }
 }
 
@@ -32,10 +31,10 @@ class _SearchSectionState extends State<SearchSection> {
     Future<List<DatabaseModel>> Function(dynamic pattern) getUserList =
         (pattern) async {
       final db = Provider.of<Database>(context, listen: false);
-      final currentUser = await db.getUser();
-      final friendList = currentUser.friends;
+      final List<String> friendIds = widget.friendLinksManager.friendIds;
+
       return await db.getUsersByIds(
-          nameQuery: formatSearchParam(pattern), ids: friendList);
+          nameQuery: formatSearchParam(pattern), ids: friendIds);
     };
 
     return Container(
@@ -49,18 +48,22 @@ class _SearchSectionState extends State<SearchSection> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   TextButton(
-                      onPressed: () => {},
-                      child: const Text('Friend Requests')),
+                      onPressed: () {
+                        widget.friendLinksManager.switchUserMode();
+                      },
+                      child: widget.friendLinksManager.userMode == "users"
+                          ? const Text('Find Friends')
+                          : const Text('Find Users')),
                   SizedBox(width: 10),
                   TextButton(
-                      onPressed: () => {}, child: const Text('Find Friends'))
+                      onPressed: () => {}, child: const Text('Friend Requests'))
                 ],
               ),
             ),
             SearchBar(
               getItemList: getUserList,
               onSelected: (DatabaseModel selected) {
-                widget.searchManager.selectedUser = selected;
+                widget.friendLinksManager.selectedUser = selected;
               },
             ),
           ],

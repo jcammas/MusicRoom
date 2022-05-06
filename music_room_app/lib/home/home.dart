@@ -31,7 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
           email: auth.currentUser!.email ?? 'N/A',
           uid: auth.currentUser!.uid,
           avatarUrl: auth.currentUser!.photoURL ?? defaultAvatarUrl,
-          friends: [],
         ));
       } else {
         //On setup l'utilisateur courant dans la db pour uniformiser la base.
