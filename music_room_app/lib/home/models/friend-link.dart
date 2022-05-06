@@ -1,11 +1,11 @@
 import 'package:music_room_app/home/models/relation-link.dart';
 
 class FriendLink extends RelationLink {
-  FriendLink({required List<String> users, required String status})
+  FriendLink({required List<dynamic> users, required String status})
       : super(name: "friendship", users: users, status: status);
 
-  static fromMap(Map<String, dynamic>? data, String uid) {
-    List<String> users = [];
+  factory FriendLink.fromMap(Map<String, dynamic>? data, String uid) {
+    List<dynamic> users = [];
     String status = "invalid";
 
     if (data != null) {

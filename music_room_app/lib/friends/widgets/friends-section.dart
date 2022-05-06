@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_room_app/friends/services/search-friend-manager.dart';
 import 'package:music_room_app/home/models/friend-link.dart';
-import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/database.dart';
 import 'package:provider/provider.dart';
 
@@ -28,14 +27,15 @@ class _FriendSectionState extends State<FriendSection> {
   @override
   Widget build(BuildContext context) {
     var db = Provider.of<Database>(context, listen: false);
-    final Stream<List<FriendLink>>  _friends = db.getFriends();
+    final Stream<List<FriendLink>> _friends = db.getFriends();
 
     return Container(
         padding: EdgeInsets.all(10),
         color: Colors.white,
-        child: <List<FriendLink>(
+        child: StreamBuilder<List<FriendLink>>(
           stream: _friends,
-          builder: (BuildContext context, AsyncSnapshot<UserApp> snapshot) {
+          builder:
+              (BuildContext context, AsyncSnapshot<List<FriendLink>> snapshot) {
             List<Widget> children;
 
             if (snapshot.hasError) {
@@ -75,13 +75,13 @@ class _FriendSectionState extends State<FriendSection> {
                   break;
 
                 default:
-                  var friends = snapshot.data;
-                  // List foundFriends = [];
-                  // String displayFound = foundFriends.length > 0
-                  //     ? 'Found' + foundFriends.length.toString() + 'friends'
+                  List<FriendLink>? links = snapshot.data;
+                  List<String> friends = links!.map((e) => e.linkedTo).toList();
+                  // String displayFound = friends.length > 0
+                  //     ? 'Found' + friends.length.toString() + 'friends'
                   //     : '';
-                  // String displayTotal =
-                  //     'Total friends: ' + friends.length.toString();
+                  String displayTotal =
+                      'Total friends: ' + friends.length.toString();
                   children = <Widget>[
                     Container(
                       padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -93,10 +93,10 @@ class _FriendSectionState extends State<FriendSection> {
                           //   displayFound,
                           //   style: Theme.of(context).textTheme.subtitle2,
                           // ),
-                          // Text(
-                          //   displayTotal,
-                          //   style: Theme.of(context).textTheme.subtitle2,
-                          // ),
+                          Text(
+                            displayTotal,
+                            style: Theme.of(context).textTheme.subtitle2,
+                          ),
                         ],
                       ),
                     ),

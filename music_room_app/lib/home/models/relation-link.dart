@@ -20,7 +20,7 @@ class RelationLink implements DatabaseModel {
   }
 
   final String name; //type of relation, ie: "friendship"
-  final List<String> users;
+  final List<dynamic> users;
   late String status;
   late final String uid;
   late final String _linkedFrom;

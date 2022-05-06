@@ -5,13 +5,10 @@ import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/database.dart';
 
 class SearchFriendManager extends ChangeNotifier {
-  SearchFriendManager({required this.db}) {
-    // _friends = ["MGiZvhhCzwh3fLeVEILgHunDHY53", "TUCxbglpIAZ2fcKJZYS78iIljeD2"];
-  }
+  SearchFriendManager({required this.db}) {}
 
   final Database db;
   UserApp? _selectedUser;
-  List<String> _friends = [];
   List<FriendLink> toto = [];
 
   void set selectedUser(selected) {
@@ -21,13 +18,11 @@ class SearchFriendManager extends ChangeNotifier {
 
   UserApp? get selectedUser => _selectedUser;
 
-  List<String> get friends => _friends;
-
-  List<Widget> getFriendListOrSelectedFriend() {
+  List<Widget> getFriendListOrSelectedFriend(List<String> friends) {
     if (_selectedUser != null) {
       return [FriendCard(_selectedUser!.uid)];
     } else {
-      return _friends.map((friend) {
+      return friends.map((friend) {
         return FriendCard(friend);
       }).toList();
     }
