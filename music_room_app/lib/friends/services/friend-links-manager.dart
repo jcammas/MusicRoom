@@ -8,17 +8,24 @@ class FriendLinksManagerService extends ChangeNotifier {
 
   late Database _db;
   List<FriendLink> _friendLinks = [];
+  List<FriendLink> _pendingLinks = [];
   List<UserApp> _users = [];
   late Stream<List<FriendLink>> _friendLinksStream;
+  late Stream<List<FriendLink>> _pendingLinksStream;
   late Stream<List<UserApp>> _usersStream;
   bool _userMode = false;
   UserApp? _selectedUser;
 
   void initService() {
     _friendLinksStream = _db.getFriendLinks();
+    _pendingLinksStream = _db.getPendingLinks();
     _usersStream = _db.usersStream();
     _friendLinksStream.listen((friendLinks) {
       _friendLinks = friendLinks;
+      notifyListeners();
+    });
+    _pendingLinksStream.listen((friendLinks) {
+      _pendingLinks = friendLinks;
       notifyListeners();
     });
     _db.usersStream().listen((users) {
@@ -42,6 +49,10 @@ class FriendLinksManagerService extends ChangeNotifier {
     }
     return list;
   }
+
+  List<String> get pendingLinks => _pendingLinks
+      .map((FriendLink pendingLink) => pendingLink.linkedTo)
+      .toList();
 
   List<FriendLink> get friendLinks => _friendLinks;
 

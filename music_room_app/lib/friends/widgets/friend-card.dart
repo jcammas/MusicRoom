@@ -67,7 +67,7 @@ class _FriendCardState extends State<FriendCard> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 16),
-                    child: Text('Awaiting friend\'s data'),
+                    child: Text('Awaiting user\'s data'),
                   )
                 ];
                 break;
@@ -95,7 +95,7 @@ class _FriendCardState extends State<FriendCard> {
                     child: Text(displayName,
                         style: Theme.of(context).textTheme.headline6),
                   ),
-                  Expanded(flex: 2, child: CustomButtonTest(widget.friendUid))
+                  Expanded(flex: 2, child: FriendCardButtons(widget.friendUid))
                 ];
             }
           }
@@ -121,14 +121,9 @@ class MenuItem {
 
 class FriendsMenuItems {
   static final List<MenuItem> firstItems = [dm, delete];
-  // static const List<MenuItem> secondItems = [logout];
 
   static const dm = MenuItem(text: 'DM', icon: Icons.mail);
   static const delete = MenuItem(text: 'Delete', icon: Icons.delete_forever);
-  // static const add = MenuItem(text: 'Add', icon: Icons.add);
-
-  // static const settings = MenuItem(text: 'Settings', icon: Icons.settings);
-  // static const logout = MenuItem(text: 'Log Out', icon: Icons.logout);
 
   static Widget buildItem(MenuItem item) {
     return Row(
@@ -157,21 +152,13 @@ class FriendsMenuItems {
       case FriendsMenuItems.delete:
         db.delete(FriendLink(users: [db.uid, friendUid], status: "accepted"));
         break;
-      // case FriendsMenuItems.add:
-      //   db.set(FriendLink(users: [db.uid, friendUid], status: "pending"));
-      //   break;
     }
   }
 }
 
 class UsersMenuItems {
   static final List<MenuItem> firstItems = [add];
-  // static const List<MenuItem> secondItems = [logout];
-
   static const add = MenuItem(text: 'Add', icon: Icons.add);
-
-  // static const settings = MenuItem(text: 'Settings', icon: Icons.settings);
-  // static const logout = MenuItem(text: 'Log Out', icon: Icons.logout);
 
   static Widget buildItem(MenuItem item) {
     return Row(
@@ -201,31 +188,44 @@ class UsersMenuItems {
   }
 }
 
-class CustomButtonTest extends StatefulWidget {
-  const CustomButtonTest(this.friendUid);
+class FriendCardButtons extends StatefulWidget {
+  const FriendCardButtons(this.friendUid);
   final String friendUid;
 
   @override
-  State<CustomButtonTest> createState() => _CustomButtonTestState();
+  State<FriendCardButtons> createState() => _FriendCardButtonsState();
 }
 
-class _CustomButtonTestState extends State<CustomButtonTest> {
+class _FriendCardButtonsState extends State<FriendCardButtons> {
   @override
   Widget build(BuildContext context) {
     var friendLinksManager = context.watch<FriendLinksManagerService>();
-    var toto = friendLinksManager.userMode == true
-        ? UsersMenuItems.firstItems.map(
+
+    //We select our buttons and actions according to the userMode state we are in.
+    List<DropdownMenuItem<MenuItem>>? buttons;
+    var buttonAction;
+    if (friendLinksManager.userMode == true) {
+      buttons = UsersMenuItems.firstItems
+          .map(
             (item) => DropdownMenuItem<MenuItem>(
               value: item,
               child: UsersMenuItems.buildItem(item),
             ),
           )
-        : FriendsMenuItems.firstItems.map(
+          .toList();
+      buttonAction = UsersMenuItems.onChanged;
+    } else {
+      buttons = FriendsMenuItems.firstItems
+          .map(
             (item) => DropdownMenuItem<MenuItem>(
               value: item,
               child: FriendsMenuItems.buildItem(item),
             ),
-          );
+          )
+          .toList();
+      buttonAction = FriendsMenuItems.onChanged;
+    }
+
     return DropdownButtonHideUnderline(
       child: DropdownButton2(
         customButton: const Icon(
@@ -236,18 +236,10 @@ class _CustomButtonTestState extends State<CustomButtonTest> {
         customItemsIndexes: const [3],
         customItemsHeight: 8,
         items: [
-          ...toto,
-          // const DropdownMenuItem<Divider>(enabled: false, child: Divider()),
-          // ...FriendsMenuItems.secondItems.map(
-          //   (item) => DropdownMenuItem<MenuItem>(
-          //     value: item,
-          //     child: FriendsMenuItems.buildItem(item),
-          //   ),
-          // ),
+          ...buttons,
         ],
         onChanged: (value) {
-          FriendsMenuItems.onChanged(
-              context, value as MenuItem, widget.friendUid);
+          buttonAction(context, value as MenuItem, widget.friendUid);
         },
         itemHeight: 48,
         itemPadding: const EdgeInsets.only(left: 16, right: 16),

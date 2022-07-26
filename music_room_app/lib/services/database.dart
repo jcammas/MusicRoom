@@ -76,6 +76,8 @@ abstract class Database {
 
   Stream<List<FriendLink>> getFriendLinks();
 
+  Stream<List<FriendLink>> getPendingLinks();
+
   Stream<UserApp> userStream({UserApp? user});
 
   Stream<List<UserApp>> usersStream({List<String>? ids});
@@ -360,6 +362,14 @@ class FirestoreDatabase implements Database {
       queryBuilder: (query) => query
           .where("users", arrayContains: uid)
           .where("status", isEqualTo: "accepted"));
+
+  @override
+  Stream<List<FriendLink>> getPendingLinks() => _service.collectionStream(
+      path: DBPath.relationLinks(),
+      builder: (data, documentId) => FriendLink.fromMap(data, documentId),
+      queryBuilder: (query) => query
+          .where("users", arrayContains: uid)
+          .where("status", isEqualTo: "pending"));
 
   @override
   Stream<UserApp> userStream({UserApp? user}) => _service.documentStream(

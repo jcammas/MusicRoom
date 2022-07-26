@@ -18,6 +18,7 @@ class _SearchSectionState extends State<SearchSection> {
   @override
   Widget build(BuildContext context) {
     var friendLinksManager = context.watch<FriendLinksManagerService>();
+    var count = friendLinksManager.pendingLinks.length;
     return Container(
         color: Theme.of(context).primaryColorLight,
         padding: EdgeInsets.fromLTRB(10, 10, 10, 15),
@@ -25,7 +26,7 @@ class _SearchSectionState extends State<SearchSection> {
           children: [
             Container(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   TextButton(
@@ -36,9 +37,40 @@ class _SearchSectionState extends State<SearchSection> {
                       child: friendLinksManager.userMode == true
                           ? const Text('Find Friends')
                           : const Text('Find Users')),
-                  SizedBox(width: 10),
-                  TextButton(
-                      onPressed: () => {}, child: const Text('Friend Requests'))
+                  new Stack(
+                    children: <Widget>[
+                      new IconButton(
+                          icon: Icon(Icons.notifications),
+                          onPressed: () {
+                            //OPEN NOTIFICATION PANEL WITH ALL PENDING INVITES
+                          }),
+                      count != 0
+                          ? new Positioned(
+                              right: 11,
+                              top: 11,
+                              child: new Container(
+                                padding: EdgeInsets.all(2),
+                                decoration: new BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                constraints: BoxConstraints(
+                                  minWidth: 14,
+                                  minHeight: 14,
+                                ),
+                                child: Text(
+                                  '$count',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            )
+                          : new Container()
+                    ],
+                  ),
                 ],
               ),
             ),
