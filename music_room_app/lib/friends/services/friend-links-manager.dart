@@ -2,63 +2,60 @@ import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/friend-link.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/database.dart';
-import 'package:provider/provider.dart';
 
-abstract class FriendLinksManager {
-  bool get userMode;
-  List<String> get friendIds;
-  List<FriendLink> get friendLinks;
-  Stream<List<FriendLink>> get friendLinksStream;
-  UserApp? get selectedUser;
-  void switchUserMode();
-
-  void set selectedUser(UserApp? selected);
-  void set db(Database db);
-}
-
-class FriendLinksManagerService extends ChangeNotifier
-    implements FriendLinksManager {
+class FriendLinksManagerService extends ChangeNotifier {
   FriendLinksManagerService() {}
 
   late Database _db;
-  late List<FriendLink> _friendLinks;
+  List<FriendLink> _friendLinks = [];
+  List<UserApp> _users = [];
   late Stream<List<FriendLink>> _friendLinksStream;
+  late Stream<List<UserApp>> _usersStream;
   bool _userMode = false;
   UserApp? _selectedUser;
 
-  void initFriendLinks() {
-    _db.getFriendLinks().listen((friendLinks) {
+  void initService() {
+    _friendLinksStream = _db.getFriendLinks();
+    _usersStream = _db.usersStream();
+    _friendLinksStream.listen((friendLinks) {
       _friendLinks = friendLinks;
+      notifyListeners();
+    });
+    _db.usersStream().listen((users) {
+      _users = users;
       notifyListeners();
     });
   }
 
-  @override
   bool get userMode => _userMode;
 
-  @override
-  List<String> get friendIds => _selectedUser != null
-      ? [_selectedUser!.uid]
-      : _friendLinks
+  List<String> get userIds {
+    List<String> list = [];
+    if (_selectedUser != null) {
+      list = [_selectedUser!.uid];
+    } else if (_userMode == true) {
+      list = _users.map((UserApp user) => user.uid).toList();
+    } else {
+      list = _friendLinks
           .map((FriendLink friendLink) => friendLink.linkedTo)
           .toList();
+    }
+    return list;
+  }
 
-  @override
   List<FriendLink> get friendLinks => _friendLinks;
 
-  @override
   Stream<List<FriendLink>> get friendLinksStream => _friendLinksStream;
 
-  @override
+  Stream<List<UserApp>> get usersStream => _usersStream;
+
   UserApp? get selectedUser => _selectedUser;
 
-  @override
   void switchUserMode() {
     _userMode = !_userMode;
     notifyListeners();
   }
 
-  @override
   void set selectedUser(UserApp? selected) {
     _selectedUser = selected;
     notifyListeners();

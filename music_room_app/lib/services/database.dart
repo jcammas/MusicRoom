@@ -302,10 +302,6 @@ class FirestoreDatabase implements Database {
             if (ids != null && ids.length > 0) {
               finalQuery = finalQuery.where('uid', whereIn: ids);
             }
-            print(nameQuery);
-            print(ids!.length);
-            print(query);
-            print(finalQuery);
             return finalQuery;
           });
 

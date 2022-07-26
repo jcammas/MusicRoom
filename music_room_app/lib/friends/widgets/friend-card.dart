@@ -212,19 +212,18 @@ class CustomButtonTest extends StatefulWidget {
 class _CustomButtonTestState extends State<CustomButtonTest> {
   @override
   Widget build(BuildContext context) {
-    FriendLinksManager friendLinksManager =
-        Provider.of<FriendLinksManager>(context, listen: false);
+    var friendLinksManager = context.watch<FriendLinksManagerService>();
     var toto = friendLinksManager.userMode == true
-        ? FriendsMenuItems.firstItems.map(
-            (item) => DropdownMenuItem<MenuItem>(
-              value: item,
-              child: FriendsMenuItems.buildItem(item),
-            ),
-          )
-        : UsersMenuItems.firstItems.map(
+        ? UsersMenuItems.firstItems.map(
             (item) => DropdownMenuItem<MenuItem>(
               value: item,
               child: UsersMenuItems.buildItem(item),
+            ),
+          )
+        : FriendsMenuItems.firstItems.map(
+            (item) => DropdownMenuItem<MenuItem>(
+              value: item,
+              child: FriendsMenuItems.buildItem(item),
             ),
           );
     return DropdownButtonHideUnderline(

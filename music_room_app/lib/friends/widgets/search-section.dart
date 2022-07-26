@@ -45,7 +45,7 @@ class _SearchSectionState extends State<SearchSection> {
             SearchBar(
               getItemList: (pattern) async {
                 final db = Provider.of<Database>(context, listen: false);
-                final List<String> friendIds = friendLinksManager.friendIds;
+                final List<String> friendIds = friendLinksManager.userIds;
                 print(friendIds);
                 return await db.getUsers(
                     nameQuery: formatSearchParam(pattern),

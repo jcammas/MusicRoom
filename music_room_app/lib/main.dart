@@ -89,7 +89,7 @@ class MyApp extends StatelessWidget {
               throw ArgumentError.notNull(
                   'Error instantiating FriendLinksManagerService');
             friendLinksManagerService.db = db;
-            friendLinksManagerService.initFriendLinks();
+            friendLinksManagerService.initService();
             return friendLinksManagerService;
           },
         )
