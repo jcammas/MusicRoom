@@ -2,53 +2,69 @@ import 'package:flutter/material.dart';
 import 'package:music_room_app/home/models/friend-link.dart';
 import 'package:music_room_app/home/models/user.dart';
 import 'package:music_room_app/services/database.dart';
+import 'package:provider/provider.dart';
 
-class FriendLinksManager extends ChangeNotifier {
-  FriendLinksManager({required this.db}) {
-    instantiateFriendLinksStream();
-  }
+abstract class FriendLinksManager {
+  bool get userMode;
+  List<String> get friendIds;
+  List<FriendLink> get friendLinks;
+  Stream<List<FriendLink>> get friendLinksStream;
+  UserApp? get selectedUser;
+  void switchUserMode();
 
-  final Database db;
+  void set selectedUser(UserApp? selected);
+  void set db(Database db);
+}
+
+class FriendLinksManagerService extends ChangeNotifier
+    implements FriendLinksManager {
+  FriendLinksManagerService() {}
+
+  late Database _db;
+  late List<FriendLink> _friendLinks;
+  late Stream<List<FriendLink>> _friendLinksStream;
+  bool _userMode = false;
   UserApp? _selectedUser;
-  List<FriendLink> _friendLinks = [];
-  String _userMode = "friends";
 
-  void switchUserMode() {
-    switch (_userMode) {
-      case "friends":
-        _userMode = "users";
-        break;
-      case "users":
-        _userMode = "friends";
-        break;
-    }
-    notifyListeners();
-  }
-
-  String get userMode => _userMode;
-
-  void set selectedUser(selected) {
-    _selectedUser = selected as UserApp?;
-    notifyListeners();
-  }
-
-  void instantiateFriendLinksStream() {
-    db.getFriendLinks().listen(((friendsLinks) {
-      _friendLinks = friendsLinks;
+  void initFriendLinks() {
+    _db.getFriendLinks().listen((friendLinks) {
+      _friendLinks = friendLinks;
       notifyListeners();
-    }));
+    });
   }
 
-  List<String> get friendIds =>
-      _friendLinks.map((FriendLink friendLink) => friendLink.linkedTo).toList();
+  @override
+  bool get userMode => _userMode;
 
-  List<String> get friendIdsIfNoSelected => _selectedUser != null
+  @override
+  List<String> get friendIds => _selectedUser != null
       ? [_selectedUser!.uid]
       : _friendLinks
           .map((FriendLink friendLink) => friendLink.linkedTo)
           .toList();
 
+  @override
   List<FriendLink> get friendLinks => _friendLinks;
 
+  @override
+  Stream<List<FriendLink>> get friendLinksStream => _friendLinksStream;
+
+  @override
   UserApp? get selectedUser => _selectedUser;
+
+  @override
+  void switchUserMode() {
+    _userMode = !_userMode;
+    notifyListeners();
+  }
+
+  @override
+  void set selectedUser(UserApp? selected) {
+    _selectedUser = selected;
+    notifyListeners();
+  }
+
+  void set db(Database db) {
+    _db = db;
+  }
 }

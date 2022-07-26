@@ -214,7 +214,7 @@ class _CustomButtonTestState extends State<CustomButtonTest> {
   Widget build(BuildContext context) {
     FriendLinksManager friendLinksManager =
         Provider.of<FriendLinksManager>(context, listen: false);
-    var toto = friendLinksManager.userMode == "users"
+    var toto = friendLinksManager.userMode == true
         ? FriendsMenuItems.firstItems.map(
             (item) => DropdownMenuItem<MenuItem>(
               value: item,

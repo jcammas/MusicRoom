@@ -295,12 +295,18 @@ class FirestoreDatabase implements Database {
           path: DBPath.users(),
           builder: (data, documentId) => UserApp.fromMap(data, documentId),
           queryBuilder: (query) {
+            var finalQuery = query;
             if (nameQuery != "")
-              query.where("user_search", arrayContains: nameQuery);
+              finalQuery =
+                  finalQuery.where("user_search", arrayContains: nameQuery);
             if (ids != null && ids.length > 0) {
-              query.where('uid', whereIn: ids);
+              finalQuery = finalQuery.where('uid', whereIn: ids);
             }
-            return query;
+            print(nameQuery);
+            print(ids!.length);
+            print(query);
+            print(finalQuery);
+            return finalQuery;
           });
 
   @override

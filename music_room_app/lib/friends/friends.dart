@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:music_room_app/friends/services/friend-links-manager.dart';
 import 'package:music_room_app/friends/widgets/friends-section.dart';
 import 'package:music_room_app/friends/widgets/search-section.dart';
+import 'package:music_room_app/services/database.dart';
 import 'package:music_room_app/widgets/custom_appbar.dart';
 import 'package:music_room_app/home/widgets/drawer.dart';
+import 'package:provider/provider.dart';
 
 import '../constant_colors.dart';
 
@@ -23,8 +26,8 @@ class _FriendScreenState extends State<FriendsScreen> {
       drawer: const MyDrawer(),
       body: SingleChildScrollView(
           child: Column(children: <Widget>[
-        SearchSection.create(context),
-        FriendSection.create(context)
+        SearchSection(),
+        // FriendSection(friendLinksManager)
       ])),
     );
   }

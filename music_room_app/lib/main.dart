@@ -11,6 +11,7 @@ import 'package:music_room_app/services/spotify_web.dart';
 import 'package:music_room_app/spotify_library/library/library.dart';
 import 'package:provider/provider.dart';
 import 'constant_colors.dart';
+import 'friends/services/friend-links-manager.dart';
 import 'landing.dart';
 import 'services/auth.dart';
 import 'services/storage_service.dart';
@@ -80,12 +81,24 @@ class MyApp extends StatelessWidget {
         Provider<AuthBase>(create: (context) => Auth()),
         Provider<Database>(create: (context) => FirestoreDatabase()),
         Provider<SpotifyWebService>(create: (context) => SpotifyWebService()),
-        Provider<StorageService>(create: (context) => StorageService())
+        Provider<StorageService>(create: (context) => StorageService()),
+        ChangeNotifierProxyProvider<Database, FriendLinksManagerService>(
+          create: (context) => FriendLinksManagerService(),
+          update: (context, db, friendLinksManagerService) {
+            if (friendLinksManagerService == null)
+              throw ArgumentError.notNull(
+                  'Error instantiating FriendLinksManagerService');
+            friendLinksManagerService.db = db;
+            friendLinksManagerService.initFriendLinks();
+            return friendLinksManagerService;
+          },
+        )
       ],
       child: Provider<SpotifySdkService>(
         create: (BuildContext context) {
           Database db = Provider.of<Database>(context, listen: false);
-          SpotifyWebService spotify = Provider.of<SpotifyWebService>(context, listen: false);
+          SpotifyWebService spotify =
+              Provider.of<SpotifyWebService>(context, listen: false);
           return SpotifySdkService(db: db, spotifyWeb: spotify);
         },
         child: MaterialApp(

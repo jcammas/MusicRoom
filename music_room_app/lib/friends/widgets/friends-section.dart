@@ -2,39 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:music_room_app/friends/services/friend-links-manager.dart';
 import 'package:music_room_app/friends/widgets/friend-card.dart';
 import 'package:music_room_app/home/models/friend-link.dart';
-import 'package:music_room_app/services/database.dart';
-import 'package:provider/provider.dart';
 
 class FriendSection extends StatefulWidget {
-  FriendSection({required this.friendLinksManager});
   final FriendLinksManager friendLinksManager;
+  FriendSection(this.friendLinksManager);
 
   @override
   State<FriendSection> createState() => _FriendSectionState();
-
-  static Widget create(BuildContext context) {
-    var db = Provider.of<Database>(context, listen: false);
-    return ChangeNotifierProvider<FriendLinksManager>(
-      create: (context) => FriendLinksManager(db: db),
-      child: Consumer<FriendLinksManager>(
-        builder: (_, friendLinksManager, __) =>
-            FriendSection(friendLinksManager: friendLinksManager),
-      ),
-    );
-  }
 }
 
 class _FriendSectionState extends State<FriendSection> {
   @override
   Widget build(BuildContext context) {
-    var db = Provider.of<Database>(context, listen: false);
-    final Stream<List<FriendLink>> _friends = db.getFriendLinks();
-
     return Container(
         padding: EdgeInsets.all(10),
         color: Colors.white,
         child: StreamBuilder<List<FriendLink>>(
-          stream: _friends,
+          stream: widget.friendLinksManager.friendLinksStream,
           builder:
               (BuildContext context, AsyncSnapshot<List<FriendLink>> snapshot) {
             List<Widget> children;
@@ -95,7 +79,7 @@ class _FriendSectionState extends State<FriendSection> {
                       ],
                     ),
                     Column(
-                      children: widget.friendLinksManager.friendIdsIfNoSelected
+                      children: widget.friendLinksManager.friendIds
                           .map((e) => FriendCard(e))
                           .toList(),
                     )
