@@ -5,10 +5,7 @@ import 'package:music_room_app/home/models/database_model.dart';
 import '../constant_colors.dart';
 
 class SearchBar extends StatelessWidget {
-  const SearchBar({
-    required this.getItemList,
-    this.onSelected,
-  });
+  const SearchBar({required this.getItemList, this.onSelected});
 
   final Future<List<DatabaseModel>> Function(String pattern) getItemList;
   final void Function(DatabaseModel selected)? onSelected;

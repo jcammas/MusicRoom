@@ -369,6 +369,7 @@ class FirestoreDatabase implements Database {
       builder: (data, documentId) => FriendLink.fromMap(data, documentId),
       queryBuilder: (query) => query
           .where("users", arrayContains: uid)
+          .where("linkedFrom", isNotEqualTo: uid)
           .where("status", isEqualTo: "pending"));
 
   @override

@@ -37,7 +37,7 @@ class _FriendSectionState extends State<FriendSection> {
               ),
               Column(
                 children: friendLinksManager.userIds
-                    .map((e) => FriendCard(e))
+                    .map((e) => FriendCard(e, false))
                     .toList(),
               )
             ]));

@@ -9,7 +9,8 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 
 class FriendCard extends StatefulWidget {
   final String friendUid;
-  FriendCard(this.friendUid);
+  final bool isPendingLink;
+  FriendCard(this.friendUid, this.isPendingLink);
 
   @override
   State<FriendCard> createState() => _FriendCardState();
@@ -95,7 +96,10 @@ class _FriendCardState extends State<FriendCard> {
                     child: Text(displayName,
                         style: Theme.of(context).textTheme.headline6),
                   ),
-                  Expanded(flex: 2, child: FriendCardButtons(widget.friendUid))
+                  Expanded(
+                      flex: 2,
+                      child: FriendCardButtons(
+                          widget.friendUid, widget.isPendingLink))
                 ];
             }
           }
@@ -120,7 +124,7 @@ class MenuItem {
 }
 
 class FriendsMenuItems {
-  static final List<MenuItem> firstItems = [dm, delete];
+  static final List<MenuItem> firstItems = [delete];
 
   static const dm = MenuItem(text: 'DM', icon: Icons.mail);
   static const delete = MenuItem(text: 'Delete', icon: Icons.delete_forever);
@@ -189,7 +193,8 @@ class UsersMenuItems {
 }
 
 class FriendCardButtons extends StatefulWidget {
-  const FriendCardButtons(this.friendUid);
+  const FriendCardButtons(this.friendUid, this.isPendingLink);
+  final bool isPendingLink;
   final String friendUid;
 
   @override
@@ -200,6 +205,7 @@ class _FriendCardButtonsState extends State<FriendCardButtons> {
   @override
   Widget build(BuildContext context) {
     var friendLinksManager = context.watch<FriendLinksManagerService>();
+    var db = Provider.of<Database>(context, listen: false);
 
     //We select our buttons and actions according to the userMode state we are in.
     List<DropdownMenuItem<MenuItem>>? buttons;
@@ -226,32 +232,40 @@ class _FriendCardButtonsState extends State<FriendCardButtons> {
       buttonAction = FriendsMenuItems.onChanged;
     }
 
-    return DropdownButtonHideUnderline(
-      child: DropdownButton2(
-        customButton: const Icon(
-          Icons.more_horiz,
-          size: 46,
-          color: Colors.white,
-        ),
-        customItemsIndexes: const [3],
-        customItemsHeight: 8,
-        items: [
-          ...buttons,
-        ],
-        onChanged: (value) {
-          buttonAction(context, value as MenuItem, widget.friendUid);
-        },
-        itemHeight: 48,
-        itemPadding: const EdgeInsets.only(left: 16, right: 16),
-        dropdownWidth: 110,
-        dropdownPadding: const EdgeInsets.symmetric(vertical: 6),
-        dropdownDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          color: primaryColor,
-        ),
-        dropdownElevation: 8,
-        offset: const Offset(0, 8),
-      ),
-    );
+    return widget.isPendingLink
+        ? ElevatedButton(
+            child: Icon(Icons.check_circle_rounded),
+            onPressed: () {
+              db.set(FriendLink(
+                  users: [db.uid, widget.friendUid], status: "accepted"));
+            },
+          )
+        : DropdownButtonHideUnderline(
+            child: DropdownButton2(
+              customButton: const Icon(
+                Icons.more_horiz,
+                size: 46,
+                color: Colors.white,
+              ),
+              customItemsIndexes: const [3],
+              customItemsHeight: 8,
+              items: [
+                ...buttons,
+              ],
+              onChanged: (value) {
+                buttonAction(context, value as MenuItem, widget.friendUid);
+              },
+              itemHeight: 48,
+              itemPadding: const EdgeInsets.only(left: 16, right: 16),
+              dropdownWidth: 110,
+              dropdownPadding: const EdgeInsets.symmetric(vertical: 6),
+              dropdownDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: primaryColor,
+              ),
+              dropdownElevation: 8,
+              offset: const Offset(0, 8),
+            ),
+          );
   }
 }
